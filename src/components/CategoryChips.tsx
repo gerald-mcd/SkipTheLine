@@ -17,12 +17,11 @@ export function CategoryChips({
             onClick={() => onChange(c.id)}
             className="flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all"
             style={{
-              background: on ? "var(--gradient-aurora)" : "oklch(0.21 0.025 260 / 0.7)",
+              background: on ? "var(--primary)" : "var(--surface)",
               color: on ? "var(--primary-foreground)" : "var(--foreground)",
               border: "1px solid",
-              borderColor: on ? "transparent" : "oklch(1 0 0 / 0.08)",
-              boxShadow: on ? "var(--shadow-glow)" : "none",
-              backdropFilter: "blur(12px)",
+              borderColor: on ? "transparent" : "var(--border)",
+              boxShadow: on ? "var(--shadow-sm)" : "none",
             }}
           >
             <span>{c.emoji}</span>
