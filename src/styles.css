@@ -106,6 +106,10 @@
   --shadow-elevated: 0 16px 40px -12px oklch(0.2 0.02 260 / 0.14);
   --shadow-glow: 0 6px 20px -4px oklch(0.45 0.15 260 / 0.35);
 
+  /* Compatibility aliases */
+  --gradient-aurora: linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 100%);
+  --gradient-hero: linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 100%);
+
   --sidebar: oklch(0.99 0.002 250);
   --sidebar-foreground: oklch(0.22 0.02 260);
   --sidebar-primary: oklch(0.45 0.15 260);
