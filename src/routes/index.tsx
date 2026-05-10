@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CityMap } from "@/components/CityMap";
-import { LiveTicker } from "@/components/LiveTicker";
 import { CategoryChips } from "@/components/CategoryChips";
-import { venues, Category, severityColor, severityLabel } from "@/lib/mock-data";
+import { venues, Category, severityColor } from "@/lib/mock-data";
 import { Search, Users, TrendingUp, Flame, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
@@ -34,9 +33,7 @@ function MapScreen() {
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
               Miami · Brickell
             </p>
-            <h1 className="text-2xl font-bold leading-tight">
-              The city is <span style={{ color: "var(--primary)" }} className="text-glow">moving</span>
-            </h1>
+            <h1 className="text-xl font-bold leading-tight">Live near you</h1>
           </div>
           <div className="glass flex items-center gap-1.5 rounded-full px-3 py-1.5">
             <span className="relative flex h-2 w-2">
@@ -58,11 +55,6 @@ function MapScreen() {
         {/* Categories */}
         <div className="mt-3">
           <CategoryChips active={cat} onChange={setCat} />
-        </div>
-
-        {/* Live ticker */}
-        <div className="mt-3">
-          <LiveTicker />
         </div>
       </div>
 

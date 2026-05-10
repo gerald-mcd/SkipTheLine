@@ -1,85 +1,126 @@
 import { Link } from "@tanstack/react-router";
 import { Venue, severityColor } from "@/lib/mock-data";
 
-export function CityMap({ venues, onSelect }: { venues: Venue[]; onSelect?: (v: Venue) => void }) {
+/**
+ * Map placeholder. This is the surface where Google Maps SDK will eventually
+ * mount. Until then we render a static dark-themed street grid that resembles
+ * a real map (not a radar) so layout, pin sizing, and overlays can be tuned.
+ */
+export function CityMap({ venues }: { venues: Venue[] }) {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Base map gradient */}
+    <div className="absolute inset-0 overflow-hidden" data-map-root>
+      {/* Map base — dark Google-Maps-style canvas */}
       <div
         className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(circle at 30% 20%, oklch(0.28 0.06 270 / 0.6), transparent 50%), radial-gradient(circle at 70% 80%, oklch(0.3 0.08 200 / 0.4), transparent 55%), linear-gradient(180deg, oklch(0.14 0.025 260) 0%, oklch(0.1 0.02 260) 100%)",
-        }}
+        style={{ background: "oklch(0.18 0.018 250)" }}
       />
-      {/* Grid streets */}
-      <svg className="absolute inset-0 h-full w-full opacity-[0.08]" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="streets" width="48" height="48" patternUnits="userSpaceOnUse">
-            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.5" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#streets)" />
-      </svg>
-      {/* Diagonal "highways" */}
-      <svg className="absolute inset-0 h-full w-full opacity-20" preserveAspectRatio="none" viewBox="0 0 100 100">
-        <path d="M -10 30 Q 50 20, 110 50" stroke="oklch(0.85 0.19 165 / 0.4)" strokeWidth="0.4" fill="none" />
-        <path d="M -10 75 Q 40 60, 110 80" stroke="oklch(0.7 0.22 290 / 0.4)" strokeWidth="0.4" fill="none" />
-        <path d="M 25 -10 L 35 110" stroke="white" strokeOpacity="0.15" strokeWidth="0.3" fill="none" />
-        <path d="M 65 -10 L 70 110" stroke="white" strokeOpacity="0.15" strokeWidth="0.3" fill="none" />
+
+      {/* Water / parks */}
+      <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 400 800">
+        {/* River */}
+        <path
+          d="M -20 520 C 80 480, 180 560, 280 500 S 420 480, 440 510 L 440 600 L -20 620 Z"
+          fill="oklch(0.22 0.04 235)"
+          opacity="0.85"
+        />
+        {/* Park blocks */}
+        <rect x="40" y="120" width="80" height="60" rx="6" fill="oklch(0.24 0.04 160)" opacity="0.5" />
+        <rect x="260" y="260" width="100" height="70" rx="6" fill="oklch(0.24 0.04 160)" opacity="0.5" />
+        <rect x="80" y="660" width="120" height="80" rx="6" fill="oklch(0.24 0.04 160)" opacity="0.5" />
       </svg>
 
-      {/* Radar sweep on user location */}
+      {/* Street grid — varied widths, slightly offset for realism */}
+      <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 400 800">
+        <g stroke="oklch(0.28 0.02 250)" fill="none">
+          {/* Horizontal streets */}
+          <line x1="0" y1="80" x2="400" y2="76" strokeWidth="1.2" />
+          <line x1="0" y1="160" x2="400" y2="158" strokeWidth="1" />
+          <line x1="0" y1="240" x2="400" y2="244" strokeWidth="1" />
+          <line x1="0" y1="320" x2="400" y2="318" strokeWidth="1" />
+          <line x1="0" y1="400" x2="400" y2="404" strokeWidth="1.2" />
+          <line x1="0" y1="640" x2="400" y2="644" strokeWidth="1" />
+          <line x1="0" y1="720" x2="400" y2="718" strokeWidth="1" />
+          {/* Vertical streets */}
+          <line x1="60" y1="0" x2="62" y2="800" strokeWidth="1" />
+          <line x1="140" y1="0" x2="138" y2="800" strokeWidth="1" />
+          <line x1="220" y1="0" x2="222" y2="800" strokeWidth="1.2" />
+          <line x1="300" y1="0" x2="298" y2="800" strokeWidth="1" />
+          <line x1="360" y1="0" x2="362" y2="800" strokeWidth="1" />
+        </g>
+        {/* Highway accents */}
+        <g stroke="oklch(0.36 0.04 70)" fill="none" opacity="0.55">
+          <path d="M -10 200 Q 200 180, 410 220" strokeWidth="2.5" />
+          <path d="M -10 480 Q 200 450, 410 470" strokeWidth="2.5" />
+        </g>
+      </svg>
+
+      {/* Subtle vignette */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 40%, oklch(0.12 0.02 260 / 0.5) 100%)",
+        }}
+      />
+
+      {/* User location dot */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="relative h-40 w-40">
-          <div
-            className="absolute inset-0 animate-radar rounded-full"
+        <div className="relative">
+          <span className="absolute inset-0 -m-3 animate-ping-soft rounded-full" style={{ background: "var(--primary)", opacity: 0.4 }} />
+          <span
+            className="relative block h-4 w-4 rounded-full ring-4"
             style={{
-              background:
-                "conic-gradient(from 0deg, transparent 0deg, oklch(0.85 0.19 165 / 0.25) 60deg, transparent 120deg)",
+              background: "var(--primary)",
+              boxShadow: "0 0 0 3px oklch(0.16 0.02 260), 0 0 16px oklch(0.85 0.19 165 / 0.6)",
             }}
           />
-          <div className="absolute inset-0 rounded-full" style={{ background: "var(--gradient-pulse)" }} />
-          <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4" style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)", outlineColor: "var(--primary)" }} />
         </div>
       </div>
 
       {/* Venue pins */}
-      {venues.map((v) => (
-        <Link
-          key={v.id}
-          to="/venue/$id"
-          params={{ id: v.id }}
-          onClick={() => onSelect?.(v)}
-          className="absolute -translate-x-1/2 -translate-y-1/2 animate-float-up"
-          style={{ left: `${v.x}%`, top: `${v.y}%` }}
-        >
-          <div className="relative flex flex-col items-center">
-            {/* Pulse */}
-            <span
-              className="absolute -top-1 h-10 w-10 animate-ping-soft rounded-full"
-              style={{ background: severityColor(v.severity), opacity: 0.3 }}
-            />
-            <div
-              className="glass-strong relative flex items-center gap-1.5 rounded-full px-2.5 py-1.5 shadow-lg"
-              style={{ borderColor: severityColor(v.severity) }}
-            >
-              <span
-                className="h-2 w-2 rounded-full animate-breathe"
-                style={{ background: severityColor(v.severity), boxShadow: `0 0 12px ${severityColor(v.severity)}` }}
+      {venues.map((v) => {
+        const c = severityColor(v.severity);
+        return (
+          <Link
+            key={v.id}
+            to="/venue/$id"
+            params={{ id: v.id }}
+            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
+            style={{ left: `${v.x}%`, top: `${v.y}%` }}
+          >
+            <div className="flex flex-col items-center">
+              <div
+                className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 shadow-lg backdrop-blur-md"
+                style={{
+                  background: "oklch(0.18 0.025 260 / 0.92)",
+                  border: `1px solid ${c}`,
+                  boxShadow: `0 4px 14px oklch(0 0 0 / 0.5), 0 0 0 1px oklch(1 0 0 / 0.04)`,
+                }}
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: c, boxShadow: `0 0 8px ${c}` }}
+                />
+                <span className="text-[11px] font-bold tabular-nums" style={{ color: c }}>
+                  {v.waitMinutes}m
+                </span>
+                <span className="max-w-[110px] truncate text-[11px] font-semibold text-foreground">
+                  {v.name}
+                </span>
+              </div>
+              {/* Pin tail */}
+              <div
+                className="-mt-px h-2 w-2 rotate-45"
+                style={{
+                  background: "oklch(0.18 0.025 260 / 0.92)",
+                  borderRight: `1px solid ${c}`,
+                  borderBottom: `1px solid ${c}`,
+                }}
               />
-              <span className="text-xs font-bold tabular-nums" style={{ color: severityColor(v.severity) }}>
-                {v.waitMinutes}m
-              </span>
             </div>
-            {v.event && (
-              <span className="mt-1 rounded-full px-1.5 py-0.5 text-[9px] font-semibold" style={{ background: "var(--accent)", color: "var(--accent-foreground)" }}>
-                ★ event
-              </span>
-            )}
-          </div>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </div>
   );
 }
