@@ -13,6 +13,7 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VenueIdRouteImport } from './routes/venue.$id'
 
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VenueIdRoute = VenueIdRouteImport.update({
+  id: '/venue/$id',
+  path: '/venue/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
+  '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
+  '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
+  '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/explore' | '/profile' | '/report'
+  fullPaths: '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/profile' | '/report'
-  id: '__root__' | '/' | '/explore' | '/profile' | '/report'
+  to: '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
+  id: '__root__' | '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   ProfileRoute: typeof ProfileRoute
   ReportRoute: typeof ReportRoute
+  VenueIdRoute: typeof VenueIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/venue/$id': {
+      id: '/venue/$id'
+      path: '/venue/$id'
+      fullPath: '/venue/$id'
+      preLoaderRoute: typeof VenueIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   ProfileRoute: ProfileRoute,
   ReportRoute: ReportRoute,
+  VenueIdRoute: VenueIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
