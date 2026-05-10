@@ -1,12 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Map, List, Plus, Trophy } from "lucide-react";
 
-const tabs = [
+const tabs: { to: string; label: string; icon: typeof Map; hero?: boolean }[] = [
   { to: "/", label: "Map", icon: Map },
   { to: "/explore", label: "Explore", icon: List },
   { to: "/report", label: "Report", icon: Plus, hero: true },
   { to: "/profile", label: "You", icon: Trophy },
-] as const;
+];
 
 export function BottomNav() {
   const { pathname } = useLocation();
@@ -20,7 +20,7 @@ export function BottomNav() {
             return (
               <Link
                 key={t.to}
-                to={t.to}
+                to={t.to as any}
                 className="relative -mt-8 flex h-16 w-16 items-center justify-center rounded-full"
                 style={{ background: "var(--gradient-aurora)", boxShadow: "var(--shadow-glow)" }}
               >
@@ -32,7 +32,7 @@ export function BottomNav() {
           return (
             <Link
               key={t.to}
-              to={t.to}
+              to={t.to as any}
               className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors"
               style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
             >
