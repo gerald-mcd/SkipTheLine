@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CityMap } from "@/components/CityMap";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor } from "@/lib/mock-data";
-import { Search, Users, TrendingUp, Flame } from "lucide-react";
+import { Search, Users, TrendingUp, Flame, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
