@@ -35,24 +35,27 @@ function Report() {
   if (submitted) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-6">
-        <div className="relative">
-          <div className="absolute inset-0 animate-pulse-ring rounded-full" style={{ background: "var(--gradient-aurora)" }} />
-          <div className="relative flex h-28 w-28 items-center justify-center rounded-full" style={{ background: "var(--gradient-aurora)", boxShadow: "var(--shadow-glow)" }}>
-            <Check className="h-12 w-12" strokeWidth={3} style={{ color: "var(--primary-foreground)" }} />
-          </div>
+        <div
+          className="flex h-20 w-20 items-center justify-center rounded-full"
+          style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
+        >
+          <Check className="h-9 w-9" strokeWidth={2.5} style={{ color: "var(--primary-foreground)" }} />
         </div>
-        <h1 className="mt-8 text-3xl font-black">Drop received</h1>
-        <p className="mt-2 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Thanks for keeping the city moving. Your report is now live.
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight">Report submitted</h1>
+        <p className="mt-1.5 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+          Thanks — your report is now live for everyone nearby.
         </p>
-        <div className="mt-6 flex items-center gap-2 rounded-full px-4 py-2" style={{ background: "oklch(0.85 0.19 165 / 0.15)", border: "1px solid var(--primary)" }}>
+        <div
+          className="mt-5 flex items-center gap-2 rounded-full px-3.5 py-1.5"
+          style={{ background: "var(--accent)" }}
+        >
           <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
-          <span className="text-sm font-bold" style={{ color: "var(--primary)" }}>+{points} SkipPoints</span>
+          <span className="text-sm font-semibold" style={{ color: "var(--primary)" }}>+{points} SkipPoints</span>
         </div>
         <button
           onClick={() => navigate({ to: "/" })}
-          className="mt-8 rounded-2xl px-6 py-3 text-sm font-bold"
-          style={{ background: "var(--surface-elevated)", color: "var(--foreground)" }}
+          className="mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold"
+          style={{ background: "var(--surface)", color: "var(--foreground)", border: "1px solid var(--border)" }}
         >
           Back to map
         </button>
@@ -61,54 +64,60 @@ function Report() {
   }
 
   return (
-    <div className="px-4 pt-6">
+    <div className="px-4 pt-6 pb-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--primary)" }}>
-            Drop a wait
+          <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            New report
           </p>
-          <h1 className="text-3xl font-black leading-tight">Report</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Report a wait</h1>
         </div>
-        <button onClick={() => navigate({ to: "/" })} className="rounded-full p-2" style={{ background: "var(--surface-elevated)" }}>
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="flex h-9 w-9 items-center justify-center rounded-full"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+        >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Venue */}
-      <button className="mt-5 flex w-full items-center gap-3 rounded-2xl p-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: "oklch(0.85 0.19 165 / 0.15)" }}>
+      <button
+        className="mt-5 flex w-full items-center gap-3 rounded-xl bg-white p-3.5"
+        style={{ border: "1px solid var(--border)" }}
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "var(--accent)" }}>
           <MapPin className="h-5 w-5" style={{ color: "var(--primary)" }} />
         </div>
         <div className="min-w-0 flex-1 text-left">
-          <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+          <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
             You're at
           </p>
-          <p className="truncate text-sm font-bold">{venue.name}</p>
+          <p className="truncate text-sm font-semibold">{venue.name}</p>
         </div>
         <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
       </button>
 
       {/* Wait selector */}
       <div className="mt-6">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
           Current wait
         </p>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-7xl font-black tabular-nums text-glow" style={{ color: "var(--primary)" }}>
+        <div className="mt-1 flex items-baseline gap-2">
+          <span className="text-6xl font-bold tabular-nums tracking-tight" style={{ color: "var(--foreground)" }}>
             {wait}
           </span>
-          <span className="text-2xl font-bold" style={{ color: "var(--muted-foreground)" }}>min</span>
+          <span className="text-xl font-medium" style={{ color: "var(--muted-foreground)" }}>min</span>
         </div>
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
           {waits.map((w) => (
             <button
               key={w}
               onClick={() => setWait(w)}
-              className="flex h-12 w-14 shrink-0 items-center justify-center rounded-2xl text-base font-bold tabular-nums transition-all"
+              className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-semibold tabular-nums transition-colors"
               style={{
-                background: w === wait ? "var(--gradient-aurora)" : "var(--surface)",
+                background: w === wait ? "var(--primary)" : "white",
                 color: w === wait ? "var(--primary-foreground)" : "var(--foreground)",
-                boxShadow: w === wait ? "var(--shadow-glow)" : "none",
                 border: "1px solid",
                 borderColor: w === wait ? "transparent" : "var(--border)",
               }}
@@ -121,7 +130,7 @@ function Report() {
 
       {/* Entry type */}
       <div className="mt-6">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
           Entry type
         </p>
         <div className="mt-2 grid grid-cols-3 gap-2">
@@ -129,15 +138,15 @@ function Report() {
             <button
               key={t.id}
               onClick={() => setType(t.id)}
-              className="rounded-2xl p-3 text-center transition-all"
+              className="rounded-xl bg-white p-3 text-center transition-colors"
               style={{
-                background: type === t.id ? "oklch(0.85 0.19 165 / 0.15)" : "var(--surface)",
+                background: type === t.id ? "var(--accent)" : "white",
                 border: "1px solid",
                 borderColor: type === t.id ? "var(--primary)" : "var(--border)",
               }}
             >
-              <div className="text-xl">{t.emoji}</div>
-              <div className="mt-1 text-[11px] font-bold">{t.label}</div>
+              <div className="text-lg">{t.emoji}</div>
+              <div className="mt-0.5 text-[11px] font-semibold">{t.label}</div>
             </button>
           ))}
         </div>
@@ -145,7 +154,7 @@ function Report() {
 
       {/* Event tag */}
       <div className="mt-6">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
           What's driving this? <span className="font-normal normal-case">(optional)</span>
         </p>
         <div className="no-scrollbar mt-2 flex gap-2 overflow-x-auto">
@@ -153,10 +162,10 @@ function Report() {
             <button
               key={e}
               onClick={() => setEvent(e)}
-              className="shrink-0 rounded-full px-3 py-2 text-xs font-semibold"
+              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium"
               style={{
-                background: event === e ? "var(--accent)" : "var(--surface)",
-                color: event === e ? "var(--accent-foreground)" : "var(--muted-foreground)",
+                background: event === e ? "var(--primary)" : "white",
+                color: event === e ? "var(--primary-foreground)" : "var(--muted-foreground)",
                 border: "1px solid",
                 borderColor: event === e ? "transparent" : "var(--border)",
               }}
@@ -167,27 +176,25 @@ function Report() {
         </div>
       </div>
 
-      {/* Reward preview + submit */}
-      <div className="mt-6 rounded-2xl p-4" style={{ background: "oklch(0.85 0.19 165 / 0.08)", border: "1px solid oklch(0.85 0.19 165 / 0.3)" }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
-            <span className="text-xs font-semibold" style={{ color: "var(--muted-foreground)" }}>You'll earn</span>
-          </div>
-          <span className="text-2xl font-black" style={{ color: "var(--primary)" }}>+{points}</span>
+      {/* Reward + submit */}
+      <div
+        className="mt-6 flex items-center justify-between rounded-xl bg-white p-3.5"
+        style={{ border: "1px solid var(--border)" }}
+      >
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
+          <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>You'll earn</span>
         </div>
-        <p className="mt-1 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-          Streak day 13 · Local rank #47
-        </p>
+        <span className="text-base font-semibold" style={{ color: "var(--primary)" }}>+{points} pts</span>
       </div>
 
       <button
         onClick={() => setSubmitted(true)}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-black"
-        style={{ background: "var(--gradient-aurora)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
+        style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
       >
-        <Zap className="h-5 w-5" strokeWidth={2.5} />
-        Drop the wait
+        <Zap className="h-4 w-4" strokeWidth={2.25} />
+        Submit report
       </button>
     </div>
   );

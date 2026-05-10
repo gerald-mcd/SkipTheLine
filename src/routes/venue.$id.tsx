@@ -36,29 +36,31 @@ function VenueDetail() {
       {/* Hero */}
       <div
         className="relative overflow-hidden px-4 pb-6 pt-6"
-        style={{
-          background: `radial-gradient(ellipse at top, ${color}33 0%, transparent 60%), oklch(0.16 0.02 260)`,
-        }}
+        style={{ background: "var(--surface-elevated)", borderBottom: "1px solid var(--border)" }}
       >
         <div className="flex items-center justify-between">
-          <button onClick={() => navigate({ to: "/explore" })} className="glass flex h-10 w-10 items-center justify-center rounded-full">
+          <button
+            onClick={() => navigate({ to: "/explore" })}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
+            style={{ border: "1px solid var(--border)" }}
+          >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div className="flex gap-2">
-            <button className="glass flex h-10 w-10 items-center justify-center rounded-full">
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white" style={{ border: "1px solid var(--border)" }}>
               <Heart className="h-4 w-4" />
             </button>
-            <button className="glass flex h-10 w-10 items-center justify-center rounded-full">
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white" style={{ border: "1px solid var(--border)" }}>
               <Share2 className="h-4 w-4" />
             </button>
           </div>
         </div>
 
         <div className="mt-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
+          <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
             {v.categoryLabel} · {v.distance}
           </p>
-          <h1 className="text-3xl font-black leading-tight">{v.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{v.name}</h1>
           <p className="mt-1 flex items-center gap-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
             <MapPin className="h-3 w-3" /> {v.address}
           </p>
@@ -67,17 +69,17 @@ function VenueDetail() {
         {/* Big number */}
         <div className="mt-6 flex items-end justify-between">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Live wait
             </p>
             <div className="flex items-baseline gap-2">
-              <span className="text-[88px] font-black leading-none tabular-nums text-glow" style={{ color }}>
+              <span className="text-7xl font-bold leading-none tabular-nums tracking-tight" style={{ color }}>
                 {v.waitMinutes}
               </span>
-              <span className="text-2xl font-bold" style={{ color }}>min</span>
+              <span className="text-xl font-medium" style={{ color }}>min</span>
             </div>
             <div className="mt-1 flex items-center gap-2">
-              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider" style={{ background: `${color}33`, color }}>
+              <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ background: `${color}1f`, color }}>
                 {severityLabel(v.severity)} line
               </span>
               <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
@@ -112,11 +114,11 @@ function VenueDetail() {
 
       {/* Event banner */}
       {v.event && (
-        <div className="mx-4 -mt-2 flex items-center gap-2 rounded-2xl p-3" style={{ background: "oklch(0.7 0.22 290 / 0.15)", border: "1px solid var(--accent)" }}>
-          <Calendar className="h-4 w-4" style={{ color: "var(--accent)" }} />
+        <div className="mx-4 mt-4 flex items-center gap-2 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+          <Calendar className="h-4 w-4" style={{ color: "var(--primary)" }} />
           <div className="flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--accent)" }}>Driving the crowd</p>
-            <p className="text-sm font-bold">{v.event}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Driving the crowd</p>
+            <p className="text-sm font-semibold">{v.event}</p>
           </div>
         </div>
       )}
@@ -130,18 +132,18 @@ function VenueDetail() {
 
       {/* Recent reports */}
       <section className="mt-6 px-4">
-        <h2 className="text-sm font-bold">Recent reports</h2>
+        <h2 className="text-sm font-semibold">Recent reports</h2>
         <div className="mt-2 space-y-2">
           {recent.map((r) => (
-            <div key={r.id} className="flex items-center gap-3 rounded-2xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-black" style={{ background: "var(--gradient-aurora)", color: "var(--primary-foreground)" }}>
+            <div key={r.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
                 {r.user[0]}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold">{r.user}</p>
+                <p className="text-sm font-medium">{r.user}</p>
                 <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>walk-in · {r.ago}</p>
               </div>
-              <span className="text-base font-black tabular-nums" style={{ color: severityColor(v.severity) }}>{r.minutes}m</span>
+              <span className="text-base font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>{r.minutes}m</span>
             </div>
           ))}
         </div>
@@ -151,10 +153,10 @@ function VenueDetail() {
       <div className="sticky bottom-24 mt-6 px-4">
         <Link
           to="/report"
-          className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-black"
-          style={{ background: "var(--gradient-aurora)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
         >
-          <Sparkles className="h-5 w-5" />
+          <Sparkles className="h-4 w-4" />
           Report wait here
         </Link>
       </div>
@@ -165,7 +167,7 @@ function VenueDetail() {
 
 function Mini({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-2xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+    <div className="rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-1.5">{icon}<span className="text-sm font-bold">{value}</span></div>
       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>{label}</p>
     </div>

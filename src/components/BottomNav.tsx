@@ -12,7 +12,10 @@ export function BottomNav() {
   const { pathname } = useLocation();
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md">
-      <div className="glass-strong mx-3 mb-3 flex items-center justify-around rounded-3xl px-2 py-2 shadow-[var(--shadow-elevated)]">
+      <div
+        className="mx-3 mb-3 flex items-center justify-around rounded-2xl bg-white px-2 py-2"
+        style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+      >
         {tabs.map((t) => {
           const Icon = t.icon;
           const active = pathname === t.to || (t.to === "/explore" && pathname.startsWith("/venue"));
@@ -21,11 +24,10 @@ export function BottomNav() {
               <Link
                 key={t.to}
                 to={t.to as any}
-                className="relative -mt-8 flex h-16 w-16 items-center justify-center rounded-full"
-                style={{ background: "var(--gradient-aurora)", boxShadow: "var(--shadow-glow)" }}
+                className="relative -mt-7 flex h-14 w-14 items-center justify-center rounded-full"
+                style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
               >
-                <span className="absolute inset-0 animate-pulse-ring rounded-full" style={{ background: "var(--gradient-aurora)" }} />
-                <Icon className="relative h-7 w-7" style={{ color: "var(--primary-foreground)" }} strokeWidth={2.5} />
+                <Icon className="relative h-6 w-6" style={{ color: "var(--primary-foreground)" }} strokeWidth={2.25} />
               </Link>
             );
           }
