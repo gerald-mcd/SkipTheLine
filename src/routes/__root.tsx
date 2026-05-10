@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { BottomNav } from "@/components/BottomNav";
 
 function NotFoundComponent() {
   return (
@@ -72,11 +73,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "SkipTheLine — Real-time wait times, before you go" },
+      { name: "description", content: "Crowd-powered live wait times for restaurants, nightlife, barbers, and more. Never wait in a line you didn't have to." },
+      { name: "theme-color", content: "#1a1f2e" },
+      { property: "og:title", content: "SkipTheLine — Live wait times" },
+      { property: "og:description", content: "Live, crowd-powered wait times for the city around you." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -113,7 +114,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="relative mx-auto min-h-screen w-full max-w-md">
+        <div className="pb-24">
+          <Outlet />
+        </div>
+        <BottomNav />
+      </div>
     </QueryClientProvider>
   );
 }
