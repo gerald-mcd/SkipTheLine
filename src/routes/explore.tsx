@@ -30,7 +30,7 @@ function Explore() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
           {list.length} venues live
         </p>
-        <h1 className="text-3xl font-black leading-tight">Explore</h1>
+        <h1 className="text-3xl font-semibold leading-tight">Explore</h1>
       </div>
 
       <div className="mt-4">
@@ -94,7 +94,7 @@ function Explore() {
                     className="inline-flex items-baseline gap-0.5 rounded-xl px-2.5 py-1.5"
                     style={{ background: `${severityColor(v.severity)}22`, border: `1px solid ${severityColor(v.severity)}55` }}
                   >
-                    <span className="text-2xl font-black tabular-nums" style={{ color: severityColor(v.severity) }}>
+                    <span className="text-2xl font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>
                       {v.waitMinutes}
                     </span>
                     <span className="text-[10px] font-bold" style={{ color: severityColor(v.severity) }}>m</span>
