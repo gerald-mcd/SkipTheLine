@@ -154,7 +154,7 @@ function VenueDetail() {
         <Link
           to="/report"
           className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
-          style={{ background: "var(--gradient-aurora)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
         >
           <Sparkles className="h-4 w-4" />
           Report wait here
