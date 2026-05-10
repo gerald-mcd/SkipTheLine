@@ -94,7 +94,7 @@ function Report() {
           Current wait
         </p>
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-7xl font-black tabular-nums text-glow" style={{ color: "var(--primary)" }}>
+          <span className="text-7xl font-black tabular-nums " style={{ color: "var(--primary)" }}>
             {wait}
           </span>
           <span className="text-2xl font-bold" style={{ color: "var(--muted-foreground)" }}>min</span>

@@ -44,7 +44,7 @@ function Explore() {
             onClick={() => setSort(s)}
             className="rounded-full px-3 py-1 text-[11px] font-semibold capitalize transition-colors"
             style={{
-              background: sort === s ? "var(--primary)" : "oklch(0.24 0.03 262 / 0.6)",
+              background: sort === s ? "var(--primary)" : "var(--secondary)",
               color: sort === s ? "var(--primary-foreground)" : "var(--muted-foreground)",
             }}
           >
@@ -62,7 +62,7 @@ function Explore() {
               to="/venue/$id"
               params={{ id: v.id }}
               className="block rounded-2xl p-4 transition-transform active:scale-[0.99]"
-              style={{ background: "oklch(0.21 0.025 260 / 0.7)", border: "1px solid oklch(1 0 0 / 0.06)" }}
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">

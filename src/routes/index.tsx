@@ -79,8 +79,8 @@ function MapScreen() {
                 className="group relative shrink-0 overflow-hidden rounded-2xl p-3"
                 style={{
                   width: 180,
-                  background: "oklch(0.24 0.03 262 / 0.8)",
-                  border: "1px solid oklch(1 0 0 / 0.06)",
+                  background: "var(--surface)",
+                  border: "1px solid var(--border)",
                 }}
               >
                 <div className="flex items-start justify-between">

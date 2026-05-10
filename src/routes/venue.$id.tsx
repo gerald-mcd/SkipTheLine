@@ -71,7 +71,7 @@ function VenueDetail() {
               Live wait
             </p>
             <div className="flex items-baseline gap-2">
-              <span className="text-[88px] font-black leading-none tabular-nums text-glow" style={{ color }}>
+              <span className="text-[88px] font-black leading-none tabular-nums " style={{ color }}>
                 {v.waitMinutes}
               </span>
               <span className="text-2xl font-bold" style={{ color }}>min</span>
