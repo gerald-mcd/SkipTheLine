@@ -167,7 +167,7 @@ function VenueDetail() {
 
 function Mini({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-2xl p-3" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+    <div className="rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-1.5">{icon}<span className="text-sm font-bold">{value}</span></div>
       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>{label}</p>
     </div>
