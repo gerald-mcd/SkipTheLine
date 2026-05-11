@@ -128,23 +128,23 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--background)) 0%, color-mix(in oklab, var(--primary) 4%, var(--background)) 40%, var(--background) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--background)) 0%, color-mix(in oklab, var(--primary) 10%, var(--background)) 45%, var(--background) 100%)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[360px] w-[360px] rounded-full opacity-60 blur-3xl animate-breathe"
-        style={{ background: "color-mix(in oklab, var(--primary) 38%, transparent)" }}
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 70%, transparent)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[420px] w-[420px] rounded-full opacity-55 blur-3xl animate-breathe"
-        style={{ background: "color-mix(in oklab, var(--warning) 32%, transparent)", animationDelay: "1.2s" }}
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--warning) 65%, transparent)", animationDelay: "1.2s" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[320px] w-[320px] -translate-x-1/2 rounded-full opacity-50 blur-3xl"
-        style={{ background: "color-mix(in oklab, var(--success) 28%, transparent)" }}
+        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
       />
       {/* Subtle dot grid overlay */}
       <div
@@ -152,11 +152,11 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, color-mix(in oklab, var(--primary) 18%, transparent) 1px, transparent 1px)",
-          backgroundSize: "22px 22px",
+            "radial-gradient(circle, color-mix(in oklab, var(--primary) 38%, transparent) 1.4px, transparent 1.4px)",
+          backgroundSize: "20px 20px",
           maskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
           WebkitMaskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
-          opacity: 0.35,
+          opacity: 0.6,
         }}
       />
 
@@ -223,12 +223,12 @@ function Home() {
           </p>
         </div>
 
-        <h1 className="font-display mt-4 text-[40px] font-semibold leading-[1.02] tracking-tight">
+        <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
           Skip the
           <br />
           <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
         </h1>
-        <p className="mt-2 max-w-[260px] text-[13px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+        <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Crowd-powered wait times for the spots people actually want to be at.
         </p>
 
@@ -363,7 +363,7 @@ function Home() {
                 </span>
                 Updated now
               </span>
-              <h3 className="font-display mt-3 text-[40px] font-semibold leading-[0.95] tracking-tight">
+              <h3 className="font-display mt-3 text-[48px] font-bold leading-[0.92] tracking-tight">
                 Walk
                 <br />
                 <span style={{ fontStyle: "italic", color: "var(--primary)" }}>straight</span> in.
