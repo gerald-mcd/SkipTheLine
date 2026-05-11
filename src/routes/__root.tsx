@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
@@ -111,6 +112,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { pathname } = useLocation();
+  const hideNav = pathname.startsWith("/social");
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -118,7 +121,7 @@ function RootComponent() {
         <div className="pb-24">
           <Outlet />
         </div>
-        <BottomNav />
+        {!hideNav && <BottomNav />}
       </div>
     </QueryClientProvider>
   );
