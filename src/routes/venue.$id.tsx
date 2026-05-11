@@ -33,47 +33,46 @@ function VenueDetail() {
 
   return (
     <div>
-      {/* Hero */}
-      <div
-        className="relative overflow-hidden px-4 pb-6 pt-6"
-        style={{ background: "var(--surface-elevated)", borderBottom: "1px solid var(--border)" }}
-      >
-        <div className="flex items-center justify-between">
+      {/* Hero image */}
+      <div className="relative h-80 w-full overflow-hidden">
+        <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%)" }} />
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
           <button
             onClick={() => navigate({ to: "/explore" })}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
-            style={{ border: "1px solid var(--border)" }}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 backdrop-blur"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
           <div className="flex gap-2">
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white" style={{ border: "1px solid var(--border)" }}>
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 backdrop-blur">
               <Heart className="h-4 w-4" />
             </button>
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white" style={{ border: "1px solid var(--border)" }}>
+            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 backdrop-blur">
               <Share2 className="h-4 w-4" />
             </button>
           </div>
         </div>
-
-        <div className="mt-5">
-          <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-            {v.categoryLabel} · {v.distance}
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+          <p className="font-grotesk text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
+            {v.categoryLabel} · {v.vibe}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">{v.name}</h1>
-          <p className="mt-1 flex items-center gap-1 text-xs" style={{ color: "var(--muted-foreground)" }}>
+          <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight">{v.name}</h1>
+          <p className="mt-1 flex items-center gap-1 text-xs opacity-90">
             <MapPin className="h-3 w-3" /> {v.address}
           </p>
         </div>
+      </div>
 
+      <div className="px-4 pt-5" style={{ background: "var(--surface-elevated)", borderBottom: "1px solid var(--border)" }}>
         {/* Big number */}
-        <div className="mt-6 flex items-end justify-between">
+        <div className="flex items-end justify-between pb-5">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            <p className="font-grotesk text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
               Live wait
             </p>
             <div className="flex items-baseline gap-2">
-              <span className="text-7xl font-bold leading-none tabular-nums tracking-tight" style={{ color }}>
+              <span className="font-display text-7xl font-bold leading-none tabular-nums tracking-tight" style={{ color }}>
                 {v.waitMinutes}
               </span>
               <span className="text-xl font-medium" style={{ color }}>min</span>
