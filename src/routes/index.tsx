@@ -319,10 +319,10 @@ function Home() {
           </div>
         )}
 
-        <h1 className="mt-6 -ml-2">
+        <h1 className="mt-6">
           <span className="sr-only">SkipTheLine</span>
           <Logo
-            className="h-32 w-auto select-none sm:h-36"
+            className="block h-auto w-[88%] max-w-[420px] select-none"
             style={{
               filter:
                 "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 32%, transparent))",
