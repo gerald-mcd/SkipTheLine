@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor, walkMinutes } from "@/lib/mock-data";
 import {
-  Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
+  Search, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
   TrendingUp, TrendingDown, Minus, Bell, BellRing, Footprints, Quote,
-  LogIn, Navigation, Radio, Crosshair, Check,
+  LogIn, Radio, Crosshair,
 } from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
