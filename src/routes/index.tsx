@@ -6,6 +6,7 @@ import { venues, Category, severityColor, walkMinutes } from "@/lib/mock-data";
 import {
   Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
   TrendingUp, TrendingDown, Minus, Bell, BellRing, Footprints, Quote,
+  LogIn, Navigation, Radio,
 } from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
@@ -29,6 +30,8 @@ function Home() {
   const { isFav, toggle } = useFavorites();
   const [shortFilter, setShortFilter] = useState<"all" | "under10" | "walk5" | "late">("all");
   const [notifyIds, setNotifyIds] = useState<Set<string>>(new Set());
+  const [locationEnabled, setLocationEnabled] = useState(false);
+  const [locating, setLocating] = useState(false);
   const heroParallaxRef = useRef<HTMLDivElement>(null);
   const heroImgRef = useRef<HTMLImageElement>(null);
 
@@ -92,31 +95,97 @@ function Home() {
     });
   };
 
+  const enableLocation = () => {
+    if (locationEnabled || locating) return;
+    setLocating(true);
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          setLocationEnabled(true);
+          setLocating(false);
+          toast.success("Location on — showing spots near you");
+        },
+        () => {
+          setLocating(false);
+          toast.error("Couldn't get your location", { description: "Showing Miami · Brickell by default." });
+        },
+        { timeout: 6000 }
+      );
+    } else {
+      setTimeout(() => {
+        setLocationEnabled(true);
+        setLocating(false);
+        toast.success("Location on — showing spots near you");
+      }, 600);
+    }
+  };
+
   return (
     <div className="pb-4">
-      {/* Header */}
-      <div className="px-5 pt-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
-            <span className="text-[11px] font-grotesk font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-              Miami · Brickell
-            </span>
-          </div>
-          <div
-            className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1"
-            style={{ border: "1px solid var(--border)" }}
+      {/* Top bar: location + sign in */}
+      <div className="px-5 pt-4">
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={enableLocation}
+            className="flex min-w-0 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-left transition-colors"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
           >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
-              <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
-            </span>
-            <span className="text-[11px] font-grotesk font-semibold tabular-nums">{totalReporters}</span>
-            <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>live</span>
+            {locationEnabled ? (
+              <>
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
+                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+                </span>
+                <MapPin className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
+                <span className="font-grotesk truncate text-[11px] font-semibold uppercase tracking-[0.16em]">
+                  Miami · Brickell
+                </span>
+              </>
+            ) : (
+              <>
+                <Navigation className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
+                <span className="font-grotesk text-[11px] font-semibold uppercase tracking-[0.16em]">
+                  {locating ? "Locating…" : "Enable location"}
+                </span>
+              </>
+            )}
+          </button>
+
+          <div className="flex items-center gap-2">
+            <div
+              className="hidden items-center gap-1.5 rounded-full bg-white px-2.5 py-1 sm:flex"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <Radio className="h-3 w-3" style={{ color: "var(--destructive)" }} />
+              <span className="text-[11px] font-grotesk font-semibold tabular-nums">{totalReporters}</span>
+              <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>reporting now</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => toast("Sign in coming soon", { description: "Save favorites, earn reporter cred, and unlock notifications." })}
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-grotesk font-semibold uppercase tracking-[0.16em] text-white transition-opacity hover:opacity-90"
+              style={{ background: "var(--foreground)" }}
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              Sign in
+            </button>
           </div>
         </div>
 
-        <h1 className="font-display mt-3 text-[40px] font-semibold leading-[1.02] tracking-tight">
+        {/* Crowdsourcing pitch */}
+        <div
+          className="mt-3 flex items-center gap-2 rounded-2xl bg-white px-3 py-2"
+          style={{ border: "1px solid var(--border)" }}
+        >
+          <AvatarStack names={["AM", "JR", "KS", "LP"]} max={4} />
+          <p className="text-[11px] leading-tight" style={{ color: "var(--muted-foreground)" }}>
+            <span className="font-semibold" style={{ color: "var(--foreground)" }}>{totalReporters} neighbors</span>{" "}
+            reporting waits right now — by the crowd, for the crowd.
+          </p>
+        </div>
+
+        <h1 className="font-display mt-4 text-[40px] font-semibold leading-[1.02] tracking-tight">
           Skip the
           <br />
           <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
