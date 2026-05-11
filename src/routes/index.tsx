@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor } from "@/lib/mock-data";
-import { Search, MapPin, Flame, Users, Clock, ArrowUpRight } from "lucide-react";
+import { Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart } from "lucide-react";
+import { TrendingCarousel } from "@/components/TrendingCarousel";
+import { VenueImage } from "@/components/VenueImage";
+import { useFavorites } from "@/hooks/use-favorites";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,6 +19,21 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
+  const [loading, setLoading] = useState(true);
+  const { isFav, toggle } = useFavorites();
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 650);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Re-trigger skeletons when filter changes
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(t);
+  }, [cat]);
+
   const filtered = cat === "all" ? venues : venues.filter((v) => v.category === cat);
   const hero = [...filtered].sort((a, b) => b.liveReporters - a.liveReporters)[0] ?? venues[0];
   const rest = filtered.filter((v) => v.id !== hero.id);
@@ -78,8 +96,12 @@ function Home() {
           className="relative block overflow-hidden rounded-3xl"
           style={{ boxShadow: "var(--shadow-lg)" }}
         >
-          <div className="relative h-72 w-full">
-            <img src={hero.image} alt={hero.name} className="absolute inset-0 h-full w-full object-cover" />
+          <div className="relative h-72 w-full bg-[var(--muted)]">
+            {loading ? (
+              <div className="absolute inset-0 animate-pulse" style={{ background: "var(--muted)" }} />
+            ) : (
+              <VenueImage src={hero.image} alt={hero.name} className="absolute inset-0 h-full w-full object-cover" />
+            )}
             <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.78) 100%)" }} />
 
             {/* Top tags */}
@@ -87,11 +109,30 @@ function Home() {
               <span className="font-grotesk inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
                 <Flame className="h-3 w-3" style={{ color: "var(--destructive)" }} /> Hottest right now
               </span>
-              {hero.event && (
-                <span className="font-grotesk rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ background: "var(--primary)" }}>
-                  {hero.event}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {hero.event && (
+                  <span className="font-grotesk rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ background: "var(--primary)" }}>
+                    {hero.event}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  aria-label={isFav(hero.id) ? "Remove from favorites" : "Add to favorites"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggle(hero.id);
+                  }}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full backdrop-blur"
+                  style={{ background: "rgba(255,255,255,0.92)" }}
+                >
+                  <Heart
+                    className="h-4 w-4"
+                    fill={isFav(hero.id) ? "var(--destructive)" : "transparent"}
+                    style={{ color: isFav(hero.id) ? "var(--destructive)" : "var(--foreground)" }}
+                  />
+                </button>
+              </div>
             </div>
 
             {/* Bottom content */}
@@ -137,38 +178,7 @@ function Home() {
           </Link>
         </div>
 
-        <div
-          className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2"
-          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
-        >
-          {trending.map((v) => (
-            <Link
-              key={v.id}
-              to="/venue/$id"
-              params={{ id: v.id }}
-              className="group relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-3xl"
-              style={{ boxShadow: "var(--shadow-md)" }}
-            >
-              <div className="relative h-72 w-full">
-                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover transition-transform group-active:scale-[0.98]" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%)" }} />
-                <span
-                  className="font-grotesk absolute right-3 top-3 inline-flex items-baseline gap-0.5 rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums text-white"
-                  style={{ background: severityColor(v.severity) }}
-                >
-                  {v.waitMinutes}<span className="text-[9px] font-semibold">m wait</span>
-                </span>
-                <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-                  <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.18em] opacity-90">
-                    {v.categoryLabel} · {v.vibe}
-                  </p>
-                  <p className="font-display text-2xl font-semibold leading-tight">{v.name}</p>
-                  <p className="mt-1 text-[11px] opacity-90">{v.liveReporters} live · {v.distance}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <TrendingCarousel items={trending} loading={loading} />
       </div>
 
       {/* Shortest waits — editorial list */}
@@ -179,16 +189,32 @@ function Home() {
         <h3 className="font-display text-2xl font-semibold tracking-tight">Shortest waits</h3>
 
         <div className="mt-3 space-y-2">
-          {shortest.map((v, i) => (
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
+                  style={{ border: "1px solid var(--border)" }}
+                >
+                  <div className="h-16 w-16 shrink-0 animate-pulse rounded-xl" style={{ background: "var(--muted)" }} />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-2.5 w-20 animate-pulse rounded" style={{ background: "var(--muted)" }} />
+                    <div className="h-4 w-40 animate-pulse rounded" style={{ background: "var(--muted)" }} />
+                    <div className="h-2.5 w-24 animate-pulse rounded" style={{ background: "var(--muted)" }} />
+                  </div>
+                  <div className="h-8 w-10 animate-pulse rounded" style={{ background: "var(--muted)" }} />
+                </div>
+              ))
+            : shortest.map((v, i) => (
             <Link
               key={v.id}
               to="/venue/$id"
               params={{ id: v.id }}
-              className="flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
+              className="relative flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
               style={{ border: "1px solid var(--border)" }}
             >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl">
-                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--muted)]">
+                <VenueImage src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
@@ -199,7 +225,7 @@ function Home() {
                   {v.distance} · {v.liveReporters} live
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-right pr-7">
                 <p className="font-grotesk text-2xl font-bold tabular-nums leading-none" style={{ color: severityColor(v.severity) }}>
                   {v.waitMinutes}
                 </p>
@@ -207,6 +233,22 @@ function Home() {
                   min
                 </p>
               </div>
+              <button
+                type="button"
+                aria-label={isFav(v.id) ? "Remove from favorites" : "Add to favorites"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggle(v.id);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full"
+              >
+                <Heart
+                  className="h-4 w-4"
+                  fill={isFav(v.id) ? "var(--destructive)" : "transparent"}
+                  style={{ color: isFav(v.id) ? "var(--destructive)" : "var(--muted-foreground)" }}
+                />
+              </button>
             </Link>
           ))}
         </div>
