@@ -136,23 +136,23 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--background)) 0%, color-mix(in oklab, var(--primary) 10%, var(--background)) 45%, var(--background) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 10%, white) 0%, color-mix(in oklab, var(--primary) 4%, white) 50%, var(--background) 100%)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe"
-        style={{ background: "color-mix(in oklab, var(--primary) 70%, transparent)" }}
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-50 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 45%, transparent)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-drift"
-        style={{ background: "color-mix(in oklab, var(--warning) 65%, transparent)", animationDelay: "1.2s" }}
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-60 blur-3xl animate-drift"
+        style={{ background: "color-mix(in oklab, white 70%, var(--primary))", animationDelay: "1.2s" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe animate-hue"
-        style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
+        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-55 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 30%, transparent)", animationDelay: "2.1s" }}
       />
       {/* Subtle dot grid overlay */}
       <div
@@ -326,7 +326,7 @@ function Home() {
         <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
           Skip the
           <br />
-          <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
+          <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span>.
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Crowd-powered wait times for the spots people actually want to be at.
