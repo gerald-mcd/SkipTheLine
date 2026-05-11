@@ -171,14 +171,6 @@ function Home() {
 
       {/* Top bar: location pill + user avatar */}
       <div className="relative px-5 pt-4">
-        <div className="mb-3 flex justify-center">
-          <img
-            src={logoUrl}
-            alt="SkipTheLine"
-            className="h-7 w-auto select-none"
-            draggable={false}
-          />
-        </div>
         <div className="flex items-center justify-between gap-2">
           <button
             type="button"
@@ -332,10 +324,14 @@ function Home() {
           </div>
         )}
 
-        <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
-          Skip the
-          <br />
-          <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
+        <h1 className="mt-5">
+          <span className="sr-only">SkipTheLine</span>
+          <img
+            src={logoUrl}
+            alt="SkipTheLine"
+            className="h-14 w-auto select-none sm:h-16"
+            draggable={false}
+          />
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Crowd-powered wait times for the spots people actually want to be at.
