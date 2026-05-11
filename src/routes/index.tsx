@@ -123,9 +123,9 @@ function Home() {
         </Link>
       </div>
 
-      {/* Trending grid */}
-      <div className="mt-8 px-5">
-        <div className="flex items-end justify-between">
+      {/* Trending carousel */}
+      <div className="mt-8">
+        <div className="flex items-end justify-between px-5">
           <div>
             <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
               Trending nearby
@@ -137,30 +137,33 @@ function Home() {
           </Link>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div
+          className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+        >
           {trending.map((v) => (
             <Link
               key={v.id}
               to="/venue/$id"
               params={{ id: v.id }}
-              className="group relative block overflow-hidden rounded-2xl"
-              style={{ boxShadow: "var(--shadow-sm)" }}
+              className="group relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-3xl"
+              style={{ boxShadow: "var(--shadow-md)" }}
             >
-              <div className="relative h-44 w-full">
+              <div className="relative h-72 w-full">
                 <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover transition-transform group-active:scale-[0.98]" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.75) 100%)" }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%)" }} />
                 <span
-                  className="font-grotesk absolute right-2 top-2 inline-flex items-baseline gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums text-white"
+                  className="font-grotesk absolute right-3 top-3 inline-flex items-baseline gap-0.5 rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums text-white"
                   style={{ background: severityColor(v.severity) }}
                 >
-                  {v.waitMinutes}<span className="text-[9px] font-semibold">m</span>
+                  {v.waitMinutes}<span className="text-[9px] font-semibold">m wait</span>
                 </span>
-                <div className="absolute inset-x-0 bottom-0 p-3 text-white">
-                  <p className="font-grotesk text-[9px] font-semibold uppercase tracking-[0.16em] opacity-90">
-                    {v.categoryLabel}
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                  <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.18em] opacity-90">
+                    {v.categoryLabel} · {v.vibe}
                   </p>
-                  <p className="font-display text-lg font-semibold leading-tight">{v.name}</p>
-                  <p className="mt-0.5 text-[10px] opacity-90">{v.liveReporters} live · {v.distance}</p>
+                  <p className="font-display text-2xl font-semibold leading-tight">{v.name}</p>
+                  <p className="mt-1 text-[11px] opacity-90">{v.liveReporters} live · {v.distance}</p>
                 </div>
               </div>
             </Link>
