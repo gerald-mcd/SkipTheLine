@@ -100,6 +100,20 @@
   --wait-moderate: oklch(0.68 0.15 65);
   --wait-long: oklch(0.58 0.2 25);
 
+  /* Vibrant accent tokens for section distinction */
+  --accent-peach: oklch(0.94 0.05 60);
+  --accent-peach-fg: oklch(0.45 0.14 40);
+  --accent-mint: oklch(0.94 0.06 165);
+  --accent-mint-fg: oklch(0.4 0.12 165);
+  --accent-sky: oklch(0.93 0.05 230);
+  --accent-sky-fg: oklch(0.4 0.14 240);
+  --accent-lilac: oklch(0.93 0.05 295);
+  --accent-lilac-fg: oklch(0.42 0.16 295);
+  --accent-lemon: oklch(0.96 0.09 100);
+  --accent-lemon-fg: oklch(0.45 0.13 90);
+  --accent-rose: oklch(0.93 0.06 15);
+  --accent-rose-fg: oklch(0.48 0.18 18);
+
   /* Shadows */
   --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.05);
   --shadow-md: 0 4px 12px oklch(0.2 0.02 260 / 0.06), 0 1px 3px oklch(0.2 0.02 260 / 0.04);
