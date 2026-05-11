@@ -13,7 +13,6 @@ import { VenueImage } from "@/components/VenueImage";
 import { CountUp } from "@/components/CountUp";
 import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
-import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -137,18 +136,23 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--background)) 0%, color-mix(in oklab, var(--primary) 4%, var(--background)) 45%, var(--background) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--background)) 0%, color-mix(in oklab, var(--primary) 10%, var(--background)) 45%, var(--background) 100%)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-40 blur-3xl animate-breathe"
-        style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 70%, transparent)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-60 blur-3xl animate-drift"
-        style={{ background: "color-mix(in oklab, white 70%, transparent)", animationDelay: "1.2s" }}
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-drift"
+        style={{ background: "color-mix(in oklab, var(--warning) 65%, transparent)", animationDelay: "1.2s" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe animate-hue"
+        style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
       />
       {/* Subtle dot grid overlay */}
       <div
@@ -156,11 +160,11 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, color-mix(in oklab, var(--primary) 22%, transparent) 1.2px, transparent 1.2px)",
+            "radial-gradient(circle, color-mix(in oklab, var(--primary) 38%, transparent) 1.4px, transparent 1.4px)",
           backgroundSize: "20px 20px",
           maskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
           WebkitMaskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
-          opacity: 0.35,
+          opacity: 0.6,
         }}
       />
 
@@ -319,15 +323,10 @@ function Home() {
           </div>
         )}
 
-        <h1 className="mt-6">
-          <span className="sr-only">SkipTheLine</span>
-          <Logo
-            className="block h-auto w-[88%] max-w-[420px] select-none"
-            style={{
-              filter:
-                "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 32%, transparent))",
-            }}
-          />
+        <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
+          Skip the
+          <br />
+          <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           Crowd-powered wait times for the spots people actually want to be at.
@@ -405,18 +404,11 @@ function Home() {
               </div>
               <div className="mt-3 flex items-center gap-3 text-[12px]">
                 <span
-                  className="font-grotesk inline-flex items-baseline gap-1.5 rounded-2xl px-3 py-1.5 font-bold"
-                  style={{
-                    background: severityColor(hero.severity),
-                    color: "white",
-                    boxShadow:
-                      "0 10px 24px -6px color-mix(in oklab, " +
-                      severityColor(hero.severity) +
-                      " 75%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
-                  }}
+                  className="font-grotesk inline-flex items-baseline gap-1 rounded-full px-2.5 py-1 font-semibold"
+                  style={{ background: severityColor(hero.severity), color: "white" }}
                 >
-                  <span className="text-2xl leading-none tabular-nums">{hero.waitMinutes}</span>
-                  <span className="text-[10px] uppercase tracking-[0.18em] opacity-95">min wait</span>
+                  <span className="text-base tabular-nums">{hero.waitMinutes}</span>
+                  <span className="text-[10px] uppercase tracking-wider">min wait</span>
                 </span>
                 <span className="inline-flex items-center gap-1 opacity-95">
                   <Users className="h-3.5 w-3.5" /> {hero.liveReporters} live
@@ -463,13 +455,13 @@ function Home() {
             <div>
               <span
                 className="font-grotesk inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]"
-                style={{ background: "color-mix(in oklab, var(--primary) 12%, white)", color: "var(--primary)" }}
+                style={{ background: "color-mix(in oklab, var(--success) 14%, white)", color: "var(--success)" }}
               >
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--primary)" }} />
-                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--primary)" }} />
+                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
+                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
                 </span>
-                Updated now · crowdsourced
+                Updated now
               </span>
               <h3 className="font-display mt-3 text-[48px] font-bold leading-[0.92] tracking-tight">
                 Walk
@@ -612,21 +604,12 @@ function Home() {
                             </span>
                           </div>
                         </div>
-                        <div
-                          className="shrink-0 rounded-2xl px-3 py-2 text-right text-white"
-                          style={{
-                            background: severityColor(v.severity),
-                            boxShadow:
-                              "0 12px 26px -8px color-mix(in oklab, " +
-                              severityColor(v.severity) +
-                              " 75%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
-                          }}
-                        >
+                        <div className="shrink-0 text-right text-white">
                           <div className="inline-flex items-baseline gap-1">
-                            <CountUp end={v.waitMinutes} className="font-grotesk text-[40px] font-extrabold leading-none tabular-nums" />
-                            <span className="font-grotesk text-base font-bold opacity-90">m</span>
+                            <CountUp end={v.waitMinutes} className="font-grotesk text-4xl font-bold leading-none tabular-nums" />
+                            <span className="font-grotesk text-sm font-semibold opacity-80">m</span>
                           </div>
-                          <p className="font-grotesk mt-0.5 text-[9px] font-bold uppercase tracking-[0.2em] opacity-95">min wait</p>
+                          <p className="font-grotesk mt-1 text-[9px] font-bold uppercase tracking-widest opacity-70">min wait</p>
                         </div>
                       </div>
                     </Link>
@@ -683,22 +666,13 @@ function Home() {
                             </span>
                           </div>
                         </div>
-                        <div
-                          className="shrink-0 rounded-xl px-2.5 py-1.5 text-right text-white"
-                          style={{
-                            background: severityColor(v.severity),
-                            boxShadow:
-                              "0 8px 20px -6px color-mix(in oklab, " +
-                              severityColor(v.severity) +
-                              " 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
-                          }}
-                        >
+                        <div className="shrink-0 text-right">
                           <div className="inline-flex items-baseline gap-1">
-                            <CountUp end={v.waitMinutes} className="font-grotesk text-3xl font-extrabold leading-none tabular-nums" />
-                            <span className="text-xs font-bold opacity-90">m</span>
+                            <CountUp end={v.waitMinutes} className="font-grotesk text-3xl font-bold leading-none tabular-nums" />
+                            <span className="text-xs font-semibold opacity-80">m</span>
                           </div>
-                          <p className="font-grotesk mt-0.5 inline-flex items-center justify-end gap-1 text-[9px] font-bold uppercase tracking-[0.2em] opacity-95">
-                            <Trend className="h-3 w-3" /> min wait
+                          <p className="font-grotesk mt-1 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest" style={{ color: trendColor === "var(--muted-foreground)" ? "rgba(255,255,255,0.7)" : trendColor }}>
+                            <Trend className="h-3 w-3" />
                           </p>
                         </div>
                       </div>
@@ -764,19 +738,10 @@ function Home() {
                           </span>
                         </div>
                         <h4 className="font-display mt-0.5 truncate text-[15px] font-semibold leading-tight">{v.name}</h4>
-                        <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: "var(--border)" }}>
-                          <span
-                            className="font-grotesk inline-flex items-baseline gap-0.5 rounded-lg px-2 py-1 text-base font-extrabold leading-none tabular-nums text-white"
-                            style={{
-                              background: severityColor(v.severity),
-                              boxShadow:
-                                "0 4px 12px -4px color-mix(in oklab, " +
-                                severityColor(v.severity) +
-                                " 70%, transparent)",
-                            }}
-                          >
+                        <div className="mt-2 flex items-center justify-between border-t pt-1.5" style={{ borderColor: "var(--border)" }}>
+                          <span className="font-grotesk text-lg font-bold leading-none tabular-nums">
                             <CountUp end={v.waitMinutes} />
-                            <span className="text-[9px] font-bold opacity-95">m</span>
+                            <span className="ml-0.5 text-[10px] font-semibold" style={{ color: "var(--muted-foreground)" }}>m</span>
                           </span>
                           <span className="font-grotesk inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                             <Footprints className="h-2.5 w-2.5" /> {walkMin}m
