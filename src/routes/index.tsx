@@ -5,6 +5,22 @@ import { Bell, Heart, Search } from "lucide-react";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
 
+type SortKey = "trending" | "wait" | "distance" | "rated";
+const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
+  { id: "trending", label: "Trending", emoji: "🔥" },
+  { id: "wait", label: "Shortest wait", emoji: "⏱️" },
+  { id: "distance", label: "Closest", emoji: "📍" },
+  { id: "rated", label: "Top rated", emoji: "⭐" },
+];
+
+// Deterministic synthetic rating (4.0 – 4.9) seeded by venue id so the
+// "Top rated" sort stays stable across renders without adding a backend field.
+function venueRating(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return 4 + (h % 90) / 100;
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -17,16 +33,20 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
+  const [sort, setSort] = useState<SortKey>("trending");
   const { isFav, toggle } = useFavorites();
 
   const filtered = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
     [cat],
   );
-  const popular = useMemo(
-    () => [...filtered].sort((a, b) => b.liveReporters - a.liveReporters),
-    [filtered],
-  );
+  const popular = useMemo(() => {
+    const list = [...filtered];
+    if (sort === "wait") return list.sort((a, b) => a.waitMinutes - b.waitMinutes);
+    if (sort === "distance") return list.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+    if (sort === "rated") return list.sort((a, b) => venueRating(b.id) - venueRating(a.id));
+    return list.sort((a, b) => b.liveReporters - a.liveReporters);
+  }, [filtered, sort]);
 
   return (
     <div className="relative overflow-hidden pb-4">
@@ -158,6 +178,28 @@ function Home() {
           >
             See all
           </Link>
+        </div>
+        <div className="mt-3 no-scrollbar flex gap-2 overflow-x-auto pb-1">
+          {sortOptions.map((s) => {
+            const on = s.id === sort;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setSort(s.id)}
+                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all"
+                style={{
+                  background: on ? "var(--foreground)" : "white",
+                  color: on ? "white" : "var(--foreground)",
+                  border: "1px solid",
+                  borderColor: on ? "var(--foreground)" : "var(--border)",
+                  boxShadow: on ? "var(--shadow-sm)" : "none",
+                }}
+              >
+                <span aria-hidden>{s.emoji}</span>
+                {s.label}
+              </button>
+            );
+          })}
         </div>
       </header>
 
