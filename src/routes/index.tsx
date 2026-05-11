@@ -1,109 +1,211 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { CityMap } from "@/components/CityMap";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor } from "@/lib/mock-data";
-import { Search, Users, TrendingUp, Zap } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Search, MapPin, Flame, Users, Clock, ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SkipTheLine — Live map of your city" },
-      { name: "description", content: "See live wait times around you. Open the radar." },
+      { title: "SkipTheLine — Live wait times in your city" },
+      { name: "description", content: "Real-time, crowd-powered wait times. See the line before you go." },
     ],
   }),
-  component: MapScreen,
+  component: Home,
 });
 
-function MapScreen() {
+function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
   const filtered = cat === "all" ? venues : venues.filter((v) => v.category === cat);
-  const trending = [...venues].sort((a, b) => b.liveReporters - a.liveReporters).slice(0, 4);
+  const hero = [...filtered].sort((a, b) => b.liveReporters - a.liveReporters)[0] ?? venues[0];
+  const rest = filtered.filter((v) => v.id !== hero.id);
+  const trending = [...rest].sort((a, b) => b.liveReporters - a.liveReporters).slice(0, 4);
+  const shortest = [...rest].sort((a, b) => a.waitMinutes - b.waitMinutes).slice(0, 6);
   const totalReporters = venues.reduce((s, v) => s + v.liveReporters, 0);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      <CityMap venues={filtered} />
-
-      {/* Top overlay */}
-      <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
+    <div className="pb-4">
+      {/* Header */}
+      <div className="px-5 pt-5">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+          <div className="flex items-center gap-1.5">
+            <MapPin className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
+            <span className="text-[11px] font-grotesk font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
               Miami · Brickell
-            </p>
-            <h1 className="text-lg font-semibold tracking-tight">Live near you</h1>
+            </span>
           </div>
           <div
-            className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5"
-            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1"
+            style={{ border: "1px solid var(--border)" }}
           >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
-            <Users className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
-            <span className="text-xs font-semibold tabular-nums">{totalReporters}</span>
-            <span className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>live</span>
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
+              <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+            </span>
+            <span className="text-[11px] font-grotesk font-semibold tabular-nums">{totalReporters}</span>
+            <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>live</span>
           </div>
         </div>
 
+        <h1 className="font-display mt-3 text-[40px] font-semibold leading-[1.02] tracking-tight">
+          Skip the
+          <br />
+          <span style={{ fontStyle: "italic", color: "var(--primary)" }}>line</span> tonight.
+        </h1>
+        <p className="mt-2 max-w-[260px] text-[13px] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
+          Crowd-powered wait times for the spots people actually want to be at.
+        </p>
+
         {/* Search */}
         <button
-          className="mt-3 flex w-full items-center gap-2 rounded-xl bg-white px-4 py-3 text-left"
+          className="mt-4 flex w-full items-center gap-2 rounded-full bg-white px-4 py-3 text-left"
           style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
         >
           <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-          <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>Search venues</span>
+          <span className="text-sm" style={{ color: "var(--muted-foreground)" }}>Search restaurants, clubs, barbers…</span>
         </button>
 
-        {/* Categories */}
-        <div className="mt-3">
+        <div className="mt-4">
           <CategoryChips active={cat} onChange={setCat} />
         </div>
       </div>
 
-      {/* Bottom sheet — trending */}
-      <div className="absolute inset-x-0 bottom-24 z-20 px-4">
-        <div
-          className="rounded-2xl bg-white p-3.5"
-          style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+      {/* Hero card */}
+      <div className="mt-5 px-5">
+        <Link
+          to="/venue/$id"
+          params={{ id: hero.id }}
+          className="relative block overflow-hidden rounded-3xl"
+          style={{ boxShadow: "var(--shadow-lg)" }}
         >
-          <div className="mb-2.5 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Trending near you</h2>
-            <Link to="/explore" className="text-xs font-medium" style={{ color: "var(--primary)" }}>
-              See all
+          <div className="relative h-72 w-full">
+            <img src={hero.image} alt={hero.name} className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.78) 100%)" }} />
+
+            {/* Top tags */}
+            <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
+              <span className="font-grotesk inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
+                <Flame className="h-3 w-3" style={{ color: "var(--destructive)" }} /> Hottest right now
+              </span>
+              {hero.event && (
+                <span className="font-grotesk rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white" style={{ background: "var(--primary)" }}>
+                  {hero.event}
+                </span>
+              )}
+            </div>
+
+            {/* Bottom content */}
+            <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+              <p className="font-grotesk text-[11px] font-semibold uppercase tracking-[0.2em] opacity-90">
+                {hero.categoryLabel} · {hero.vibe}
+              </p>
+              <div className="mt-1 flex items-end justify-between gap-3">
+                <h2 className="font-display text-4xl font-semibold leading-none tracking-tight">{hero.name}</h2>
+                <ArrowUpRight className="h-7 w-7 shrink-0" />
+              </div>
+              <div className="mt-3 flex items-center gap-3 text-[12px]">
+                <span
+                  className="font-grotesk inline-flex items-baseline gap-1 rounded-full px-2.5 py-1 font-semibold"
+                  style={{ background: severityColor(hero.severity), color: "white" }}
+                >
+                  <span className="text-base tabular-nums">{hero.waitMinutes}</span>
+                  <span className="text-[10px] uppercase tracking-wider">min wait</span>
+                </span>
+                <span className="inline-flex items-center gap-1 opacity-95">
+                  <Users className="h-3.5 w-3.5" /> {hero.liveReporters} live
+                </span>
+                <span className="inline-flex items-center gap-1 opacity-95">
+                  <Clock className="h-3.5 w-3.5" /> {hero.lastReportMinutes}m ago
+                </span>
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Trending grid */}
+      <div className="mt-8 px-5">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
+              Trending nearby
+            </p>
+            <h3 className="font-display text-2xl font-semibold tracking-tight">The buzz tonight</h3>
+          </div>
+          <Link to="/explore" className="font-grotesk text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
+            See all →
+          </Link>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {trending.map((v) => (
+            <Link
+              key={v.id}
+              to="/venue/$id"
+              params={{ id: v.id }}
+              className="group relative block overflow-hidden rounded-2xl"
+              style={{ boxShadow: "var(--shadow-sm)" }}
+            >
+              <div className="relative h-44 w-full">
+                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover transition-transform group-active:scale-[0.98]" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.75) 100%)" }} />
+                <span
+                  className="font-grotesk absolute right-2 top-2 inline-flex items-baseline gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums text-white"
+                  style={{ background: severityColor(v.severity) }}
+                >
+                  {v.waitMinutes}<span className="text-[9px] font-semibold">m</span>
+                </span>
+                <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+                  <p className="font-grotesk text-[9px] font-semibold uppercase tracking-[0.16em] opacity-90">
+                    {v.categoryLabel}
+                  </p>
+                  <p className="font-display text-lg font-semibold leading-tight">{v.name}</p>
+                  <p className="mt-0.5 text-[10px] opacity-90">{v.liveReporters} live · {v.distance}</p>
+                </div>
+              </div>
             </Link>
-          </div>
-          <div className="no-scrollbar flex gap-2 overflow-x-auto">
-            {trending.map((v) => (
-              <Link
-                key={v.id}
-                to="/venue/$id"
-                params={{ id: v.id }}
-                className="shrink-0 rounded-xl p-2.5"
-                style={{ width: 168, background: "var(--surface-elevated)", border: "1px solid var(--border)" }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                      {v.categoryLabel}
-                    </p>
-                    <p className="truncate text-sm font-semibold">{v.name}</p>
-                  </div>
-                  <TrendingUp className="h-3.5 w-3.5 shrink-0" style={{ color: severityColor(v.severity) }} />
-                </div>
-                <div className="mt-2 flex items-baseline gap-1">
-                  <span className="text-xl font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>
-                    {v.waitMinutes}
-                  </span>
-                  <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>min</span>
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                  <Zap className="h-3 w-3" />
-                  {v.liveReporters} live · {v.distance}
-                </div>
-              </Link>
-            ))}
-          </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Shortest waits — editorial list */}
+      <div className="mt-8 px-5">
+        <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
+          Walk straight in
+        </p>
+        <h3 className="font-display text-2xl font-semibold tracking-tight">Shortest waits</h3>
+
+        <div className="mt-3 space-y-2">
+          {shortest.map((v, i) => (
+            <Link
+              key={v.id}
+              to="/venue/$id"
+              params={{ id: v.id }}
+              className="flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl">
+                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                  {String(i + 1).padStart(2, "0")} · {v.categoryLabel}
+                </p>
+                <p className="font-display truncate text-lg font-semibold leading-tight">{v.name}</p>
+                <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                  {v.distance} · {v.liveReporters} live
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-grotesk text-2xl font-bold tabular-nums leading-none" style={{ color: severityColor(v.severity) }}>
+                  {v.waitMinutes}
+                </p>
+                <p className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                  min
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
