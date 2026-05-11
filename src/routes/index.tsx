@@ -121,9 +121,47 @@ function Home() {
   };
 
   return (
-    <div className="pb-4">
+    <div className="relative overflow-hidden pb-4">
+      {/* Ambient background — soft gradient + blurred color blobs */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
+        style={{
+          background:
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--background)) 0%, color-mix(in oklab, var(--primary) 4%, var(--background)) 40%, var(--background) 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[360px] w-[360px] rounded-full opacity-60 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 38%, transparent)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[420px] w-[420px] rounded-full opacity-55 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--warning) 32%, transparent)", animationDelay: "1.2s" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[320px] w-[320px] -translate-x-1/2 rounded-full opacity-50 blur-3xl"
+        style={{ background: "color-mix(in oklab, var(--success) 28%, transparent)" }}
+      />
+      {/* Subtle dot grid overlay */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, color-mix(in oklab, var(--primary) 18%, transparent) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+          maskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
+          WebkitMaskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
+          opacity: 0.35,
+        }}
+      />
+
       {/* Top bar: location + sign in */}
-      <div className="px-5 pt-4">
+      <div className="relative px-5 pt-4">
         <div className="flex items-center justify-between gap-2">
           <button
             type="button"
