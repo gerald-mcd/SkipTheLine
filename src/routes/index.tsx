@@ -10,7 +10,6 @@ import {
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
 import { CountUp } from "@/components/CountUp";
-import { ProgressRing } from "@/components/ProgressRing";
 import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
 
@@ -323,8 +322,6 @@ function Home() {
                   const v = shortest[0];
                   const fav = isFav(v.id);
                   const notif = notifyIds.has(v.id);
-                  const ratio = v.waitMinutes / Math.max(1, v.typicalWaitMinutes);
-                  const beatsBy = Math.max(0, v.typicalWaitMinutes - v.waitMinutes);
                   const walkMin = walkMinutes(v.distance);
                   return (
                     <Link
