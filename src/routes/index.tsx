@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor } from "@/lib/mock-data";
-import { Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart } from "lucide-react";
+import { Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, Zap } from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
 import { useFavorites } from "@/hooks/use-favorites";
