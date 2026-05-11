@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { BottomNav } from "@/components/BottomNav";
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -119,6 +120,7 @@ function RootComponent() {
           <Outlet />
         </div>
         <BottomNav />
+        <Toaster position="top-center" richColors closeButton theme="light" />
       </div>
     </QueryClientProvider>
   );

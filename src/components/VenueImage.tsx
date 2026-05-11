@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { type RefObject, useState } from "react";
 
 export function VenueImage({
   src,
   alt,
   className,
+  imgRef,
+  style,
 }: {
   src: string;
   alt: string;
   className?: string;
+  imgRef?: RefObject<HTMLImageElement | null>;
+  style?: React.CSSProperties;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
@@ -27,6 +31,7 @@ export function VenueImage({
       )}
       {!errored && (
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
           loading="lazy"
@@ -36,7 +41,7 @@ export function VenueImage({
             setLoaded(true);
           }}
           className={className}
-          style={{ opacity: loaded ? 1 : 0, transition: "opacity 300ms ease" }}
+          style={{ opacity: loaded ? 1 : 0, transition: "opacity 300ms ease", ...style }}
         />
       )}
     </>
