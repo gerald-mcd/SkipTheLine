@@ -252,7 +252,7 @@ function Home() {
           to="/venue/$id"
           params={{ id: hero.id }}
           className="relative block overflow-hidden rounded-3xl"
-          style={{ boxShadow: "var(--shadow-lg)" }}
+          style={{ boxShadow: "var(--shadow-lg), 0 24px 60px -24px color-mix(in oklab, var(--primary) 55%, transparent)" }}
         >
           <div className="relative h-72 w-full bg-[var(--muted)]">
             {loading ? (
@@ -343,8 +343,13 @@ function Home() {
       <div className="mt-8">
         <div className="px-5">
           <div
-            className="overflow-hidden rounded-[28px] bg-white p-5"
-            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}
+            className="relative overflow-hidden rounded-[28px] p-5"
+            style={{
+              background:
+                "linear-gradient(180deg, color-mix(in oklab, var(--primary) 4%, white) 0%, white 60%)",
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-md), 0 20px 50px -28px color-mix(in oklab, var(--primary) 40%, transparent)",
+            }}
           >
             {/* Header */}
             <div>
