@@ -98,7 +98,7 @@ function Home() {
 
         {/* Voucher banner */}
         <div
-          className="relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
+          className="animate-fade-in-up relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
           style={{
             background:
               "linear-gradient(135deg, oklch(0.32 0.04 40) 0%, oklch(0.22 0.03 40) 100%)",
@@ -121,7 +121,7 @@ function Home() {
           {/* Decorative food disc */}
           <div
             aria-hidden
-            className="absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
+            className="animate-drift absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
             style={{
               backgroundImage:
                 "url(https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80&auto=format&fit=crop)",
@@ -186,7 +186,7 @@ function Home() {
               <button
                 key={s.id}
                 onClick={() => setSort(s.id)}
-                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all"
+                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all duration-300 active:scale-95"
                 style={{
                   background: on ? "var(--foreground)" : "white",
                   color: on ? "white" : "var(--foreground)",
