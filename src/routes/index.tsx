@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Clock, Heart, Search } from "lucide-react";
+import { Bell, Check, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
 
@@ -168,38 +168,17 @@ function Home() {
           <CategoryRow active={cat} onChange={setCat} />
         </div>
 
-        {/* Popular this week */}
-        <div className="mt-6 flex items-center justify-between">
-          <h2 className="font-display text-lg font-bold tracking-tight">Popular this week</h2>
-          <Link
-            to="/discover"
-            className="font-grotesk text-xs font-semibold"
-            style={{ color: "var(--primary)" }}
-          >
-            See all
-          </Link>
-        </div>
-        <div className="mt-3 no-scrollbar flex gap-2 overflow-x-auto pb-1">
-          {sortOptions.map((s) => {
-            const on = s.id === sort;
-            return (
-              <button
-                key={s.id}
-                onClick={() => setSort(s.id)}
-                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all duration-300 active:scale-95"
-                style={{
-                  background: on ? "var(--foreground)" : "white",
-                  color: on ? "white" : "var(--foreground)",
-                  border: "1px solid",
-                  borderColor: on ? "var(--foreground)" : "var(--border)",
-                  boxShadow: on ? "var(--shadow-sm)" : "none",
-                }}
-              >
-                <span aria-hidden>{s.emoji}</span>
-                {s.label}
-              </button>
-            );
-          })}
+        {/* Around you — consolidated filter (categories above, sort behind icon) */}
+        <div className="mt-6 flex items-end justify-between gap-3">
+          <div>
+            <h2 className="font-display text-lg font-bold tracking-tight">Around you</h2>
+            <p className="font-grotesk mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+              Sorted by <span className="font-bold" style={{ color: "var(--foreground)" }}>
+                {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
+              </span>
+            </p>
+          </div>
+          <SortMenu value={sort} onChange={setSort} />
         </div>
       </header>
 
@@ -245,45 +224,94 @@ function Home() {
                     style={{ color: fav ? "var(--primary)" : "var(--foreground)" }}
                   />
                 </button>
-                <span
-                  key={`${v.id}-${v.waitMinutes}`}
-                  className={`font-grotesk animate-pop-in absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full text-white ${
-                    isWaitSort ? "px-2.5 py-1 text-[12px]" : "px-2 py-0.5 text-[10px]"
-                  } font-bold`}
-                  style={{
-                    background: "var(--primary)",
-                    boxShadow: isWaitSort ? "var(--shadow-md)" : "none",
-                  }}
-                >
-                  <Clock className={isWaitSort ? "h-3 w-3" : "h-2.5 w-2.5"} />
-                  <span className="tabular-nums">{v.waitMinutes}m</span>
-                  <span className={`${isWaitSort ? "text-[9px]" : "text-[8px]"} uppercase tracking-wider opacity-90`}>
-                    wait
-                  </span>
-                </span>
               </div>
               <div className="p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
-                  {isWaitSort && (
-                    <span
-                      key={`wait-${v.id}-${v.waitMinutes}`}
-                      className="font-display animate-pop-in shrink-0 text-base font-extrabold tabular-nums leading-none"
-                      style={{ color: "var(--primary)" }}
-                    >
-                      {v.waitMinutes}
-                      <span className="text-[10px] font-bold"> min</span>
-                    </span>
-                  )}
+                <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
+                <div className="mt-1 flex items-end justify-between gap-2">
+                  <p className="font-grotesk text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                    <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> reporting · {v.distance}
+                  </p>
+                  <span
+                    key={`wait-${v.id}-${v.waitMinutes}`}
+                    className={`font-display animate-pop-in shrink-0 tabular-nums leading-none ${
+                      isWaitSort ? "text-base font-extrabold" : "text-sm font-bold"
+                    }`}
+                    style={{ color: "var(--primary)" }}
+                  >
+                    {v.waitMinutes}
+                    <span className="text-[10px] font-bold"> min</span>
+                  </span>
                 </div>
-                <p className="font-grotesk mt-1 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> reporting · {v.distance}
-                </p>
               </div>
             </Link>
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function SortMenu({
+  value,
+  onChange,
+}: {
+  value: SortKey;
+  onChange: (k: SortKey) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Sort"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition-transform active:scale-95"
+        style={{ background: "var(--primary)", boxShadow: "var(--shadow-sm)" }}
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+      </button>
+      {open && (
+        <div
+          className="animate-fade-in-up absolute right-0 top-12 z-30 w-56 overflow-hidden rounded-2xl bg-white p-1.5"
+          style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+        >
+          <p className="font-grotesk px-3 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+            Sort by
+          </p>
+          {sortOptions.map((s) => {
+            const on = s.id === value;
+            return (
+              <button
+                key={s.id}
+                onClick={() => {
+                  onChange(s.id);
+                  setOpen(false);
+                }}
+                className="font-grotesk flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-[12px] font-semibold transition-colors"
+                style={{
+                  background: on ? "color-mix(in oklab, var(--primary) 10%, white)" : "transparent",
+                  color: on ? "var(--primary)" : "var(--foreground)",
+                }}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <span aria-hidden>{s.emoji}</span>
+                  {s.label}
+                </span>
+                {on && <Check className="h-3.5 w-3.5" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
