@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Venue, severityColor } from "@/lib/mock-data";
+import { Venue } from "@/lib/mock-data";
 
 /**
  * Map placeholder. This is the surface where Google Maps SDK will eventually
@@ -65,44 +65,25 @@ export function CityMap({ venues }: { venues: Venue[] }) {
         </div>
       </div>
 
-      {/* Venue pins */}
-      {venues.map((v) => {
-        const c = severityColor(v.severity);
-        return (
-          <Link
-            key={v.id}
-            to="/venue/$id"
-            params={{ id: v.id }}
-            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
-            style={{ left: `${v.x}%`, top: `${v.y}%` }}
-          >
-            <div className="flex flex-col items-center">
-              <div
-                className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5"
-                style={{
-                  border: `1px solid var(--border)`,
-                  boxShadow: "var(--shadow-md)",
-                }}
-              >
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />
-                <span className="text-[11px] font-semibold tabular-nums" style={{ color: c }}>
-                  {v.waitMinutes}m
-                </span>
-                <span className="max-w-[120px] truncate text-[11px] font-medium" style={{ color: "var(--foreground)" }}>
-                  {v.name}
-                </span>
-              </div>
-              <div
-                className="-mt-px h-2 w-2 rotate-45 bg-white"
-                style={{
-                  borderRight: `1px solid var(--border)`,
-                  borderBottom: `1px solid var(--border)`,
-                }}
-              />
-            </div>
-          </Link>
-        );
-      })}
+      {/* Venue pins — dark teardrop markers */}
+      {venues.map((v) => (
+        <Link
+          key={v.id}
+          to="/venue/$id"
+          params={{ id: v.id }}
+          className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
+          style={{ left: `${v.x}%`, top: `${v.y}%` }}
+          aria-label={v.name}
+        >
+          <svg width="28" height="36" viewBox="0 0 28 36" fill="none" style={{ filter: "drop-shadow(0 4px 6px oklch(0.2 0.02 260 / 0.25))" }}>
+            <path
+              d="M14 0C6.27 0 0 6.27 0 14c0 9.5 12.2 20.8 13.2 21.7a1.2 1.2 0 0 0 1.6 0C15.8 34.8 28 23.5 28 14 28 6.27 21.73 0 14 0Z"
+              fill="var(--foreground)"
+            />
+            <circle cx="14" cy="14" r="4.5" fill="white" />
+          </svg>
+        </Link>
+      ))}
     </div>
   );
 }

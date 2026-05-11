@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CityMap } from "@/components/CityMap";
-import { CategoryChips } from "@/components/CategoryChips";
-import { venues, Category, severityColor, severityLabel, walkMinutes } from "@/lib/mock-data";
-import { ChevronUp, Clock, Footprints, Search, Users } from "lucide-react";
+import { venues, Category } from "@/lib/mock-data";
+import { MapPin, Search, SlidersHorizontal, Star } from "lucide-react";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -15,10 +14,15 @@ export const Route = createFileRoute("/discover")({
   component: Discover,
 });
 
-function Discover() {
-  const [cat, setCat] = useState<Category | "all">("all");
-  const [sheetOpen, setSheetOpen] = useState(true);
+// Deterministic synthetic rating (4.0 – 4.9) seeded by venue id.
+function venueRating(id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return 4 + (h % 90) / 100;
+}
 
+function Discover() {
+  const [cat] = useState<Category | "all">("all");
   const list = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
     [cat],
@@ -29,107 +33,76 @@ function Discover() {
       {/* Map layer */}
       <CityMap venues={list} />
 
-      {/* Floating search */}
+      {/* Floating search + filter */}
       <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
-        <div
-          className="flex items-center gap-2 rounded-full bg-white px-3 py-2.5"
-          style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}
-        >
-          <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
-          <input
-            placeholder="Restaurant name or dish..."
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--muted-foreground)]"
-          />
+        <div className="flex items-center gap-2">
+          <div
+            className="flex flex-1 items-center gap-2 rounded-full bg-white px-4 py-3"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}
+          >
+            <Search className="h-4 w-4" style={{ color: "var(--primary)" }} />
+            <input
+              placeholder="Restaurant name or dish..."
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--muted-foreground)]"
+            />
+          </div>
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-white"
-            style={{ background: "var(--primary)" }}
+            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white transition-transform active:scale-95"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
             aria-label="Filters"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="4" y1="7" x2="14" y2="7" /><circle cx="17" cy="7" r="2.2" />
-              <line x1="10" y1="17" x2="20" y2="17" /><circle cx="7" cy="17" r="2.2" />
-            </svg>
+            <SlidersHorizontal className="h-5 w-5" />
           </button>
-        </div>
-
-        <div className="mt-3">
-          <CategoryChips active={cat} onChange={setCat} />
         </div>
       </div>
 
       {/* Bottom card sheet */}
       <div
-        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-white transition-transform duration-300"
+        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-white"
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
-          transform: sheetOpen ? "translateY(0)" : "translateY(calc(100% - 80px))",
+          maxHeight: "55%",
         }}
       >
-        <button
-          type="button"
-          onClick={() => setSheetOpen((v) => !v)}
-          className="flex w-full items-center justify-between px-5 py-3"
-        >
-          <div className="flex items-center gap-2">
-            <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
-          </div>
-        </button>
-        <div className="-mt-2 flex items-center justify-between px-5 pb-2">
-          <div>
-            <p className="font-grotesk text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-              Nearby
-            </p>
-            <h2 className="font-display text-xl font-bold tracking-tight">
-              {list.length} spots <span style={{ color: "var(--primary)" }}>around you</span>
-            </h2>
-          </div>
-          <ChevronUp
-            className="h-5 w-5 transition-transform"
-            style={{ color: "var(--muted-foreground)", transform: sheetOpen ? "rotate(180deg)" : "none" }}
-          />
+        <div className="flex justify-center pt-2.5">
+          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
         </div>
+        <h2 className="font-display mt-2 text-center text-base font-bold tracking-tight">
+          List of restaurants
+        </h2>
 
-        <div className="no-scrollbar flex gap-3 overflow-x-auto px-5 pb-5 pt-2">
+        <div className="no-scrollbar mt-3 max-h-[300px] space-y-2.5 overflow-y-auto px-4 pb-5">
           {list.map((v) => {
-            const c = severityColor(v.severity);
-            const walk = walkMinutes(v.distance);
+            const rating = venueRating(v.id);
             return (
               <Link
                 key={v.id}
                 to="/venue/$id"
                 params={{ id: v.id }}
-                className="block w-[220px] shrink-0 overflow-hidden rounded-2xl bg-white transition-transform active:scale-[0.98]"
+                className="card-lift animate-fade-in-up flex items-center gap-3 rounded-2xl bg-white p-2.5 transition-transform active:scale-[0.98]"
                 style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
               >
-                <div className="relative h-28 w-full">
-                  <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
-                  <span
-                    className="font-grotesk absolute left-2 top-2 inline-flex items-baseline gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
-                    style={{ background: c }}
-                  >
-                    <span className="tabular-nums">{v.waitMinutes}m</span>
-                    <span className="text-[8px] uppercase tracking-wider opacity-90">{severityLabel(v.severity)}</span>
-                  </span>
-                </div>
-                <div className="p-3">
-                  <p className="font-grotesk text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-                    {v.categoryLabel} · {v.distance}
+                <img
+                  src={v.image}
+                  alt={v.name}
+                  className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display truncate text-sm font-bold tracking-tight">
+                    {v.name}
+                  </h3>
+                  <p className="font-grotesk mt-0.5 flex items-center gap-1 truncate text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                    <MapPin className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+                    <span className="truncate">{v.address}</span>
                   </p>
-                  <h3 className="font-display mt-0.5 truncate text-sm font-bold tracking-tight">{v.name}</h3>
-                  <div className="font-grotesk mt-2 flex items-center gap-3 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-3 w-3" style={{ color: "var(--primary)" }} />
-                      <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Footprints className="h-3 w-3" /> {walk}m
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> {v.lastReportMinutes}m
-                    </span>
-                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <Star className="h-3.5 w-3.5" fill="oklch(0.78 0.16 75)" stroke="oklch(0.78 0.16 75)" />
+                  <span className="font-grotesk text-xs font-bold tabular-nums">
+                    {rating.toFixed(1)}
+                  </span>
                 </div>
               </Link>
             );
