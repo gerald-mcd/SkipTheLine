@@ -130,7 +130,7 @@ function Home() {
 
   return (
     <div className="relative overflow-hidden pb-4">
-      {/* Ambient background — gradient + drifting aurora + blurred color blobs */}
+      {/* Ambient background — soft gradient + blurred color blobs */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
@@ -139,31 +139,9 @@ function Home() {
             "linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--background)) 0%, color-mix(in oklab, var(--primary) 10%, var(--background)) 45%, var(--background) 100%)",
         }}
       />
-      {/* Aurora ribbon */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px] overflow-hidden">
-        <div
-          className="absolute left-1/2 top-[-20%] h-[120%] w-[160%] -translate-x-1/2 opacity-70 blur-2xl animate-aurora"
-          style={{
-            background:
-              "conic-gradient(from 90deg at 50% 50%, transparent 0deg, color-mix(in oklab, var(--primary) 55%, transparent) 60deg, color-mix(in oklab, var(--warning) 50%, transparent) 140deg, transparent 220deg, color-mix(in oklab, var(--success) 45%, transparent) 300deg, transparent 360deg)",
-            mixBlendMode: "screen",
-          }}
-        />
-      </div>
-      {/* Shimmer sweep across the hero band */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px] overflow-hidden">
-        <div
-          className="absolute -top-10 left-0 h-[120%] w-[40%] animate-shimmer-sweep"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, color-mix(in oklab, white 70%, transparent) 50%, transparent 100%)",
-            mixBlendMode: "overlay",
-          }}
-        />
-      </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe animate-float-y"
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe"
         style={{ background: "color-mix(in oklab, var(--primary) 70%, transparent)" }}
       />
       <div
@@ -176,10 +154,10 @@ function Home() {
         className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe animate-hue"
         style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
       />
-      {/* Panning dot grid overlay */}
+      {/* Subtle dot grid overlay */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px] animate-grid-pan"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           backgroundImage:
             "radial-gradient(circle, color-mix(in oklab, var(--primary) 38%, transparent) 1.4px, transparent 1.4px)",
@@ -189,28 +167,6 @@ function Home() {
           opacity: 0.6,
         }}
       />
-      {/* Rising sparks */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[200px] -z-10 h-[400px] overflow-hidden">
-        {[
-          { left: "12%", delay: "0s", color: "var(--primary)" },
-          { left: "28%", delay: "1.4s", color: "var(--warning)" },
-          { left: "46%", delay: "2.8s", color: "var(--success)" },
-          { left: "64%", delay: "0.7s", color: "var(--primary)" },
-          { left: "82%", delay: "2.1s", color: "var(--warning)" },
-          { left: "92%", delay: "3.4s", color: "var(--success)" },
-        ].map((s, i) => (
-          <span
-            key={i}
-            className="absolute bottom-0 h-1.5 w-1.5 rounded-full animate-spark"
-            style={{
-              left: s.left,
-              background: s.color,
-              boxShadow: `0 0 12px ${s.color}`,
-              animationDelay: s.delay,
-            }}
-          />
-        ))}
-      </div>
 
       {/* Top bar: location pill + user avatar */}
       <div className="relative px-5 pt-4">
