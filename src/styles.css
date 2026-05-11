@@ -228,6 +228,9 @@
   0%, 100% { filter: hue-rotate(0deg); }
   50% { filter: hue-rotate(18deg); }
 }
+@keyframes route-flow {
+  to { stroke-dashoffset: -200; }
+}
 
 .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4,0,0.2,1) infinite; }
 .animate-ping-soft { animation: ping-soft 2s ease-out infinite; }
