@@ -13,7 +13,7 @@ import { VenueImage } from "@/components/VenueImage";
 import { CountUp } from "@/components/CountUp";
 import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
-import logoUrl from "@/assets/logo.png";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -321,16 +321,10 @@ function Home() {
 
         <h1 className="mt-6 -ml-2">
           <span className="sr-only">SkipTheLine</span>
-          <img
-            src={logoUrl}
-            alt="SkipTheLine"
-            className="h-24 w-auto select-none sm:h-28"
-            draggable={false}
-            style={{
-              filter:
-                "drop-shadow(0 10px 26px color-mix(in oklab, var(--primary) 32%, transparent))",
-              mixBlendMode: "multiply",
-            }}
+          <Logo
+            className="h-32 w-auto select-none sm:h-36"
+            // drop-shadow gives the warm halo without a visible box edge
+            // (SVG is transparent so it sits cleanly on the ambient background)
           />
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
