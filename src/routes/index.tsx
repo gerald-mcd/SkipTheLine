@@ -86,7 +86,6 @@ function Home() {
     });
     return filteredList.slice(0, 6);
   }, [shortestAll, shortFilter]);
-  const totalReporters = venues.reduce((s, v) => s + v.liveReporters, 0);
 
   const toggleNotify = (id: string, name: string) => {
     setNotifyIds((prev) => {
