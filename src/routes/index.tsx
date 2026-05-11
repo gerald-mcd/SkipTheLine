@@ -49,22 +49,6 @@ function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   });
 
-  // "Just walked in" social-proof toasts on a soft interval
-  useEffect(() => {
-    if (loading) return;
-    const t = setInterval(() => {
-      const pool = venues.filter((v) => v.waitMinutes <= 25);
-      if (!pool.length) return;
-      const v = pool[Math.floor(Math.random() * pool.length)];
-      const who = v.reporterNames[Math.floor(Math.random() * v.reporterNames.length)];
-      toast(`${who} just walked in to ${v.name}`, {
-        description: `${v.waitMinutes} min wait · ${v.distance} away`,
-        duration: 4200,
-      });
-    }, 22000);
-    return () => clearInterval(t);
-  }, [loading]);
-
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 650);
     return () => clearTimeout(t);
@@ -359,22 +343,7 @@ function Home() {
                       />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.92) 100%)" }} />
 
-                      <span
-                        className="font-grotesk pointer-events-none absolute left-4 top-2 select-none text-[96px] font-bold italic leading-none tracking-tighter"
-                        style={{ color: "rgba(255,255,255,0.22)" }}
-                      >
-                        01
-                      </span>
-
-                      {/* Dynamic top-left label */}
-                      {beatsBy > 5 && (
-                        <span
-                          className="font-grotesk absolute left-3 bottom-[58%] inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white"
-                          style={{ background: "color-mix(in oklab, var(--success) 85%, black)" }}
-                        >
-                          <TrendingDown className="h-3 w-3" /> Beats typical by {beatsBy}m
-                        </span>
-                      )}
+                      {/* Dynamic top-left label removed per design */}
 
                       {/* Action stack */}
                       <div className="absolute right-3 top-3 flex items-center gap-2">
@@ -426,13 +395,12 @@ function Home() {
                             </span>
                           </div>
                         </div>
-                        <div className="shrink-0">
-                          <ProgressRing value={ratio} size={84} stroke={5} color="white" trackColor="rgba(255,255,255,0.2)">
-                            <div className="text-center text-white">
-                              <CountUp end={v.waitMinutes} className="font-grotesk text-3xl font-bold leading-none tabular-nums" />
-                              <p className="font-grotesk mt-0.5 text-[8px] font-bold uppercase tracking-widest opacity-70">min wait</p>
-                            </div>
-                          </ProgressRing>
+                        <div className="shrink-0 text-right text-white">
+                          <div className="inline-flex items-baseline gap-1">
+                            <CountUp end={v.waitMinutes} className="font-grotesk text-4xl font-bold leading-none tabular-nums" />
+                            <span className="font-grotesk text-sm font-semibold opacity-80">m</span>
+                          </div>
+                          <p className="font-grotesk mt-1 text-[9px] font-bold uppercase tracking-widest opacity-70">min wait</p>
                         </div>
                       </div>
                     </Link>
@@ -456,12 +424,6 @@ function Home() {
                     >
                       <VenueImage src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-active:scale-[0.98]" />
                       <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.88) 100%)" }} />
-                      <span
-                        className="font-grotesk pointer-events-none absolute left-3 top-1 select-none text-[64px] font-bold italic leading-none tracking-tighter"
-                        style={{ color: "rgba(255,255,255,0.22)" }}
-                      >
-                        02
-                      </span>
                       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
                         <button
                           type="button"
@@ -501,7 +463,7 @@ function Home() {
                             <span className="text-xs font-semibold opacity-80">m</span>
                           </div>
                           <p className="font-grotesk mt-1 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest" style={{ color: trendColor === "var(--muted-foreground)" ? "rgba(255,255,255,0.7)" : trendColor }}>
-                            <Trend className="h-3 w-3" /> {v.trend === "up" ? "Rising" : v.trend === "down" ? "Dropping" : "Steady"}
+                            <Trend className="h-3 w-3" />
                           </p>
                         </div>
                       </div>
