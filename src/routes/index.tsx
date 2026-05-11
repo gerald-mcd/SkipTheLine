@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Heart, Search } from "lucide-react";
+import { Bell, Clock, Heart, Search } from "lucide-react";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
 
@@ -98,7 +98,7 @@ function Home() {
 
         {/* Voucher banner */}
         <div
-          className="relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
+          className="animate-fade-in-up relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
           style={{
             background:
               "linear-gradient(135deg, oklch(0.32 0.04 40) 0%, oklch(0.22 0.03 40) 100%)",
@@ -121,7 +121,7 @@ function Home() {
           {/* Decorative food disc */}
           <div
             aria-hidden
-            className="absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
+            className="animate-drift absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
             style={{
               backgroundImage:
                 "url(https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80&auto=format&fit=crop)",
@@ -186,7 +186,7 @@ function Home() {
               <button
                 key={s.id}
                 onClick={() => setSort(s.id)}
-                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all"
+                className="font-grotesk shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-all duration-300 active:scale-95"
                 style={{
                   background: on ? "var(--foreground)" : "white",
                   color: on ? "white" : "var(--foreground)",
@@ -204,18 +204,31 @@ function Home() {
       </header>
 
       <div className="mt-3 grid grid-cols-2 gap-3 px-5">
-        {popular.slice(0, 6).map((v) => {
+        {popular.slice(0, 6).map((v, idx) => {
           const fav = isFav(v.id);
+          const isWaitSort = sort === "wait";
           return (
             <Link
               key={v.id}
               to="/venue/$id"
               params={{ id: v.id }}
-              className="group block overflow-hidden rounded-2xl bg-white"
-              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+              className="card-lift animate-fade-in-up group block overflow-hidden rounded-2xl bg-white"
+              style={{
+                border: "1px solid var(--border)",
+                boxShadow: "var(--shadow-sm)",
+                animationDelay: `${idx * 60}ms`,
+              }}
             >
               <div className="relative h-32 w-full">
-                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+                <img
+                  src={v.image}
+                  alt={v.name}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src =
+                      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80&auto=format&fit=crop";
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
                 <button
                   type="button"
                   aria-label={fav ? "Remove from favorites" : "Add to favorites"}
@@ -224,24 +237,45 @@ function Home() {
                     e.stopPropagation();
                     toggle(v.id);
                   }}
-                  className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 backdrop-blur"
+                  className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-90"
                 >
                   <Heart
-                    className="h-3.5 w-3.5"
+                    className="h-3.5 w-3.5 transition-colors"
                     fill={fav ? "var(--primary)" : "transparent"}
                     style={{ color: fav ? "var(--primary)" : "var(--foreground)" }}
                   />
                 </button>
                 <span
-                  className="font-grotesk absolute bottom-2 left-2 inline-flex items-baseline gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
-                  style={{ background: "var(--primary)" }}
+                  key={`${v.id}-${v.waitMinutes}`}
+                  className={`font-grotesk animate-pop-in absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full text-white ${
+                    isWaitSort ? "px-2.5 py-1 text-[12px]" : "px-2 py-0.5 text-[10px]"
+                  } font-bold`}
+                  style={{
+                    background: "var(--primary)",
+                    boxShadow: isWaitSort ? "var(--shadow-md)" : "none",
+                  }}
                 >
+                  <Clock className={isWaitSort ? "h-3 w-3" : "h-2.5 w-2.5"} />
                   <span className="tabular-nums">{v.waitMinutes}m</span>
-                  <span className="text-[8px] uppercase tracking-wider opacity-90">wait</span>
+                  <span className={`${isWaitSort ? "text-[9px]" : "text-[8px]"} uppercase tracking-wider opacity-90`}>
+                    wait
+                  </span>
                 </span>
               </div>
               <div className="p-3">
-                <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
+                  {isWaitSort && (
+                    <span
+                      key={`wait-${v.id}-${v.waitMinutes}`}
+                      className="font-display animate-pop-in shrink-0 text-base font-extrabold tabular-nums leading-none"
+                      style={{ color: "var(--primary)" }}
+                    >
+                      {v.waitMinutes}
+                      <span className="text-[10px] font-bold"> min</span>
+                    </span>
+                  )}
+                </div>
                 <p className="font-grotesk mt-1 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
                   <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> reporting · {v.distance}
                 </p>
@@ -269,7 +303,7 @@ function CategoryRow({
           <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            className="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all"
+            className="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300 active:scale-95"
             style={{
               background: on ? "var(--primary)" : "white",
               color: on ? "var(--primary-foreground)" : "var(--primary)",
