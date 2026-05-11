@@ -6,7 +6,7 @@ import { venues, Category, severityColor, walkMinutes } from "@/lib/mock-data";
 import {
   Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
   TrendingUp, TrendingDown, Minus, Bell, BellRing, Footprints, Quote,
-  LogIn, Navigation, Radio,
+  LogIn, Navigation, Radio, Crosshair, Check,
 } from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
@@ -32,6 +32,8 @@ function Home() {
   const [notifyIds, setNotifyIds] = useState<Set<string>>(new Set());
   const [locationEnabled, setLocationEnabled] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [radiusMi, setRadiusMi] = useState<number>(1.5);
+  const [area] = useState({ city: "Miami", neighborhood: "Brickell" });
   const heroParallaxRef = useRef<HTMLDivElement>(null);
   const heroImgRef = useRef<HTMLImageElement>(null);
 
@@ -63,7 +65,14 @@ function Home() {
     return () => clearTimeout(t);
   }, [cat]);
 
-  const filtered = cat === "all" ? venues : venues.filter((v) => v.category === cat);
+  const locScoped = locationEnabled
+    ? venues.filter((v) => {
+        const d = parseFloat(v.distance);
+        return Number.isNaN(d) ? true : d <= radiusMi;
+      })
+    : venues;
+  const filtered = cat === "all" ? locScoped : locScoped.filter((v) => v.category === cat);
+  const inRangeCount = locScoped.length;
   const hero = [...filtered].sort((a, b) => b.liveReporters - a.liveReporters)[0] ?? venues[0];
   const rest = filtered.filter((v) => v.id !== hero.id);
   const trending = [...rest].sort((a, b) => b.liveReporters - a.liveReporters).slice(0, 4);
