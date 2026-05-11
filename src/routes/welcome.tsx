@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { venues, liveFeed } from "@/lib/mock-data";
+import { RollingNumber } from "@/components/RollingNumber";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -22,27 +23,51 @@ function Welcome() {
   // Ticking wait time + live reporter count for ambient liveness
   const [wait, setWait] = useState(featured.waitMinutes);
   const [reporters, setReporters] = useState(featured.liveReporters);
-  const [now, setNow] = useState(0);
+  const [pulseTick, setPulseTick] = useState(0);
+  const [spotlight, setSpotlight] = useState({ x: 50, y: 22 });
+  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setInterval(() => {
       setWait((w) => Math.max(28, Math.min(58, w + (Math.random() > 0.5 ? 1 : -1))));
       setReporters((r) => Math.max(3, Math.min(12, r + (Math.random() > 0.5 ? 1 : -1))));
-      setNow((n) => n + 1);
+      setPulseTick((n) => n + 1);
     }, 1800);
     return () => clearInterval(t);
   }, []);
 
+  function handleMove(e: React.MouseEvent) {
+    const el = heroRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setSpotlight({
+      x: ((e.clientX - r.left) / r.width) * 100,
+      y: ((e.clientY - r.top) / r.height) * 100,
+    });
+  }
+
   // Live ticker — duplicate the feed for seamless loop
   const ticker = [...liveFeed, ...liveFeed];
 
+  // Mini live-pulse spark bars
+  const bars = Array.from({ length: 14 });
+
   return (
     <div
+      ref={heroRef}
+      onMouseMove={handleMove}
       className="font-grotesk relative min-h-screen w-full overflow-hidden"
       style={{ background: "color-mix(in oklab, var(--primary) 5%, white)" }}
     >
       {/* Ambient atmosphere */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
+        {/* Cursor-following spotlight */}
+        <div
+          className="absolute inset-0 transition-[background] duration-300"
+          style={{
+            background: `radial-gradient(420px circle at ${spotlight.x}% ${spotlight.y}%, color-mix(in oklab, var(--primary-glow) 22%, transparent), transparent 60%)`,
+          }}
+        />
         <div
           className="animate-drift absolute -left-32 top-[-120px] h-[480px] w-[480px] rounded-full blur-3xl"
           style={{ background: "color-mix(in oklab, var(--primary) 32%, transparent)", opacity: 0.55 }}
@@ -68,7 +93,7 @@ function Welcome() {
 
       {/* Top brand strip */}
       <div className="relative z-10 flex items-center justify-between px-6 pt-7">
-        <div className="flex items-center gap-2">
+        <div className="animate-fade-in-up flex items-center gap-2">
           <span
             className="relative flex h-9 w-9 items-center justify-center rounded-2xl text-white"
             style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
@@ -85,67 +110,94 @@ function Welcome() {
         </div>
         <Link
           to="/"
-          className="text-[13px] font-semibold"
+          className="press-depth text-[13px] font-semibold"
           style={{ color: "var(--muted-foreground)" }}
         >
           Skip →
         </Link>
       </div>
 
-      {/* Live status pill */}
+      {/* Live status pill — with mini equalizer spark */}
       <div className="relative z-10 mt-6 flex justify-center px-6">
         <div
-          className="animate-fade-in-up inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
+          className="animate-fade-in-up inline-flex items-center gap-2.5 rounded-full px-3.5 py-1.5"
           style={{
             background: "white",
             border: "1px solid color-mix(in oklab, var(--primary) 18%, var(--border))",
             boxShadow: "var(--shadow-sm)",
+            animationDelay: "60ms",
           }}
         >
-          <span className="relative flex h-2 w-2">
-            <span
-              className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-75"
-              style={{ background: "var(--wait-short)" }}
-            />
-            <span
-              className="relative inline-flex h-2 w-2 rounded-full"
-              style={{ background: "var(--wait-short)" }}
-            />
+          <span className="flex items-end gap-[2px]" aria-hidden>
+            {bars.slice(0, 5).map((_, i) => (
+              <span
+                key={i}
+                className="block w-[2px] origin-bottom rounded-full"
+                style={{
+                  height: "10px",
+                  background: "var(--wait-short)",
+                  animation: `spark-bar ${0.7 + (i % 3) * 0.18}s ease-in-out ${i * 0.08}s infinite`,
+                }}
+              />
+            ))}
           </span>
           <span className="text-[11px] font-bold tracking-tight">
-            <span style={{ color: "var(--foreground)" }}>2,418 people</span>{" "}
+            <span style={{ color: "var(--foreground)" }} className="tabular-nums">
+              <RollingNumber value={2418 + (pulseTick % 12)} minDigits={4} />
+            </span>{" "}
+            <span style={{ color: "var(--foreground)" }}>people</span>{" "}
             <span style={{ color: "var(--muted-foreground)" }}>reporting around you</span>
           </span>
         </div>
       </div>
 
-      {/* Headline — asymmetric, mixed weights */}
+      {/* Headline — asymmetric, mixed weights, with shimmering accent */}
       <div className="relative z-10 mt-7 px-6">
         <h1 className="font-display text-[44px] font-extrabold leading-[0.98] tracking-tight">
-          <span className="animate-fade-in-up block">When to go.</span>
+          <span className="animate-fade-in-up block" style={{ animationDelay: "120ms" }}>
+            When to go.
+          </span>
           <span
             className="animate-fade-in-up block italic"
-            style={{ color: "var(--primary)", animationDelay: "120ms" }}
+            style={{
+              animationDelay: "220ms",
+              backgroundImage:
+                "linear-gradient(90deg, var(--primary) 0%, var(--primary-glow) 40%, var(--primary) 80%)",
+              backgroundSize: "200% auto",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+              animation:
+                "fade-in-up 0.5s cubic-bezier(0.22,1,0.36,1) 220ms both, shimmer-text 6s linear infinite",
+            }}
           >
             Where you want
           </span>
-          <span className="animate-fade-in-up block" style={{ animationDelay: "220ms" }}>
+          <span className="animate-fade-in-up block" style={{ animationDelay: "320ms" }}>
             to go.
           </span>
         </h1>
+        <p
+          className="animate-fade-in-up mt-3 max-w-[340px] text-[13px] leading-snug"
+          style={{ color: "var(--muted-foreground)", animationDelay: "420ms" }}
+        >
+          Crowd-powered wait times, updated by humans on the ground — right now,
+          a few blocks from you.
+        </p>
       </div>
 
       {/* Live preview composition */}
       <div className="relative z-10 mx-6 mt-7 h-[260px]">
         {/* Floating venue card — tilted */}
         <div
-          className="animate-fade-in-up absolute left-0 top-0 w-[78%] origin-bottom-left overflow-hidden rounded-3xl bg-white"
+          className="animate-fade-in-up tilt-hover absolute left-0 top-0 w-[78%] origin-bottom-left overflow-hidden rounded-3xl bg-white"
           style={{
             transform: "rotate(-3deg)",
+            ["--tilt-hover" as string]: "-1.5deg",
             border: "1px solid var(--border)",
             boxShadow:
               "0 28px 60px -20px color-mix(in oklab, var(--primary) 30%, transparent), 0 4px 12px color-mix(in oklab, var(--foreground) 8%, transparent)",
-            animationDelay: "320ms",
+            animationDelay: "520ms",
           }}
         >
           <div className="relative h-[140px]">
@@ -191,16 +243,12 @@ function Welcome() {
                 Wait now
               </div>
               <div className="flex items-baseline gap-1">
-                <span
-                  key={wait}
-                  className="font-display text-[26px] font-extrabold leading-none"
-                  style={{
-                    color: "var(--primary)",
-                    animation: "pop-in 280ms cubic-bezier(0.22,1,0.36,1) both",
-                  }}
-                >
-                  {wait}
-                </span>
+                <RollingNumber
+                  value={wait}
+                  minDigits={2}
+                  className="font-display text-[26px] font-extrabold leading-none tabular-nums"
+                  digitClassName=""
+                />
                 <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
                   min
                 </span>
@@ -222,10 +270,10 @@ function Welcome() {
                 ))}
               </div>
               <span
-                className="mt-1 text-[10px] font-semibold tabular-nums"
+                className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums"
                 style={{ color: "var(--muted-foreground)" }}
               >
-                {reporters} reporting now
+                <RollingNumber value={reporters} /> reporting now
               </span>
             </div>
           </div>
@@ -233,14 +281,15 @@ function Welcome() {
 
         {/* Mini map chip — tilted opposite */}
         <div
-          className="animate-fade-in-up absolute right-0 top-[110px] w-[58%] origin-top-right overflow-hidden rounded-3xl"
+          className="animate-fade-in-up tilt-hover absolute right-0 top-[110px] w-[58%] origin-top-right overflow-hidden rounded-3xl"
           style={{
             transform: "rotate(4deg)",
+            ["--tilt-hover" as string]: "2deg",
             border: "1px solid var(--border)",
             background: "white",
             boxShadow:
               "0 24px 50px -16px color-mix(in oklab, var(--primary) 24%, transparent), 0 2px 8px color-mix(in oklab, var(--foreground) 6%, transparent)",
-            animationDelay: "460ms",
+            animationDelay: "660ms",
           }}
         >
           <div
@@ -274,6 +323,16 @@ function Welcome() {
                 d="M140,0 L160,150"
                 stroke="color-mix(in oklab, var(--primary) 22%, transparent)"
                 strokeWidth="0.8"
+              />
+              {/* Animated route from "you" to nearest pin */}
+              <path
+                d="M100,120 Q70,90 44,42"
+                stroke="var(--primary)"
+                strokeWidth="1.6"
+                fill="none"
+                strokeDasharray="4 6"
+                strokeLinecap="round"
+                style={{ animation: "route-flow 2.4s linear infinite" }}
               />
             </svg>
 
@@ -322,7 +381,10 @@ function Welcome() {
       </div>
 
       {/* Live ticker — edge-bleed */}
-      <div className="relative z-10 mt-5 overflow-hidden">
+      <div
+        className="animate-fade-in-up relative z-10 mt-5 overflow-hidden"
+        style={{ animationDelay: "780ms" }}
+      >
         <div
           className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12"
           style={{
@@ -362,7 +424,7 @@ function Welcome() {
               <span style={{ color: "var(--muted-foreground)" }}>at</span>
               <span className="font-semibold">{r.venue}</span>
               <span className="tabular-nums" style={{ color: "var(--primary)" }}>
-                · {r.minutes}m
+                · <RollingNumber value={r.minutes} />m
               </span>
               <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
                 {r.ago}
@@ -373,7 +435,10 @@ function Welcome() {
       </div>
 
       {/* Auth section — feels like a continuation, not a card-in-a-card */}
-      <div className="relative z-10 mt-8 px-6 pb-10">
+      <div
+        className="animate-fade-in-up relative z-10 mt-8 px-6 pb-10"
+        style={{ animationDelay: "880ms" }}
+      >
         <form
           className="space-y-2.5"
           onSubmit={(e) => e.preventDefault()}
@@ -395,15 +460,15 @@ function Welcome() {
           />
           <Link
             to="/"
-            className="font-display flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-transform active:scale-[0.98]"
+            className="press-depth font-display animate-gradient flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white"
             style={{
               background:
-                "linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary-glow) 80%, var(--primary)))",
+                "linear-gradient(120deg, var(--primary) 0%, var(--primary-glow) 50%, var(--primary) 100%)",
               boxShadow: "var(--shadow-glow)",
             }}
           >
-            Get started — it's free
-            <span aria-hidden>→</span>
+            <span>Get started — it's free</span>
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </form>
 
@@ -421,7 +486,7 @@ function Welcome() {
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold transition-all active:scale-95"
+            className="press-depth flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold"
             style={{ border: "1px solid var(--border)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -446,7 +511,7 @@ function Welcome() {
           </button>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white transition-all active:scale-95"
+            className="press-depth flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white"
             style={{ background: "var(--foreground)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
