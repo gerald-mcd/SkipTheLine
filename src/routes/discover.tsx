@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CityMap } from "@/components/CityMap";
-import { CategoryChips } from "@/components/CategoryChips";
-import { venues, Category, severityColor, severityLabel, walkMinutes } from "@/lib/mock-data";
-import { ChevronUp, Clock, Footprints, Search, Users } from "lucide-react";
+import { venues, MapPin, Star } from "@/lib/mock-data" as never;
+import { Search, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
