@@ -1,9 +1,9 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Map, List, Plus, Trophy } from "lucide-react";
+import { Home, Map, Plus, Trophy } from "lucide-react";
 
 const tabs: { to: string; label: string; icon: typeof Map; hero?: boolean }[] = [
-  { to: "/", label: "Map", icon: Map },
-  { to: "/explore", label: "Explore", icon: List },
+  { to: "/", label: "Home", icon: Home },
+  { to: "/discover", label: "Map", icon: Map },
   { to: "/report", label: "Report", icon: Plus, hero: true },
   { to: "/profile", label: "You", icon: Trophy },
 ];
@@ -18,7 +18,9 @@ export function BottomNav() {
       >
         {tabs.map((t) => {
           const Icon = t.icon;
-          const active = pathname === t.to || (t.to === "/explore" && pathname.startsWith("/venue"));
+          const active =
+            pathname === t.to ||
+            (t.to === "/discover" && pathname.startsWith("/venue"));
           if (t.hero) {
             return (
               <Link
