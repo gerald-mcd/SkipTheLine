@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor, severityLabel } from "@/lib/mock-data";
-import { Clock, Users, Star, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { Clock, Users, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -25,15 +25,13 @@ function Explore() {
   });
 
   return (
-    <div className="px-4 pt-6">
-      <div className="mb-1">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
-          {list.length} venues live
-        </p>
-        <h1 className="text-3xl font-semibold leading-tight">Explore</h1>
-      </div>
+    <div className="px-5 pt-6">
+      <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
+        {list.length} venues live
+      </p>
+      <h1 className="font-display text-4xl font-semibold leading-none tracking-tight">Explore</h1>
 
-      <div className="mt-4">
+      <div className="mt-5">
         <CategoryChips active={cat} onChange={setCat} />
       </div>
 
@@ -42,10 +40,12 @@ function Explore() {
           <button
             key={s}
             onClick={() => setSort(s)}
-            className="rounded-full px-3 py-1 text-[11px] font-semibold capitalize transition-colors"
+            className="font-grotesk rounded-full px-3 py-1.5 text-[11px] font-semibold capitalize transition-colors"
             style={{
-              background: sort === s ? "var(--primary)" : "var(--secondary)",
-              color: sort === s ? "var(--primary-foreground)" : "var(--muted-foreground)",
+              background: sort === s ? "var(--foreground)" : "transparent",
+              color: sort === s ? "var(--background)" : "var(--muted-foreground)",
+              border: "1px solid",
+              borderColor: sort === s ? "var(--foreground)" : "var(--border)",
             }}
           >
             {s === "wait" ? "Shortest wait" : s === "distance" ? "Closest" : "Trending"}
@@ -53,7 +53,7 @@ function Explore() {
         ))}
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-5 space-y-4">
         {list.map((v) => {
           const TrendIcon = v.trend === "up" ? ArrowUpRight : v.trend === "down" ? ArrowDownRight : Minus;
           return (
@@ -61,49 +61,43 @@ function Explore() {
               key={v.id}
               to="/venue/$id"
               params={{ id: v.id }}
-              className="block rounded-xl bg-white p-4 transition-transform active:scale-[0.99]"
-              style={{ border: "1px solid var(--border)" }}
+              className="block overflow-hidden rounded-3xl bg-white"
+              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                      {v.categoryLabel} · {v.distance}
-                    </p>
-                    {v.event && (
-                      <span className="rounded-full px-1.5 py-0.5 text-[9px] font-medium" style={{ background: "var(--accent)", color: "var(--primary)" }}>
-                        Event
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-0.5 truncate text-base font-semibold">{v.name}</h3>
-                  <div className="mt-2 flex items-center gap-3 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {v.lastReportMinutes}m ago
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3" style={{ color: "var(--primary)" }} />
-                      {v.liveReporters} live
-                    </span>
-                    <span>{v.reportsCount} reports</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div
-                    className="inline-flex items-baseline gap-0.5 rounded-lg px-2.5 py-1"
-                    style={{ background: `${severityColor(v.severity)}1a` }}
-                  >
-                    <span className="text-2xl font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>
-                      {v.waitMinutes}
-                    </span>
-                    <span className="text-[10px] font-medium" style={{ color: severityColor(v.severity) }}>m</span>
-                  </div>
-                  <p className="mt-1 flex items-center justify-end gap-0.5 text-[10px] font-medium" style={{ color: severityColor(v.severity) }}>
-                    <TrendIcon className="h-3 w-3" />
-                    {severityLabel(v.severity)}
+              <div className="relative h-44 w-full">
+                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%)" }} />
+                {v.event && (
+                  <span className="font-grotesk absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur">
+                    🎉 {v.event}
+                  </span>
+                )}
+                <span
+                  className="font-grotesk absolute right-3 top-3 inline-flex items-baseline gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold text-white"
+                  style={{ background: severityColor(v.severity) }}
+                >
+                  <span className="text-sm tabular-nums">{v.waitMinutes}m</span>
+                  <span className="text-[9px] uppercase tracking-wider opacity-90">{severityLabel(v.severity)}</span>
+                </span>
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                  <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.18em] opacity-90">
+                    {v.categoryLabel} · {v.distance}
                   </p>
+                  <h3 className="font-display text-2xl font-semibold leading-tight">{v.name}</h3>
                 </div>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                <span className="font-grotesk inline-flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
+                  <span className="font-semibold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> live now
+                </span>
+                <span className="font-grotesk inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" /> {v.lastReportMinutes}m ago
+                </span>
+                <span className="font-grotesk inline-flex items-center gap-1" style={{ color: severityColor(v.severity) }}>
+                  <TrendIcon className="h-3.5 w-3.5" />
+                  <span className="font-semibold capitalize">{v.trend}</span>
+                </span>
               </div>
             </Link>
           );
