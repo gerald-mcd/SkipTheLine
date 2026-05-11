@@ -13,6 +13,7 @@ import { VenueImage } from "@/components/VenueImage";
 import { CountUp } from "@/components/CountUp";
 import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
+import logoUrl from "@/assets/logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -170,6 +171,14 @@ function Home() {
 
       {/* Top bar: location pill + user avatar */}
       <div className="relative px-5 pt-4">
+        <div className="mb-3 flex justify-center">
+          <img
+            src={logoUrl}
+            alt="SkipTheLine"
+            className="h-7 w-auto select-none"
+            draggable={false}
+          />
+        </div>
         <div className="flex items-center justify-between gap-2">
           <button
             type="button"
