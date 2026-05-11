@@ -319,16 +319,16 @@ function Home() {
           </div>
         )}
 
-        <h1 className="mt-6 -ml-1">
+        <h1 className="mt-6 -ml-2">
           <span className="sr-only">SkipTheLine</span>
           <img
             src={logoUrl}
             alt="SkipTheLine"
-            className="h-16 w-auto select-none sm:h-20"
+            className="h-24 w-auto select-none sm:h-28"
             draggable={false}
             style={{
               filter:
-                "drop-shadow(0 6px 18px color-mix(in oklab, var(--primary) 28%, transparent))",
+                "drop-shadow(0 10px 26px color-mix(in oklab, var(--primary) 32%, transparent))",
               mixBlendMode: "multiply",
             }}
           />
