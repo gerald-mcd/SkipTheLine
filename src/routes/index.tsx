@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { CategoryChips } from "@/components/CategoryChips";
-import { venues, Category, severityColor } from "@/lib/mock-data";
-import { Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight } from "lucide-react";
+import { venues, Category, severityColor, walkMinutes, type Venue } from "@/lib/mock-data";
+import {
+  Search, MapPin, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
+  TrendingUp, TrendingDown, Minus, Bell, BellRing, Footprints, Quote,
+} from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
+import { CountUp } from "@/components/CountUp";
+import { ProgressRing } from "@/components/ProgressRing";
+import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
 
 export const Route = createFileRoute("/")({
@@ -21,6 +28,42 @@ function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [loading, setLoading] = useState(true);
   const { isFav, toggle } = useFavorites();
+  const [shortFilter, setShortFilter] = useState<"all" | "under10" | "walk5" | "late">("all");
+  const [notifyIds, setNotifyIds] = useState<Set<string>>(new Set());
+  const heroParallaxRef = useRef<HTMLDivElement>(null);
+  const heroImgRef = useRef<HTMLImageElement>(null);
+
+  // Parallax on the #1 featured hero image
+  useEffect(() => {
+    const onScroll = () => {
+      if (!heroParallaxRef.current || !heroImgRef.current) return;
+      const rect = heroParallaxRef.current.getBoundingClientRect();
+      const vh = window.innerHeight || 800;
+      // -1 (off-top) … 0 (centered) … 1 (off-bottom)
+      const progress = (rect.top + rect.height / 2 - vh / 2) / (vh / 2 + rect.height / 2);
+      const clamped = Math.max(-1, Math.min(1, progress));
+      heroImgRef.current.style.transform = `translate3d(0, ${(-clamped * 18).toFixed(1)}px, 0) scale(1.08)`;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  });
+
+  // "Just walked in" social-proof toasts on a soft interval
+  useEffect(() => {
+    if (loading) return;
+    const t = setInterval(() => {
+      const pool = venues.filter((v) => v.waitMinutes <= 25);
+      if (!pool.length) return;
+      const v = pool[Math.floor(Math.random() * pool.length)];
+      const who = v.reporterNames[Math.floor(Math.random() * v.reporterNames.length)];
+      toast(`${who} just walked in to ${v.name}`, {
+        description: `${v.waitMinutes} min wait · ${v.distance} away`,
+        duration: 4200,
+      });
+    }, 22000);
+    return () => clearInterval(t);
+  }, [loading]);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 650);
@@ -38,8 +81,33 @@ function Home() {
   const hero = [...filtered].sort((a, b) => b.liveReporters - a.liveReporters)[0] ?? venues[0];
   const rest = filtered.filter((v) => v.id !== hero.id);
   const trending = [...rest].sort((a, b) => b.liveReporters - a.liveReporters).slice(0, 4);
-  const shortest = [...rest].sort((a, b) => a.waitMinutes - b.waitMinutes).slice(0, 6);
+  const shortestAll = useMemo(() => [...rest].sort((a, b) => a.waitMinutes - b.waitMinutes), [rest]);
+  const shortest = useMemo(() => {
+    const filteredList = shortestAll.filter((v) => {
+      if (shortFilter === "under10") return v.waitMinutes <= 10;
+      if (shortFilter === "walk5") return walkMinutes(v.distance) <= 5;
+      if (shortFilter === "late") return /([2-5])am|24h/i.test(v.hours);
+      return true;
+    });
+    return filteredList.slice(0, 6);
+  }, [shortestAll, shortFilter]);
   const totalReporters = venues.reduce((s, v) => s + v.liveReporters, 0);
+
+  const toggleNotify = (id: string, name: string) => {
+    setNotifyIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast(`Notifications off for ${name}`);
+      } else {
+        next.add(id);
+        toast(`We'll ping you when ${name} drops`, {
+          description: "Threshold: under 10 min wait",
+        });
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="pb-4">
