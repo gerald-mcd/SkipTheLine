@@ -6,7 +6,7 @@ import { venues, Category, severityColor, walkMinutes } from "@/lib/mock-data";
 import {
   Search, Flame, Users, Clock, ArrowUpRight, Heart, ArrowRight,
   TrendingUp, TrendingDown, Minus, Bell, BellRing, Footprints, Quote,
-  LogIn, Radio, Crosshair,
+  Crosshair, User, ChevronDown,
 } from "lucide-react";
 import { TrendingCarousel } from "@/components/TrendingCarousel";
 import { VenueImage } from "@/components/VenueImage";
@@ -147,12 +147,12 @@ function Home() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-breathe"
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-drift"
         style={{ background: "color-mix(in oklab, var(--warning) 65%, transparent)", animationDelay: "1.2s" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe"
+        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe animate-hue"
         style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
       />
       {/* Subtle dot grid overlay */}
@@ -169,39 +169,72 @@ function Home() {
         }}
       />
 
-      {/* Top bar: location + sign in */}
+      {/* Top bar: location pill + user avatar */}
       <div className="relative px-5 pt-4">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <span className="font-display text-[15px] font-bold tracking-tight">SkipTheLine</span>
-            <span className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-              · Live
+          <button
+            type="button"
+            onClick={enableLocation}
+            disabled={locating}
+            className="group inline-flex max-w-[70%] items-center gap-2 rounded-full bg-white/90 py-1.5 pl-1.5 pr-3 backdrop-blur transition-all active:scale-[0.98]"
+            style={{
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <span
+              className="relative flex h-7 w-7 items-center justify-center rounded-full"
+              style={{
+                background: locationEnabled
+                  ? "color-mix(in oklab, var(--success) 16%, white)"
+                  : "color-mix(in oklab, var(--primary) 14%, white)",
+              }}
+            >
+              {!locationEnabled && (
+                <span
+                  className="absolute inset-0 animate-ping-soft rounded-full"
+                  style={{ background: "color-mix(in oklab, var(--primary) 22%, transparent)" }}
+                />
+              )}
+              <Crosshair
+                className="relative h-3.5 w-3.5"
+                style={{ color: locationEnabled ? "var(--success)" : "var(--primary)" }}
+              />
             </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div
-              className="hidden items-center gap-1.5 rounded-full bg-white px-2.5 py-1 sm:flex"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <Radio className="h-3 w-3" style={{ color: "var(--destructive)" }} />
-              <span className="text-[11px] font-grotesk font-semibold tabular-nums">{totalReporters}</span>
-              <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>reporting now</span>
+            <div className="flex min-w-0 flex-col items-start leading-tight">
+              <span
+                className="font-grotesk text-[8.5px] font-bold uppercase tracking-[0.18em]"
+                style={{ color: locationEnabled ? "var(--success)" : "var(--muted-foreground)" }}
+              >
+                {locating ? "Finding you…" : locationEnabled ? "Nearby" : "Location off"}
+              </span>
+              <span className="font-display max-w-[180px] truncate text-[13px] font-bold tracking-tight">
+                {locationEnabled ? `${area.neighborhood}, ${area.city}` : "Enable location"}
+              </span>
             </div>
-            <button
-              type="button"
-              onClick={() => toast("Sign in coming soon", { description: "Save favorites, earn reporter cred, and unlock notifications." })}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-grotesk font-semibold uppercase tracking-[0.16em] text-white transition-opacity hover:opacity-90"
-              style={{ background: "var(--foreground)" }}
-            >
-              <LogIn className="h-3.5 w-3.5" />
-              Sign in
-            </button>
-          </div>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--muted-foreground)" }} />
+          </button>
+
+          <button
+            type="button"
+            aria-label="Sign in"
+            onClick={() => toast("Sign in coming soon", { description: "Save favorites, earn reporter cred, and unlock notifications." })}
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white transition-transform active:scale-95"
+            style={{
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <User className="h-4 w-4" style={{ color: "var(--foreground)" }} />
+            <span
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-white"
+              style={{ background: "var(--primary)" }}
+            />
+          </button>
         </div>
 
-        {/* Location preview card */}
-        {locationEnabled ? (
+        {/* Location preview card — only when enabled */}
+        {locationEnabled && (
           <div
             className="mt-3 overflow-hidden rounded-2xl bg-white animate-fade-in"
             style={{
@@ -289,40 +322,6 @@ function Home() {
               </div>
             </div>
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={enableLocation}
-            disabled={locating}
-            className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left transition-transform active:scale-[0.99]"
-            style={{
-              border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
-              boxShadow: "var(--shadow-sm), 0 12px 32px -20px color-mix(in oklab, var(--primary) 60%, transparent)",
-            }}
-          >
-            <div
-              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-              style={{ background: "color-mix(in oklab, var(--primary) 12%, white)" }}
-            >
-              {locating ? (
-                <span className="absolute inset-0 animate-radar rounded-xl" style={{
-                  background: "conic-gradient(from 0deg, transparent 0deg, color-mix(in oklab, var(--primary) 40%, transparent) 90deg, transparent 180deg)",
-                }} />
-              ) : (
-                <span className="absolute inset-0 animate-ping-soft rounded-xl" style={{ background: "color-mix(in oklab, var(--primary) 20%, transparent)" }} />
-              )}
-              <Crosshair className="relative h-5 w-5" style={{ color: "var(--primary)" }} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-grotesk text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
-                {locating ? "Finding you…" : "Tap to enable location"}
-              </p>
-              <p className="font-display mt-0.5 text-[17px] font-bold leading-tight tracking-tight">
-                See waits within walking distance
-              </p>
-            </div>
-            <ArrowRight className="h-4 w-4 shrink-0" style={{ color: "var(--primary)" }} />
-          </button>
         )}
 
         <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
