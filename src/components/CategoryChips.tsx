@@ -15,16 +15,14 @@ export function CategoryChips({
           <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            className="flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all"
+            className="flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all"
             style={{
-              background: on ? "var(--primary)" : "var(--surface)",
-              color: on ? "var(--primary-foreground)" : "var(--foreground)",
-              border: "1px solid",
-              borderColor: on ? "transparent" : "var(--border)",
+              background: on ? "var(--primary)" : "white",
+              color: on ? "var(--primary-foreground)" : "var(--primary)",
+              border: "1.5px solid var(--primary)",
               boxShadow: on ? "var(--shadow-sm)" : "none",
             }}
           >
-            <span>{c.emoji}</span>
             <span>{c.label}</span>
           </button>
         );
