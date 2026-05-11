@@ -137,23 +137,18 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 22%, var(--background)) 0%, color-mix(in oklab, var(--primary) 10%, var(--background)) 45%, var(--background) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--background)) 0%, color-mix(in oklab, var(--primary) 4%, var(--background)) 45%, var(--background) 100%)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-90 blur-3xl animate-breathe"
-        style={{ background: "color-mix(in oklab, var(--primary) 70%, transparent)" }}
+        className="pointer-events-none absolute -left-24 -top-24 -z-10 h-[440px] w-[440px] rounded-full opacity-40 blur-3xl animate-breathe"
+        style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-85 blur-3xl animate-drift"
-        style={{ background: "color-mix(in oklab, var(--warning) 65%, transparent)", animationDelay: "1.2s" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[520px] -z-10 h-[400px] w-[400px] -translate-x-1/2 rounded-full opacity-80 blur-3xl animate-breathe animate-hue"
-        style={{ background: "color-mix(in oklab, var(--success) 55%, transparent)", animationDelay: "2.1s" }}
+        className="pointer-events-none absolute -right-32 top-40 -z-10 h-[500px] w-[500px] rounded-full opacity-60 blur-3xl animate-drift"
+        style={{ background: "color-mix(in oklab, white 70%, transparent)", animationDelay: "1.2s" }}
       />
       {/* Subtle dot grid overlay */}
       <div
@@ -161,11 +156,11 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[680px]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, color-mix(in oklab, var(--primary) 38%, transparent) 1.4px, transparent 1.4px)",
+            "radial-gradient(circle, color-mix(in oklab, var(--primary) 22%, transparent) 1.2px, transparent 1.2px)",
           backgroundSize: "20px 20px",
           maskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
           WebkitMaskImage: "linear-gradient(180deg, black 0%, transparent 70%)",
-          opacity: 0.6,
+          opacity: 0.35,
         }}
       />
 
