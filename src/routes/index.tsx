@@ -13,7 +13,7 @@ import { VenueImage } from "@/components/VenueImage";
 import { CountUp } from "@/components/CountUp";
 import { AvatarStack } from "@/components/AvatarStack";
 import { useFavorites } from "@/hooks/use-favorites";
-import logoUrl from "@/assets/logo.png";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -321,15 +321,11 @@ function Home() {
 
         <h1 className="mt-6 -ml-2">
           <span className="sr-only">SkipTheLine</span>
-          <img
-            src={logoUrl}
-            alt="SkipTheLine"
-            className="h-24 w-auto select-none sm:h-28"
-            draggable={false}
+          <Logo
+            className="h-32 w-auto select-none sm:h-36"
             style={{
               filter:
-                "drop-shadow(0 10px 26px color-mix(in oklab, var(--primary) 32%, transparent))",
-              mixBlendMode: "multiply",
+                "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 32%, transparent))",
             }}
           />
         </h1>
