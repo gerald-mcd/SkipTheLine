@@ -181,77 +181,157 @@ function Home() {
         <TrendingCarousel items={trending} loading={loading} />
       </div>
 
-      {/* Shortest waits — editorial list */}
-      <div className="mt-8 px-5">
-        <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
-          Walk straight in
-        </p>
-        <h3 className="font-display text-2xl font-semibold tracking-tight">Shortest waits</h3>
-
-        <div className="mt-3 space-y-2">
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
-                  style={{ border: "1px solid var(--border)" }}
-                >
-                  <div className="h-16 w-16 shrink-0 animate-pulse rounded-xl" style={{ background: "var(--muted)" }} />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-2.5 w-20 animate-pulse rounded" style={{ background: "var(--muted)" }} />
-                    <div className="h-4 w-40 animate-pulse rounded" style={{ background: "var(--muted)" }} />
-                    <div className="h-2.5 w-24 animate-pulse rounded" style={{ background: "var(--muted)" }} />
-                  </div>
-                  <div className="h-8 w-10 animate-pulse rounded" style={{ background: "var(--muted)" }} />
-                </div>
-              ))
-            : shortest.map((v, i) => (
-            <Link
-              key={v.id}
-              to="/venue/$id"
-              params={{ id: v.id }}
-              className="relative flex items-center gap-3 rounded-2xl bg-white p-2 pr-3"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-[var(--muted)]">
-                <VenueImage src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                  {String(i + 1).padStart(2, "0")} · {v.categoryLabel}
-                </p>
-                <p className="font-display truncate text-lg font-semibold leading-tight">{v.name}</p>
-                <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                  {v.distance} · {v.liveReporters} live
-                </p>
-              </div>
-              <div className="text-right pr-7">
-                <p className="font-grotesk text-2xl font-bold tabular-nums leading-none" style={{ color: severityColor(v.severity) }}>
-                  {v.waitMinutes}
-                </p>
-                <p className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                  min
-                </p>
-              </div>
-              <button
-                type="button"
-                aria-label={isFav(v.id) ? "Remove from favorites" : "Add to favorites"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  toggle(v.id);
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full"
-              >
-                <Heart
-                  className="h-4 w-4"
-                  fill={isFav(v.id) ? "var(--destructive)" : "transparent"}
-                  style={{ color: isFav(v.id) ? "var(--destructive)" : "var(--muted-foreground)" }}
-                />
-              </button>
-            </Link>
-          ))}
+      {/* Shortest waits — editorial poster row */}
+      <div className="mt-8">
+        <div className="flex items-end justify-between px-5">
+          <div>
+            <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
+              Walk straight in
+            </p>
+            <h3 className="font-display text-2xl font-semibold tracking-tight">Shortest waits</h3>
+          </div>
+          <span
+            className="font-grotesk inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider"
+            style={{ border: "1px solid var(--border)", color: "var(--success)" }}
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
+              <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+            </span>
+            Updated now
+          </span>
         </div>
+
+        {loading ? (
+          <div className="mt-3 flex gap-3 overflow-hidden px-5">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-56 w-40 shrink-0 animate-pulse rounded-2xl" style={{ background: "var(--muted)" }} />
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Featured #1 */}
+            {shortest[0] && (
+              <div className="mt-3 px-5">
+                <Link
+                  to="/venue/$id"
+                  params={{ id: shortest[0].id }}
+                  className="relative block overflow-hidden rounded-3xl"
+                  style={{ boxShadow: "var(--shadow-md)" }}
+                >
+                  <div className="relative h-44 w-full bg-[var(--muted)]">
+                    <VenueImage src={shortest[0].image} alt={shortest[0].name} className="absolute inset-0 h-full w-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0) 100%)" }} />
+
+                    {/* Fastest tag */}
+                    <span
+                      className="font-grotesk absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white"
+                      style={{ background: "var(--success)" }}
+                    >
+                      <Zap className="h-3 w-3" /> Fastest in
+                    </span>
+
+                    <div className="absolute inset-y-0 left-0 flex w-3/5 flex-col justify-center p-5 text-white">
+                      <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em] opacity-90">
+                        #01 · {shortest[0].categoryLabel}
+                      </p>
+                      <p className="font-display mt-1 text-2xl font-semibold leading-tight">{shortest[0].name}</p>
+                      <div className="mt-2 flex items-baseline gap-1">
+                        <span className="font-display text-5xl font-semibold tabular-nums leading-none">{shortest[0].waitMinutes}</span>
+                        <span className="font-grotesk text-[10px] font-semibold uppercase tracking-wider opacity-90">min · {shortest[0].distance}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label={isFav(shortest[0].id) ? "Remove from favorites" : "Add to favorites"}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggle(shortest[0].id);
+                      }}
+                      className="absolute bottom-3 right-3 inline-flex h-9 w-9 items-center justify-center rounded-full backdrop-blur"
+                      style={{ background: "rgba(255,255,255,0.92)" }}
+                    >
+                      <Heart
+                        className="h-4 w-4"
+                        fill={isFav(shortest[0].id) ? "var(--destructive)" : "transparent"}
+                        style={{ color: isFav(shortest[0].id) ? "var(--destructive)" : "var(--foreground)" }}
+                      />
+                    </button>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            {/* Poster row */}
+            <div
+              className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2"
+              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+            >
+              {shortest.slice(1).map((v, idx) => {
+                const rank = idx + 2;
+                const fav = isFav(v.id);
+                return (
+                  <Link
+                    key={v.id}
+                    to="/venue/$id"
+                    params={{ id: v.id }}
+                    className="group relative block w-40 shrink-0 snap-start overflow-hidden rounded-2xl"
+                    style={{ boxShadow: "var(--shadow-sm)" }}
+                  >
+                    <div className="relative h-56 w-full bg-[var(--muted)]">
+                      <VenueImage src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover transition-transform group-active:scale-[0.97]" />
+                      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.85) 100%)" }} />
+
+                      {/* Oversized rank watermark */}
+                      <span
+                        className="font-display absolute -left-1 -top-3 select-none text-[88px] font-semibold leading-none tracking-tight text-white"
+                        style={{ opacity: 0.22 }}
+                      >
+                        {String(rank).padStart(2, "0")}
+                      </span>
+
+                      {/* Wait pill */}
+                      <span
+                        className="font-grotesk absolute right-2 top-2 inline-flex items-baseline gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums text-white"
+                        style={{ background: severityColor(v.severity) }}
+                      >
+                        {v.waitMinutes}<span className="text-[9px] font-semibold">m</span>
+                      </span>
+
+                      <button
+                        type="button"
+                        aria-label={fav ? "Remove from favorites" : "Add to favorites"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggle(v.id);
+                        }}
+                        className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full backdrop-blur"
+                        style={{ background: "rgba(255,255,255,0.92)" }}
+                      >
+                        <Heart
+                          className="h-3.5 w-3.5"
+                          fill={fav ? "var(--destructive)" : "transparent"}
+                          style={{ color: fav ? "var(--destructive)" : "var(--foreground)" }}
+                        />
+                      </button>
+
+                      <div className="absolute inset-x-0 bottom-0 p-3 text-white">
+                        <p className="font-grotesk text-[9px] font-semibold uppercase tracking-[0.18em] opacity-90">
+                          {v.categoryLabel}
+                        </p>
+                        <p className="font-display truncate text-base font-semibold leading-tight">{v.name}</p>
+                        <p className="mt-0.5 text-[10px] opacity-90">{v.distance} · {v.liveReporters} live</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
