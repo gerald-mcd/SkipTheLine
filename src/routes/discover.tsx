@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CityMap } from "@/components/CityMap";
 import { venues, Category } from "@/lib/mock-data";
 import { MapPin, Search, SlidersHorizontal, Star } from "lucide-react";
@@ -23,15 +23,33 @@ function venueRating(id: string) {
 
 function Discover() {
   const [cat] = useState<Category | "all">("all");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
   const list = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
     [cat],
   );
 
+  useEffect(() => {
+    if (!selectedId) return;
+    const el = cardRefs.current[selectedId];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [selectedId]);
+
+  const handleSelect = (id: string) => {
+    if (selectedId === id) {
+      navigate({ to: "/venue/$id", params: { id } });
+      return;
+    }
+    setSelectedId(id);
+  };
+
   return (
     <div className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Map layer */}
-      <CityMap venues={list} />
+      <CityMap venues={list} focusedId={selectedId} />
 
       {/* Floating search + filter */}
       <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
@@ -76,13 +94,24 @@ function Discover() {
         <div className="no-scrollbar mt-3 max-h-[300px] space-y-2.5 overflow-y-auto px-4 pb-5">
           {list.map((v) => {
             const rating = venueRating(v.id);
+            const on = v.id === selectedId;
             return (
-              <Link
+              <button
                 key={v.id}
-                to="/venue/$id"
-                params={{ id: v.id }}
-                className="card-lift animate-fade-in-up flex items-center gap-3 rounded-2xl bg-white p-2.5 transition-transform active:scale-[0.98]"
-                style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+                type="button"
+                ref={(el) => {
+                  cardRefs.current[v.id] = el;
+                }}
+                onClick={() => handleSelect(v.id)}
+                className="card-lift animate-fade-in-up flex w-full items-center gap-3 rounded-2xl bg-white p-2.5 text-left transition-all active:scale-[0.98]"
+                style={{
+                  border: on
+                    ? "1.5px solid var(--primary)"
+                    : "1px solid var(--border)",
+                  boxShadow: on
+                    ? "0 8px 24px -10px color-mix(in oklab, var(--primary) 45%, transparent)"
+                    : "var(--shadow-sm)",
+                }}
               >
                 <img
                   src={v.image}
@@ -104,7 +133,7 @@ function Discover() {
                     {rating.toFixed(1)}
                   </span>
                 </div>
-              </Link>
+              </button>
             );
           })}
         </div>

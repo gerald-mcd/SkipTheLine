@@ -10,6 +10,7 @@ const tabs: { to: string; label: string; icon: typeof Map; hero?: boolean }[] = 
 
 export function BottomNav() {
   const { pathname } = useLocation();
+  if (pathname === "/welcome") return null;
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md">
       <div
