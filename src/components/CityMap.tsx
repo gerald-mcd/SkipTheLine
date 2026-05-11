@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Venue, severityColor } from "@/lib/mock-data";
+import { Venue } from "@/lib/mock-data";
 
 /**
  * Map placeholder. This is the surface where Google Maps SDK will eventually
