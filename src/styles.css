@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@400;500;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -100,20 +100,6 @@
   --wait-moderate: oklch(0.68 0.15 65);
   --wait-long: oklch(0.58 0.2 25);
 
-  /* Vibrant accent tokens for section distinction */
-  --accent-peach: oklch(0.94 0.05 60);
-  --accent-peach-fg: oklch(0.45 0.14 40);
-  --accent-mint: oklch(0.94 0.06 165);
-  --accent-mint-fg: oklch(0.4 0.12 165);
-  --accent-sky: oklch(0.93 0.05 230);
-  --accent-sky-fg: oklch(0.4 0.14 240);
-  --accent-lilac: oklch(0.93 0.05 295);
-  --accent-lilac-fg: oklch(0.42 0.16 295);
-  --accent-lemon: oklch(0.96 0.09 100);
-  --accent-lemon-fg: oklch(0.45 0.13 90);
-  --accent-rose: oklch(0.93 0.06 15);
-  --accent-rose-fg: oklch(0.48 0.18 18);
-
   /* Shadows */
   --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.05);
   --shadow-md: 0 4px 12px oklch(0.2 0.02 260 / 0.06), 0 1px 3px oklch(0.2 0.02 260 / 0.04);
@@ -183,18 +169,13 @@
     overscroll-behavior: none;
   }
   .font-display {
-    font-family: "Bricolage Grotesque", "Plus Jakarta Sans", "Space Grotesk", system-ui, sans-serif;
+    font-family: "Fraunces", "Times New Roman", serif;
     font-optical-sizing: auto;
-    letter-spacing: -0.035em;
-    font-weight: 700;
+    letter-spacing: -0.02em;
   }
   .font-grotesk {
     font-family: "Space Grotesk", "Inter", sans-serif;
     letter-spacing: -0.01em;
-  }
-  .font-jakarta {
-    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-    letter-spacing: -0.02em;
   }
 }
 

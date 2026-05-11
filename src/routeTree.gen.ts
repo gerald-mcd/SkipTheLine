@@ -9,18 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SocialRouteImport } from './routes/social'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VenueIdRouteImport } from './routes/venue.$id'
 
-const SocialRoute = SocialRouteImport.update({
-  id: '/social',
-  path: '/social',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -52,7 +46,6 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
-  '/social': typeof SocialRoute
   '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRoutesByTo {
@@ -60,7 +53,6 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
-  '/social': typeof SocialRoute
   '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRoutesById {
@@ -69,28 +61,14 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
-  '/social': typeof SocialRoute
   '/venue/$id': typeof VenueIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/explore'
-    | '/profile'
-    | '/report'
-    | '/social'
-    | '/venue/$id'
+  fullPaths: '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/explore' | '/profile' | '/report' | '/social' | '/venue/$id'
-  id:
-    | '__root__'
-    | '/'
-    | '/explore'
-    | '/profile'
-    | '/report'
-    | '/social'
-    | '/venue/$id'
+  to: '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
+  id: '__root__' | '/' | '/explore' | '/profile' | '/report' | '/venue/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -98,19 +76,11 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   ProfileRoute: typeof ProfileRoute
   ReportRoute: typeof ReportRoute
-  SocialRoute: typeof SocialRoute
   VenueIdRoute: typeof VenueIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/social': {
-      id: '/social'
-      path: '/social'
-      fullPath: '/social'
-      preLoaderRoute: typeof SocialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/report': {
       id: '/report'
       path: '/report'
@@ -154,7 +124,6 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   ProfileRoute: ProfileRoute,
   ReportRoute: ReportRoute,
-  SocialRoute: SocialRoute,
   VenueIdRoute: VenueIdRoute,
 }
 export const routeTree = rootRouteImport
