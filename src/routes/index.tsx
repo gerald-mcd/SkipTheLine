@@ -323,8 +323,10 @@ function Home() {
           <span className="sr-only">SkipTheLine</span>
           <Logo
             className="h-32 w-auto select-none sm:h-36"
-            // drop-shadow gives the warm halo without a visible box edge
-            // (SVG is transparent so it sits cleanly on the ambient background)
+            style={{
+              filter:
+                "drop-shadow(0 12px 28px color-mix(in oklab, var(--primary) 32%, transparent))",
+            }}
           />
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>

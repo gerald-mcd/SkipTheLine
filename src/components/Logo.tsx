@@ -1,9 +1,10 @@
 type LogoProps = {
   className?: string;
   title?: string;
+  style?: React.CSSProperties;
 };
 
-export function Logo({ className, title = "SkipTheLine" }: LogoProps) {
+export function Logo({ className, title = "SkipTheLine", style }: LogoProps) {
   return (
     <svg
       role="img"
@@ -11,6 +12,7 @@ export function Logo({ className, title = "SkipTheLine" }: LogoProps) {
       viewBox="0 0 760 200"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      style={style}
       preserveAspectRatio="xMidYMid meet"
     >
       <title>{title}</title>
