@@ -228,6 +228,33 @@
   0%, 100% { filter: hue-rotate(0deg); }
   50% { filter: hue-rotate(18deg); }
 }
+@keyframes aurora {
+  0% { transform: translate3d(-15%, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(15%, 4%, 0) rotate(180deg); }
+  100% { transform: translate3d(-15%, 0, 0) rotate(360deg); }
+}
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(28px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(28px) rotate(-360deg); }
+}
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-120%) skewX(-20deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+}
+@keyframes grid-pan {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes spark {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-120px) scale(1); opacity: 0; }
+}
 
 .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4,0,0.2,1) infinite; }
 .animate-ping-soft { animation: ping-soft 2s ease-out infinite; }
@@ -237,6 +264,12 @@
 .animate-breathe { animation: breathe 3s ease-in-out infinite; }
 .animate-drift { animation: drift 14s ease-in-out infinite; }
 .animate-hue { animation: hue-shift 12s ease-in-out infinite; }
+.animate-aurora { animation: aurora 22s ease-in-out infinite; }
+.animate-orbit { animation: orbit 18s linear infinite; }
+.animate-shimmer-sweep { animation: shimmer-sweep 6s ease-in-out infinite; }
+.animate-grid-pan { animation: grid-pan 8s linear infinite; }
+.animate-float-y { animation: float-y 6s ease-in-out infinite; }
+.animate-spark { animation: spark 4s ease-out infinite; }
 
 /* Utility classes */
 .glass {
