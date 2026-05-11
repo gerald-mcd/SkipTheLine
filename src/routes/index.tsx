@@ -319,13 +319,18 @@ function Home() {
           </div>
         )}
 
-        <h1 className="mt-5">
+        <h1 className="mt-6 -ml-1">
           <span className="sr-only">SkipTheLine</span>
           <img
             src={logoUrl}
             alt="SkipTheLine"
-            className="h-14 w-auto select-none sm:h-16"
+            className="h-16 w-auto select-none sm:h-20"
             draggable={false}
+            style={{
+              filter:
+                "drop-shadow(0 6px 18px color-mix(in oklab, var(--primary) 28%, transparent))",
+              mixBlendMode: "multiply",
+            }}
           />
         </h1>
         <p className="mt-2 max-w-[280px] text-[14px] font-medium leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
@@ -404,11 +409,18 @@ function Home() {
               </div>
               <div className="mt-3 flex items-center gap-3 text-[12px]">
                 <span
-                  className="font-grotesk inline-flex items-baseline gap-1 rounded-full px-2.5 py-1 font-semibold"
-                  style={{ background: severityColor(hero.severity), color: "white" }}
+                  className="font-grotesk inline-flex items-baseline gap-1.5 rounded-2xl px-3 py-1.5 font-bold"
+                  style={{
+                    background: severityColor(hero.severity),
+                    color: "white",
+                    boxShadow:
+                      "0 10px 24px -6px color-mix(in oklab, " +
+                      severityColor(hero.severity) +
+                      " 75%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
+                  }}
                 >
-                  <span className="text-base tabular-nums">{hero.waitMinutes}</span>
-                  <span className="text-[10px] uppercase tracking-wider">min wait</span>
+                  <span className="text-2xl leading-none tabular-nums">{hero.waitMinutes}</span>
+                  <span className="text-[10px] uppercase tracking-[0.18em] opacity-95">min wait</span>
                 </span>
                 <span className="inline-flex items-center gap-1 opacity-95">
                   <Users className="h-3.5 w-3.5" /> {hero.liveReporters} live
@@ -455,13 +467,13 @@ function Home() {
             <div>
               <span
                 className="font-grotesk inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]"
-                style={{ background: "color-mix(in oklab, var(--success) 14%, white)", color: "var(--success)" }}
+                style={{ background: "color-mix(in oklab, var(--primary) 12%, white)", color: "var(--primary)" }}
               >
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
-                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--primary)" }} />
+                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--primary)" }} />
                 </span>
-                Updated now
+                Updated now · crowdsourced
               </span>
               <h3 className="font-display mt-3 text-[48px] font-bold leading-[0.92] tracking-tight">
                 Walk
@@ -604,12 +616,21 @@ function Home() {
                             </span>
                           </div>
                         </div>
-                        <div className="shrink-0 text-right text-white">
+                        <div
+                          className="shrink-0 rounded-2xl px-3 py-2 text-right text-white"
+                          style={{
+                            background: severityColor(v.severity),
+                            boxShadow:
+                              "0 12px 26px -8px color-mix(in oklab, " +
+                              severityColor(v.severity) +
+                              " 75%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
+                          }}
+                        >
                           <div className="inline-flex items-baseline gap-1">
-                            <CountUp end={v.waitMinutes} className="font-grotesk text-4xl font-bold leading-none tabular-nums" />
-                            <span className="font-grotesk text-sm font-semibold opacity-80">m</span>
+                            <CountUp end={v.waitMinutes} className="font-grotesk text-[40px] font-extrabold leading-none tabular-nums" />
+                            <span className="font-grotesk text-base font-bold opacity-90">m</span>
                           </div>
-                          <p className="font-grotesk mt-1 text-[9px] font-bold uppercase tracking-widest opacity-70">min wait</p>
+                          <p className="font-grotesk mt-0.5 text-[9px] font-bold uppercase tracking-[0.2em] opacity-95">min wait</p>
                         </div>
                       </div>
                     </Link>
@@ -666,13 +687,22 @@ function Home() {
                             </span>
                           </div>
                         </div>
-                        <div className="shrink-0 text-right">
+                        <div
+                          className="shrink-0 rounded-xl px-2.5 py-1.5 text-right text-white"
+                          style={{
+                            background: severityColor(v.severity),
+                            boxShadow:
+                              "0 8px 20px -6px color-mix(in oklab, " +
+                              severityColor(v.severity) +
+                              " 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.28)",
+                          }}
+                        >
                           <div className="inline-flex items-baseline gap-1">
-                            <CountUp end={v.waitMinutes} className="font-grotesk text-3xl font-bold leading-none tabular-nums" />
-                            <span className="text-xs font-semibold opacity-80">m</span>
+                            <CountUp end={v.waitMinutes} className="font-grotesk text-3xl font-extrabold leading-none tabular-nums" />
+                            <span className="text-xs font-bold opacity-90">m</span>
                           </div>
-                          <p className="font-grotesk mt-1 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest" style={{ color: trendColor === "var(--muted-foreground)" ? "rgba(255,255,255,0.7)" : trendColor }}>
-                            <Trend className="h-3 w-3" />
+                          <p className="font-grotesk mt-0.5 inline-flex items-center justify-end gap-1 text-[9px] font-bold uppercase tracking-[0.2em] opacity-95">
+                            <Trend className="h-3 w-3" /> min wait
                           </p>
                         </div>
                       </div>
@@ -738,10 +768,19 @@ function Home() {
                           </span>
                         </div>
                         <h4 className="font-display mt-0.5 truncate text-[15px] font-semibold leading-tight">{v.name}</h4>
-                        <div className="mt-2 flex items-center justify-between border-t pt-1.5" style={{ borderColor: "var(--border)" }}>
-                          <span className="font-grotesk text-lg font-bold leading-none tabular-nums">
+                        <div className="mt-2 flex items-center justify-between border-t pt-2" style={{ borderColor: "var(--border)" }}>
+                          <span
+                            className="font-grotesk inline-flex items-baseline gap-0.5 rounded-lg px-2 py-1 text-base font-extrabold leading-none tabular-nums text-white"
+                            style={{
+                              background: severityColor(v.severity),
+                              boxShadow:
+                                "0 4px 12px -4px color-mix(in oklab, " +
+                                severityColor(v.severity) +
+                                " 70%, transparent)",
+                            }}
+                          >
                             <CountUp end={v.waitMinutes} />
-                            <span className="ml-0.5 text-[10px] font-semibold" style={{ color: "var(--muted-foreground)" }}>m</span>
+                            <span className="text-[9px] font-bold opacity-95">m</span>
                           </span>
                           <span className="font-grotesk inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                             <Footprints className="h-2.5 w-2.5" /> {walkMin}m
