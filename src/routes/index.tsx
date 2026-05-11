@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Heart, Search, MapPin, TrendingUp, Star, Clock, Navigation } from "lucide-react";
+import { Bell, Heart, Search } from "lucide-react";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
 
@@ -17,50 +17,16 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
-  const [sort, setSort] = useState<"trending" | "wait" | "distance" | "rating">("trending");
   const { isFav, toggle } = useFavorites();
 
   const filtered = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
     [cat],
   );
-
-  // Synthetic rating derived from id so it's stable
-  const ratingFor = (id: string) => 4 + ((id.charCodeAt(1) % 9) + 1) / 10;
-
-  const trendingNearby = useMemo(
-    () =>
-      [...filtered]
-        .sort((a, b) => {
-          const ta = a.trend === "up" ? 0 : a.trend === "flat" ? 1 : 2;
-          const tb = b.trend === "up" ? 0 : b.trend === "flat" ? 1 : 2;
-          if (ta !== tb) return ta - tb;
-          const da = parseFloat(a.distance);
-          const db = parseFloat(b.distance);
-          if (da !== db) return da - db;
-          return b.liveReporters - a.liveReporters;
-        })
-        .slice(0, 8),
+  const popular = useMemo(
+    () => [...filtered].sort((a, b) => b.liveReporters - a.liveReporters),
     [filtered],
   );
-
-  const sorted = useMemo(() => {
-    const list = [...filtered];
-    if (sort === "wait") list.sort((a, b) => a.waitMinutes - b.waitMinutes);
-    else if (sort === "distance")
-      list.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
-    else if (sort === "rating") list.sort((a, b) => ratingFor(b.id) - ratingFor(a.id));
-    else list.sort((a, b) => b.liveReporters - a.liveReporters);
-    return list;
-  }, [filtered, sort]);
-
-  const sortOptions: { id: typeof sort; label: string; icon: typeof Clock }[] = [
-    { id: "trending", label: "Trending", icon: TrendingUp },
-    { id: "wait", label: "Shortest wait", icon: Clock },
-    { id: "distance", label: "Closest", icon: Navigation },
-    { id: "rating", label: "Top rated", icon: Star },
-  ];
-  const sortLabel = sortOptions.find((s) => s.id === sort)?.label ?? "Popular";
 
   return (
     <div className="relative overflow-hidden pb-4">
@@ -182,66 +148,9 @@ function Home() {
           <CategoryRow active={cat} onChange={setCat} />
         </div>
 
-        {/* Trending nearby */}
-        <div className="mt-7 flex items-center justify-between">
-          <div>
-            <h2 className="font-display text-lg font-bold tracking-tight">Trending nearby</h2>
-            <p className="font-grotesk mt-0.5 flex items-center gap-1 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-              <MapPin className="h-3 w-3" style={{ color: "var(--primary)" }} />
-              Within 2 mi of you
-            </p>
-          </div>
-          <Link
-            to="/discover"
-            className="font-grotesk text-xs font-semibold"
-            style={{ color: "var(--primary)" }}
-          >
-            See all
-          </Link>
-        </div>
-      </header>
-
-      <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
-        {trendingNearby.map((v) => {
-          const rating = 4 + ((v.id.charCodeAt(1) % 9) + 1) / 10;
-          return (
-            <Link
-              key={v.id}
-              to="/venue/$id"
-              params={{ id: v.id }}
-              className="block w-44 shrink-0 overflow-hidden rounded-2xl bg-white"
-              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
-            >
-              <div className="relative h-28 w-full">
-                <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
-                <span
-                  className="font-grotesk absolute left-2 top-2 inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold text-white"
-                  style={{ background: "var(--primary)" }}
-                >
-                  <TrendingUp className="h-2.5 w-2.5" />
-                  Trending
-                </span>
-              </div>
-              <div className="p-2.5">
-                <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
-                <div className="mt-1 flex items-center justify-between text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="font-grotesk inline-flex items-center gap-0.5">
-                    <Star className="h-2.5 w-2.5" fill="var(--primary)" style={{ color: "var(--primary)" }} />
-                    <span className="font-bold" style={{ color: "var(--foreground)" }}>{rating.toFixed(1)}</span>
-                  </span>
-                  <span className="font-grotesk">{v.distance}</span>
-                  <span className="font-grotesk font-bold tabular-nums" style={{ color: "var(--primary)" }}>{v.waitMinutes}m</span>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-
-      <header className="relative px-5">
-        {/* Sortable list */}
+        {/* Popular this week */}
         <div className="mt-6 flex items-center justify-between">
-          <h2 className="font-display text-lg font-bold tracking-tight">{sortLabel}</h2>
+          <h2 className="font-display text-lg font-bold tracking-tight">Popular this week</h2>
           <Link
             to="/discover"
             className="font-grotesk text-xs font-semibold"
@@ -249,36 +158,12 @@ function Home() {
           >
             See all
           </Link>
-        </div>
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
-          {sortOptions.map((s) => {
-            const on = s.id === sort;
-            const Icon = s.icon;
-            return (
-              <button
-                key={s.id}
-                onClick={() => setSort(s.id)}
-                className="font-grotesk inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold transition-all"
-                style={{
-                  background: on ? "var(--foreground)" : "white",
-                  color: on ? "var(--background)" : "var(--foreground)",
-                  border: "1px solid",
-                  borderColor: on ? "var(--foreground)" : "var(--border)",
-                  boxShadow: on ? "var(--shadow-sm)" : "none",
-                }}
-              >
-                <Icon className="h-3 w-3" />
-                {s.label}
-              </button>
-            );
-          })}
         </div>
       </header>
 
       <div className="mt-3 grid grid-cols-2 gap-3 px-5">
-        {sorted.slice(0, 6).map((v) => {
+        {popular.slice(0, 6).map((v) => {
           const fav = isFav(v.id);
-          const rating = ratingFor(v.id);
           return (
             <Link
               key={v.id}
@@ -315,13 +200,9 @@ function Home() {
               </div>
               <div className="p-3">
                 <h3 className="font-display truncate text-sm font-bold tracking-tight">{v.name}</h3>
-                <div className="mt-1 flex items-center justify-between text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="font-grotesk inline-flex items-center gap-0.5">
-                    <Star className="h-2.5 w-2.5" fill="var(--primary)" style={{ color: "var(--primary)" }} />
-                    <span className="font-bold" style={{ color: "var(--foreground)" }}>{rating.toFixed(1)}</span>
-                  </span>
-                  <span className="font-grotesk">{v.distance}</span>
-                </div>
+                <p className="font-grotesk mt-1 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                  <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> reporting · {v.distance}
+                </p>
               </div>
             </Link>
           );
