@@ -231,6 +231,10 @@
 @keyframes route-flow {
   to { stroke-dashoffset: -200; }
 }
+@keyframes ticker-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
 .animate-pulse-ring { animation: pulse-ring 2.4s cubic-bezier(0.4,0,0.2,1) infinite; }
 .animate-ping-soft { animation: ping-soft 2s ease-out infinite; }
