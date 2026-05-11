@@ -172,32 +172,12 @@ function Home() {
       {/* Top bar: location + sign in */}
       <div className="relative px-5 pt-4">
         <div className="flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={enableLocation}
-            className="flex min-w-0 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-left transition-colors"
-            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
-          >
-            {locationEnabled ? (
-              <>
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
-                  <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
-                </span>
-                <MapPin className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
-                <span className="font-grotesk truncate text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Miami · Brickell
-                </span>
-              </>
-            ) : (
-              <>
-                <Navigation className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
-                <span className="font-grotesk text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  {locating ? "Locating…" : "Enable location"}
-                </span>
-              </>
-            )}
-          </button>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <span className="font-display text-[15px] font-bold tracking-tight">SkipTheLine</span>
+            <span className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+              · Live
+            </span>
+          </div>
 
           <div className="flex items-center gap-2">
             <div
@@ -220,17 +200,130 @@ function Home() {
           </div>
         </div>
 
-        {/* Crowdsourcing pitch */}
-        <div
-          className="mt-3 flex items-center gap-2 rounded-2xl bg-white px-3 py-2"
-          style={{ border: "1px solid var(--border)" }}
-        >
-          <AvatarStack names={["AM", "JR", "KS", "LP"]} max={4} />
-          <p className="text-[11px] leading-tight" style={{ color: "var(--muted-foreground)" }}>
-            <span className="font-semibold" style={{ color: "var(--foreground)" }}>{totalReporters} neighbors</span>{" "}
-            reporting waits right now — by the crowd, for the crowd.
-          </p>
-        </div>
+        {/* Location preview card */}
+        {locationEnabled ? (
+          <div
+            className="mt-3 overflow-hidden rounded-2xl bg-white animate-fade-in"
+            style={{
+              border: "1px solid var(--border)",
+              boxShadow: "var(--shadow-md), 0 16px 40px -24px color-mix(in oklab, var(--primary) 50%, transparent)",
+            }}
+          >
+            <div className="flex items-stretch gap-3 p-3">
+              {/* Mini radar map */}
+              <div
+                className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl"
+                style={{
+                  background:
+                    "radial-gradient(circle at center, color-mix(in oklab, var(--primary) 30%, white) 0%, white 70%)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                {/* concentric rings */}
+                <div className="absolute inset-2 rounded-full" style={{ border: "1px dashed color-mix(in oklab, var(--primary) 40%, transparent)" }} />
+                <div className="absolute inset-5 rounded-full" style={{ border: "1px dashed color-mix(in oklab, var(--primary) 55%, transparent)" }} />
+                {/* venue dots */}
+                {locScoped.slice(0, 5).map((v, i) => (
+                  <span
+                    key={v.id}
+                    className="absolute h-1.5 w-1.5 rounded-full"
+                    style={{
+                      left: `${20 + ((i * 17) % 60)}%`,
+                      top: `${22 + ((i * 23) % 56)}%`,
+                      background: severityColor(v.severity),
+                      boxShadow: "0 0 0 2px white",
+                    }}
+                  />
+                ))}
+                {/* center pin with sweep */}
+                <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2">
+                  <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "color-mix(in oklab, var(--primary) 50%, transparent)" }} />
+                  <span className="relative block h-3 w-3 rounded-full border-2 border-white" style={{ background: "var(--primary)" }} />
+                </div>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: "var(--success)" }} />
+                    <span className="relative h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+                  </span>
+                  <span className="font-grotesk text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--success)" }}>
+                    Location on
+                  </span>
+                </div>
+                <p className="font-display mt-0.5 truncate text-[20px] font-bold leading-tight tracking-tight">
+                  {area.neighborhood}, {area.city}
+                </p>
+                <p className="font-grotesk mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                  <span className="font-bold tabular-nums" style={{ color: "var(--foreground)" }}>{inRangeCount}</span> spots within {radiusMi} mi
+                </p>
+              </div>
+            </div>
+            {/* Radius chips */}
+            <div
+              className="flex items-center gap-1.5 border-t px-3 py-2"
+              style={{ borderColor: "var(--border)", background: "color-mix(in oklab, var(--primary) 3%, white)" }}
+            >
+              <span className="font-grotesk text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+                Radius
+              </span>
+              <div className="flex flex-1 items-center gap-1.5">
+                {[0.5, 1, 1.5, 3, 5].map((r) => {
+                  const active = radiusMi === r;
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setRadiusMi(r)}
+                      className="font-grotesk flex-1 rounded-full px-2 py-1 text-[10px] font-bold tabular-nums transition-colors"
+                      style={{
+                        background: active ? "var(--foreground)" : "white",
+                        color: active ? "white" : "var(--muted-foreground)",
+                        border: `1px solid ${active ? "var(--foreground)" : "var(--border)"}`,
+                      }}
+                    >
+                      {r} mi
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={enableLocation}
+            disabled={locating}
+            className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left transition-transform active:scale-[0.99]"
+            style={{
+              border: "1px solid color-mix(in oklab, var(--primary) 30%, var(--border))",
+              boxShadow: "var(--shadow-sm), 0 12px 32px -20px color-mix(in oklab, var(--primary) 60%, transparent)",
+            }}
+          >
+            <div
+              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+              style={{ background: "color-mix(in oklab, var(--primary) 12%, white)" }}
+            >
+              {locating ? (
+                <span className="absolute inset-0 animate-radar rounded-xl" style={{
+                  background: "conic-gradient(from 0deg, transparent 0deg, color-mix(in oklab, var(--primary) 40%, transparent) 90deg, transparent 180deg)",
+                }} />
+              ) : (
+                <span className="absolute inset-0 animate-ping-soft rounded-xl" style={{ background: "color-mix(in oklab, var(--primary) 20%, transparent)" }} />
+              )}
+              <Crosshair className="relative h-5 w-5" style={{ color: "var(--primary)" }} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-grotesk text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--primary)" }}>
+                {locating ? "Finding you…" : "Tap to enable location"}
+              </p>
+              <p className="font-display mt-0.5 text-[17px] font-bold leading-tight tracking-tight">
+                See waits within walking distance
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0" style={{ color: "var(--primary)" }} />
+          </button>
+        )}
 
         <h1 className="font-display mt-4 text-[52px] font-bold leading-[0.98] tracking-tight">
           Skip the
