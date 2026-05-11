@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { venues, liveFeed } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -7,311 +9,460 @@ export const Route = createFileRoute("/welcome")({
       {
         name: "description",
         content:
-          "SkipTheLine tells you when to go, where you want to go. Live, crowd-powered wait times for restaurants, nightlife, and more.",
-      },
-      { property: "og:title", content: "SkipTheLine — When to go, where you want to go" },
-      {
-        property: "og:description",
-        content: "Live, crowd-powered wait times for the city around you.",
+          "Live, crowd-powered wait times for restaurants, nightlife, and more — SkipTheLine tells you when to go, where you want to go.",
       },
     ],
   }),
   component: Welcome,
 });
 
+const featured = venues.find((v) => v.id === "v1")!; // Komodo
+
 function Welcome() {
+  // Ticking wait time + live reporter count for ambient liveness
+  const [wait, setWait] = useState(featured.waitMinutes);
+  const [reporters, setReporters] = useState(featured.liveReporters);
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setWait((w) => Math.max(28, Math.min(58, w + (Math.random() > 0.5 ? 1 : -1))));
+      setReporters((r) => Math.max(3, Math.min(12, r + (Math.random() > 0.5 ? 1 : -1))));
+      setNow((n) => n + 1);
+    }, 1800);
+    return () => clearInterval(t);
+  }, []);
+
+  // Live ticker — duplicate the feed for seamless loop
+  const ticker = [...liveFeed, ...liveFeed];
+
   return (
     <div
-      className="font-grotesk relative flex min-h-screen w-full items-center justify-center overflow-hidden"
-      style={{ background: "color-mix(in oklab, var(--primary) 4%, white)" }}
+      className="font-grotesk relative min-h-screen w-full overflow-hidden"
+      style={{ background: "color-mix(in oklab, var(--primary) 5%, white)" }}
     >
-      {/* Animated map background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Ambient atmosphere */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
         <div
-          className="animate-drift absolute inset-0"
+          className="animate-drift absolute -left-32 top-[-120px] h-[480px] w-[480px] rounded-full blur-3xl"
+          style={{ background: "color-mix(in oklab, var(--primary) 32%, transparent)", opacity: 0.55 }}
+        />
+        <div
+          className="animate-drift absolute -right-24 top-[40%] h-[420px] w-[420px] rounded-full blur-3xl"
           style={{
-            background:
-              "radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--primary) 18%, transparent) 0%, transparent 55%)",
+            background: "color-mix(in oklab, var(--primary-glow) 38%, transparent)",
+            opacity: 0.5,
+            animationDelay: "3s",
           }}
         />
         <div
-          className="animate-drift absolute -left-1/4 top-1/3 h-[420px] w-[420px] rounded-full opacity-50 blur-3xl"
+          className="absolute inset-0 opacity-[0.18]"
           style={{
-            background: "color-mix(in oklab, var(--primary-glow) 40%, transparent)",
-            animationDelay: "2s",
-          }}
-        />
-
-        {/* Topographic / route lines */}
-        <svg
-          className="absolute left-1/2 top-1/4 h-[460px] w-[900px] -translate-x-1/2 opacity-25"
-          viewBox="0 0 800 400"
-          fill="none"
-        >
-          <defs>
-            <linearGradient id="routeGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.1" />
-              <stop offset="50%" stopColor="var(--primary)" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.1" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M50,300 C150,250 250,350 400,200 S650,50 750,150"
-            stroke="url(#routeGrad)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeDasharray="6 10"
-            style={{ animation: "route-flow 2.4s linear infinite" }}
-          />
-          <path
-            d="M-20,180 C120,200 220,80 360,140 S620,260 820,200"
-            stroke="var(--primary)"
-            strokeOpacity="0.35"
-            strokeWidth="1"
-            strokeDasharray="2 8"
-          />
-          <circle cx="50" cy="300" r="5" fill="var(--primary)" />
-          <circle cx="750" cy="150" r="5" fill="var(--primary)" />
-        </svg>
-
-        {/* Pulsing pins */}
-        <div className="absolute left-[28%] top-[24%]">
-          <span className="relative flex h-3 w-3">
-            <span
-              className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-75"
-              style={{ background: "var(--primary)" }}
-            />
-            <span
-              className="relative inline-flex h-3 w-3 rounded-full"
-              style={{ background: "var(--primary)", boxShadow: "0 0 0 3px white" }}
-            />
-          </span>
-        </div>
-        <div className="absolute right-[22%] top-[40%]">
-          <span className="relative flex h-3.5 w-3.5">
-            <span
-              className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-70"
-              style={{ background: "var(--primary)", animationDelay: "0.8s" }}
-            />
-            <span
-              className="relative inline-flex h-3.5 w-3.5 rounded-full"
-              style={{ background: "var(--primary)", boxShadow: "0 0 0 3px white" }}
-            />
-          </span>
-        </div>
-        <div className="absolute left-[18%] bottom-[18%]">
-          <span className="relative flex h-2.5 w-2.5">
-            <span
-              className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-60"
-              style={{ background: "var(--primary)", animationDelay: "1.6s" }}
-            />
-            <span
-              className="relative inline-flex h-2.5 w-2.5 rounded-full"
-              style={{ background: "var(--primary)", boxShadow: "0 0 0 3px white" }}
-            />
-          </span>
-        </div>
-
-        {/* Floating sparkles */}
-        <div
-          className="absolute right-10 top-20 h-1.5 w-1.5 animate-pulse rounded-full"
-          style={{ background: "color-mix(in oklab, var(--primary) 60%, transparent)" }}
-        />
-        <div
-          className="absolute bottom-24 left-12 h-2 w-2 animate-pulse rounded-full"
-          style={{
-            background: "color-mix(in oklab, var(--primary-glow) 70%, transparent)",
-            animationDelay: "0.6s",
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--primary) 40%, transparent) 1px, transparent 0)",
+            backgroundSize: "22px 22px",
+            maskImage: "radial-gradient(circle at 50% 30%, black 30%, transparent 75%)",
           }}
         />
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex w-full max-w-md flex-col items-center px-6 py-12">
-        {/* Brand chip */}
+      {/* Top brand strip */}
+      <div className="relative z-10 flex items-center justify-between px-6 pt-7">
+        <div className="flex items-center gap-2">
+          <span
+            className="relative flex h-9 w-9 items-center justify-center rounded-2xl text-white"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
+          >
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+              <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
+            </svg>
+            <span
+              className="animate-ping-soft absolute inset-0 rounded-2xl"
+              style={{ background: "var(--primary)", opacity: 0.3 }}
+            />
+          </span>
+          <span className="font-display text-[17px] font-extrabold tracking-tight">SkipTheLine</span>
+        </div>
+        <Link
+          to="/"
+          className="text-[13px] font-semibold"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          Skip →
+        </Link>
+      </div>
+
+      {/* Live status pill */}
+      <div className="relative z-10 mt-6 flex justify-center px-6">
         <div
-          className="animate-fade-in-up mb-5 inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+          className="animate-fade-in-up inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
           style={{
-            background: "color-mix(in oklab, var(--primary) 10%, white)",
-            border: "1px solid color-mix(in oklab, var(--primary) 20%, transparent)",
+            background: "white",
+            border: "1px solid color-mix(in oklab, var(--primary) 18%, var(--border))",
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          <span
-            className="h-2 w-2 animate-pulse rounded-full"
-            style={{ background: "var(--primary)" }}
-          />
-          <span
-            className="text-[10px] font-bold uppercase tracking-[0.18em]"
-            style={{ color: "var(--primary)" }}
-          >
-            Real-time Navigation
+          <span className="relative flex h-2 w-2">
+            <span
+              className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-75"
+              style={{ background: "var(--wait-short)" }}
+            />
+            <span
+              className="relative inline-flex h-2 w-2 rounded-full"
+              style={{ background: "var(--wait-short)" }}
+            />
+          </span>
+          <span className="text-[11px] font-bold tracking-tight">
+            <span style={{ color: "var(--foreground)" }}>2,418 people</span>{" "}
+            <span style={{ color: "var(--muted-foreground)" }}>reporting around you</span>
           </span>
         </div>
+      </div>
 
-        {/* Headline */}
-        <div className="animate-fade-in-up mb-8 text-center" style={{ animationDelay: "80ms" }}>
-          <h1 className="font-display text-[40px] font-extrabold leading-[1.02] tracking-tight">
-            Skip<span style={{ color: "var(--primary)" }}>TheLine</span>
-          </h1>
-          <p
-            className="mt-3 text-[15px] font-medium leading-relaxed"
-            style={{ color: "var(--muted-foreground)" }}
+      {/* Headline — asymmetric, mixed weights */}
+      <div className="relative z-10 mt-7 px-6">
+        <h1 className="font-display text-[44px] font-extrabold leading-[0.98] tracking-tight">
+          <span className="animate-fade-in-up block">When to go.</span>
+          <span
+            className="animate-fade-in-up block italic"
+            style={{ color: "var(--primary)", animationDelay: "120ms" }}
           >
-            When to go,{" "}
-            <span className="italic" style={{ color: "var(--primary)" }}>
-              where
-            </span>{" "}
-            you want to go.
-          </p>
-        </div>
+            Where you want
+          </span>
+          <span className="animate-fade-in-up block" style={{ animationDelay: "220ms" }}>
+            to go.
+          </span>
+        </h1>
+      </div>
 
-        {/* Auth card */}
+      {/* Live preview composition */}
+      <div className="relative z-10 mx-6 mt-7 h-[260px]">
+        {/* Floating venue card — tilted */}
         <div
-          className="animate-fade-in-up w-full rounded-3xl bg-white p-7"
+          className="animate-fade-in-up absolute left-0 top-0 w-[78%] origin-bottom-left overflow-hidden rounded-3xl bg-white"
           style={{
-            border: "1px solid color-mix(in oklab, var(--primary) 10%, var(--border))",
+            transform: "rotate(-3deg)",
+            border: "1px solid var(--border)",
             boxShadow:
-              "0 32px 64px -12px color-mix(in oklab, var(--primary) 18%, transparent), 0 2px 6px color-mix(in oklab, var(--primary) 8%, transparent)",
-            animationDelay: "160ms",
+              "0 28px 60px -20px color-mix(in oklab, var(--primary) 30%, transparent), 0 4px 12px color-mix(in oklab, var(--foreground) 8%, transparent)",
+            animationDelay: "320ms",
           }}
         >
-          <form
-            className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
+          <div className="relative h-[140px]">
+            <img
+              src={featured.image}
+              alt={featured.name}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 40%, color-mix(in oklab, black 70%, transparent) 100%)",
+              }}
+            />
+            <span
+              className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-[10px] font-bold backdrop-blur"
+              style={{ color: "var(--primary)" }}
+            >
+              <span
+                className="h-1.5 w-1.5 animate-pulse rounded-full"
+                style={{ background: "var(--primary)" }}
+              />
+              LIVE
+            </span>
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-white">
+              <div>
+                <div className="font-display text-[15px] font-bold leading-tight">
+                  {featured.name}
+                </div>
+                <div className="text-[10px] opacity-85">
+                  {featured.vibe} · {featured.distance}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between px-4 py-3">
             <div>
-              <label
-                className="mb-2 ml-1 block text-[10px] font-bold uppercase tracking-[0.16em]"
+              <div
+                className="text-[9px] font-bold uppercase tracking-[0.14em]"
                 style={{ color: "var(--muted-foreground)" }}
               >
-                Email address
-              </label>
-              <input
-                type="email"
-                placeholder="name@example.com"
-                className="w-full rounded-2xl px-5 py-4 text-[15px] outline-none transition-all placeholder:text-neutral-300 focus:ring-2"
-                style={{
-                  background: "var(--muted)",
-                  border: "1px solid var(--border)",
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "var(--primary)";
-                  e.currentTarget.style.boxShadow =
-                    "0 0 0 4px color-mix(in oklab, var(--primary) 18%, transparent)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              />
-            </div>
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label
-                  className="ml-1 block text-[10px] font-bold uppercase tracking-[0.16em]"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  Password
-                </label>
-                <button
-                  type="button"
-                  className="text-[11px] font-semibold hover:underline"
-                  style={{ color: "var(--primary)" }}
-                >
-                  Forgot?
-                </button>
+                Wait now
               </div>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full rounded-2xl px-5 py-4 text-[15px] outline-none transition-all placeholder:text-neutral-300"
+              <div className="flex items-baseline gap-1">
+                <span
+                  key={wait}
+                  className="font-display text-[26px] font-extrabold leading-none"
+                  style={{
+                    color: "var(--primary)",
+                    animation: "pop-in 280ms cubic-bezier(0.22,1,0.36,1) both",
+                  }}
+                >
+                  {wait}
+                </span>
+                <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
+                  min
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="flex -space-x-1.5">
+                {["S", "M", "D"].map((c, i) => (
+                  <span
+                    key={i}
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{
+                      background: ["oklch(0.62 0.16 30)", "oklch(0.62 0.14 200)", "oklch(0.62 0.14 140)"][i],
+                      border: "1.5px solid white",
+                    }}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <span
+                className="mt-1 text-[10px] font-semibold tabular-nums"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                {reporters} reporting now
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Mini map chip — tilted opposite */}
+        <div
+          className="animate-fade-in-up absolute right-0 top-[110px] w-[58%] origin-top-right overflow-hidden rounded-3xl"
+          style={{
+            transform: "rotate(4deg)",
+            border: "1px solid var(--border)",
+            background: "white",
+            boxShadow:
+              "0 24px 50px -16px color-mix(in oklab, var(--primary) 24%, transparent), 0 2px 8px color-mix(in oklab, var(--foreground) 6%, transparent)",
+            animationDelay: "460ms",
+          }}
+        >
+          <div
+            className="relative h-[150px]"
+            style={{
+              background:
+                "linear-gradient(135deg, color-mix(in oklab, var(--primary) 8%, white), color-mix(in oklab, var(--primary-glow) 14%, white))",
+            }}
+          >
+            {/* Faux map grid */}
+            <svg className="absolute inset-0 h-full w-full opacity-50" viewBox="0 0 200 150">
+              <path
+                d="M0,40 Q60,30 120,55 T220,50"
+                stroke="color-mix(in oklab, var(--primary) 40%, transparent)"
+                strokeWidth="1.2"
+                fill="none"
+              />
+              <path
+                d="M-10,90 Q70,80 130,110 T230,100"
+                stroke="color-mix(in oklab, var(--primary) 30%, transparent)"
+                strokeWidth="1"
+                fill="none"
+                strokeDasharray="3 3"
+              />
+              <path
+                d="M40,0 L60,150"
+                stroke="color-mix(in oklab, var(--primary) 22%, transparent)"
+                strokeWidth="0.8"
+              />
+              <path
+                d="M140,0 L160,150"
+                stroke="color-mix(in oklab, var(--primary) 22%, transparent)"
+                strokeWidth="0.8"
+              />
+            </svg>
+
+            {/* Wait-time pin badges */}
+            {[
+              { left: "22%", top: "28%", min: 8, color: "var(--wait-short)" },
+              { left: "58%", top: "20%", min: 42, color: "var(--wait-long)" },
+              { left: "38%", top: "62%", min: 15, color: "var(--wait-moderate)" },
+              { left: "76%", top: "58%", min: 25, color: "var(--wait-moderate)" },
+            ].map((p, i) => (
+              <div
+                key={i}
+                className="absolute -translate-x-1/2 -translate-y-1/2"
+                style={{ left: p.left, top: p.top }}
+              >
+                <div className="relative">
+                  <span
+                    className="animate-ping-soft absolute inset-0 rounded-full"
+                    style={{ background: p.color, opacity: 0.35, animationDelay: `${i * 0.4}s` }}
+                  />
+                  <span
+                    className="relative inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[9px] font-extrabold text-white tabular-nums"
+                    style={{ background: p.color, boxShadow: "0 4px 10px rgba(0,0,0,0.15)" }}
+                  >
+                    {p.min}m
+                  </span>
+                </div>
+              </div>
+            ))}
+
+            {/* "You" dot */}
+            <div className="absolute left-[50%] top-[80%] -translate-x-1/2 -translate-y-1/2">
+              <span className="relative flex h-3 w-3">
+                <span
+                  className="animate-ping-soft absolute inline-flex h-full w-full rounded-full opacity-75"
+                  style={{ background: "oklch(0.55 0.18 250)" }}
+                />
+                <span
+                  className="relative inline-flex h-3 w-3 rounded-full"
+                  style={{ background: "oklch(0.55 0.18 250)", border: "2px solid white" }}
+                />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Live ticker — edge-bleed */}
+      <div className="relative z-10 mt-5 overflow-hidden">
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12"
+          style={{
+            background:
+              "linear-gradient(to right, color-mix(in oklab, var(--primary) 5%, white), transparent)",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12"
+          style={{
+            background:
+              "linear-gradient(to left, color-mix(in oklab, var(--primary) 5%, white), transparent)",
+          }}
+        />
+        <div
+          className="flex gap-2 whitespace-nowrap"
+          style={{ animation: "ticker-x 38s linear infinite" }}
+        >
+          {ticker.map((r, i) => (
+            <div
+              key={i}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px]"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
                 style={{
-                  background: "var(--muted)",
-                  border: "1px solid var(--border)",
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = "var(--primary)";
-                  e.currentTarget.style.boxShadow =
-                    "0 0 0 4px color-mix(in oklab, var(--primary) 18%, transparent)";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border)";
-                  e.currentTarget.style.boxShadow = "none";
+                  background:
+                    r.minutes <= 15
+                      ? "var(--wait-short)"
+                      : r.minutes <= 45
+                        ? "var(--wait-moderate)"
+                        : "var(--wait-long)",
                 }}
               />
+              <span className="font-bold">{r.user}</span>
+              <span style={{ color: "var(--muted-foreground)" }}>at</span>
+              <span className="font-semibold">{r.venue}</span>
+              <span className="tabular-nums" style={{ color: "var(--primary)" }}>
+                · {r.minutes}m
+              </span>
+              <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                {r.ago}
+              </span>
             </div>
-            <Link
-              to="/"
-              className="font-display flex h-14 w-full items-center justify-center rounded-2xl text-base font-bold text-white transition-all active:scale-[0.98]"
-              style={{
-                background: "var(--primary)",
-                boxShadow: "var(--shadow-glow)",
-              }}
-            >
-              Get started
-            </Link>
-          </form>
+          ))}
+        </div>
+      </div>
 
-          <div className="relative my-7 flex items-center">
-            <div className="flex-grow border-t" style={{ borderColor: "var(--border)" }} />
-            <span
-              className="mx-4 text-[10px] font-bold uppercase tracking-[0.18em]"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              or continue with
-            </span>
-            <div className="flex-grow border-t" style={{ borderColor: "var(--border)" }} />
-          </div>
+      {/* Auth section — feels like a continuation, not a card-in-a-card */}
+      <div className="relative z-10 mt-8 px-6 pb-10">
+        <form
+          className="space-y-2.5"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <input
+            type="email"
+            placeholder="Email address"
+            className="w-full rounded-2xl bg-white px-5 py-4 text-[15px] outline-none transition-all placeholder:text-neutral-400"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "var(--primary)";
+              e.currentTarget.style.boxShadow =
+                "0 0 0 4px color-mix(in oklab, var(--primary) 16%, transparent)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+            }}
+          />
+          <Link
+            to="/"
+            className="font-display flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-transform active:scale-[0.98]"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary-glow) 80%, var(--primary)))",
+              boxShadow: "var(--shadow-glow)",
+            }}
+          >
+            Get started — it's free
+            <span aria-hidden>→</span>
+          </Link>
+        </form>
 
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              className="flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold transition-all hover:bg-neutral-50 active:scale-95"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Google
-            </button>
-            <button
-              type="button"
-              className="flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold transition-all hover:bg-neutral-50 active:scale-95"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.05 20.28c-.96.95-2.13 1.72-3.32 1.72-1.19 0-1.61-.72-3.08-.72-1.47 0-1.94.7-3.04.72-1.11.02-2.31-.83-3.29-1.78-2-1.92-3.04-5.32-2.06-7.85 1-2.51 3.51-4.04 5.76-4.04 1.16 0 2.14.39 3 .39.86 0 2.1-.51 3.44-.51 1.41 0 2.67.5 3.51 1.48-2.61 1.45-2.19 5.38.45 6.51-.55 1.57-1.47 3.08-2.47 4.08zM12.03 7.25c-.02-2.23 1.84-4.13 4.04-4.25.13 2.19-1.92 4.2-4.04 4.25z" />
-              </svg>
-              Apple
-            </button>
-          </div>
+        <div className="my-4 flex items-center gap-3">
+          <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+          <span
+            className="text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            or
+          </span>
+          <div className="h-px flex-1" style={{ background: "var(--border)" }} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold transition-all active:scale-95"
+            style={{ border: "1px solid var(--border)" }}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
+            </svg>
+            Google
+          </button>
+          <button
+            type="button"
+            className="flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white transition-all active:scale-95"
+            style={{ background: "var(--foreground)" }}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.05 20.28c-.96.95-2.13 1.72-3.32 1.72-1.19 0-1.61-.72-3.08-.72-1.47 0-1.94.7-3.04.72-1.11.02-2.31-.83-3.29-1.78-2-1.92-3.04-5.32-2.06-7.85 1-2.51 3.51-4.04 5.76-4.04 1.16 0 2.14.39 3 .39.86 0 2.1-.51 3.44-.51 1.41 0 2.67.5 3.51 1.48-2.61 1.45-2.19 5.38.45 6.51-.55 1.57-1.47 3.08-2.47 4.08zM12.03 7.25c-.02-2.23 1.84-4.13 4.04-4.25.13 2.19-1.92 4.2-4.04 4.25z" />
+            </svg>
+            Apple
+          </button>
         </div>
 
         <p
-          className="animate-fade-in-up mt-7 text-center text-sm font-medium"
-          style={{ color: "var(--muted-foreground)", animationDelay: "240ms" }}
+          className="mt-5 text-center text-[12px]"
+          style={{ color: "var(--muted-foreground)" }}
         >
-          New here?{" "}
-          <Link to="/" className="font-bold hover:underline" style={{ color: "var(--primary)" }}>
-            Create an account
-          </Link>
+          By continuing you agree to the{" "}
+          <span style={{ color: "var(--foreground)" }}>Terms</span> &{" "}
+          <span style={{ color: "var(--foreground)" }}>Privacy</span>.
         </p>
       </div>
     </div>
