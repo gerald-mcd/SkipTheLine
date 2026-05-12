@@ -136,6 +136,8 @@ export const profile = {
   streak: 12,
   rank: 47,
   cityRank: 312,
+  rankTrend: "up" as "up" | "down" | "flat",
+  rankDelta: 5,
   reportsThisWeek: 23,
   email: "alex@skiptheline.app",
   phone: "+1 (305) 555-0142",
@@ -163,6 +165,45 @@ export const profile = {
     { rank: 48, name: "Nina B.", points: 2770, you: false },
   ],
 };
+
+// ---------- Leaderboard geography (state → city → neighborhood) ----------
+export type GeoScope = "state" | "city" | "neighborhood";
+
+export interface GeoNode {
+  id: string;
+  name: string;
+  scope: GeoScope;
+  parentId?: string;
+  rank: number;
+  reporters: number;
+  yourPoints: number;
+  topName: string;
+  topPoints: number;
+  trend: "up" | "down" | "flat";
+  // Position inside the parent map (% units, 0-100), with width/height
+  shape: { x: number; y: number; w: number; h: number };
+}
+
+export const geoNodes: GeoNode[] = [
+  // State
+  { id: "fl", name: "Florida", scope: "state", rank: 18432, reporters: 24500, yourPoints: 2840, topName: "Jasmine K.", topPoints: 18420, trend: "up", shape: { x: 8, y: 10, w: 84, h: 78 } },
+  // Cities (children of fl)
+  { id: "miami", name: "Miami", scope: "city", parentId: "fl", rank: 312, reporters: 3200, yourPoints: 2840, topName: "Jasmine K.", topPoints: 12410, trend: "up", shape: { x: 56, y: 58, w: 30, h: 28 } },
+  { id: "orlando", name: "Orlando", scope: "city", parentId: "fl", rank: 0, reporters: 1900, yourPoints: 0, topName: "Maya R.", topPoints: 9800, trend: "flat", shape: { x: 38, y: 30, w: 26, h: 22 } },
+  { id: "tampa", name: "Tampa", scope: "city", parentId: "fl", rank: 0, reporters: 1450, yourPoints: 0, topName: "Leo P.", topPoints: 7600, trend: "down", shape: { x: 14, y: 38, w: 24, h: 22 } },
+  // Neighborhoods (children of miami)
+  { id: "wynwood", name: "Wynwood", scope: "neighborhood", parentId: "miami", rank: 47, reporters: 410, yourPoints: 2840, topName: "Jasmine K.", topPoints: 8420, trend: "up", shape: { x: 30, y: 22, w: 32, h: 26 } },
+  { id: "brickell", name: "Brickell", scope: "neighborhood", parentId: "miami", rank: 0, reporters: 520, yourPoints: 0, topName: "Rico M.", topPoints: 7110, trend: "flat", shape: { x: 22, y: 56, w: 30, h: 28 } },
+  { id: "south-beach", name: "South Beach", scope: "neighborhood", parentId: "miami", rank: 0, reporters: 480, yourPoints: 0, topName: "Priya S.", topPoints: 6890, trend: "down", shape: { x: 60, y: 36, w: 28, h: 38 } },
+  { id: "midtown", name: "Midtown", scope: "neighborhood", parentId: "miami", rank: 0, reporters: 300, yourPoints: 0, topName: "Devon W.", topPoints: 4200, trend: "up", shape: { x: 16, y: 22, w: 22, h: 18 } },
+];
+
+export function geoChildren(parentId?: string) {
+  return geoNodes.filter((n) => n.parentId === parentId);
+}
+export function geoById(id: string) {
+  return geoNodes.find((n) => n.id === id);
+}
 
 export interface Person {
   id: string;
