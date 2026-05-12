@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { profile } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays } from "lucide-react";
+import { useMemo, useState } from "react";
+import { profile, peoplePool, incomingRequests, type Person } from "@/lib/mock-data";
+import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -16,6 +17,13 @@ export const Route = createFileRoute("/profile")({
 function Profile() {
   const goalPoints = 5000;
   const progress = Math.min(100, (profile.points / goalPoints) * 100);
+  const [findOpen, setFindOpen] = useState(false);
+  // Local extra friends added during this session
+  const [extraFriends, setExtraFriends] = useState<Person[]>([]);
+  const allFriends = useMemo(
+    () => [...profile.friends, ...extraFriends.map((p) => ({ id: p.id, name: p.name, handle: p.handle, initial: p.initial }))],
+    [extraFriends],
+  );
 
   return (
     <div className="px-4 pt-6">
@@ -144,20 +152,37 @@ function Profile() {
       {/* Friends */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Friends</h2>
+          <h2 className="text-sm font-semibold">
+            Friends <span className="ml-1 text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>{allFriends.length}</span>
+          </h2>
           <button
-            onClick={() => toast("Find friends coming soon")}
-            className="flex items-center gap-1 text-xs font-medium"
-            style={{ color: "var(--primary)" }}
+            onClick={() => setFindOpen(true)}
+            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold"
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
           >
-            <UserPlus className="h-3 w-3" /> Add
+            <UserPlus className="h-3.5 w-3.5" /> Find friends
           </button>
         </div>
         <p className="mb-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
           Friends' names appear on their reports. Strangers stay anonymous.
         </p>
+        {incomingRequests.length > 0 && (
+          <div className="mb-3 rounded-2xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
+              {incomingRequests.length} pending request{incomingRequests.length === 1 ? "" : "s"}
+            </p>
+            <div className="space-y-2">
+              {incomingRequests.map((p) => (
+                <RequestRow key={p.id} person={p} onAccept={() => {
+                  setExtraFriends((prev) => prev.some((x) => x.id === p.id) ? prev : [...prev, p]);
+                  toast(`You're now friends with ${p.name}`);
+                }} />
+              ))}
+            </div>
+          </div>
+        )}
         <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
-          {profile.friends.map((f, i) => (
+          {allFriends.map((f, i) => (
             <div
               key={f.id}
               className="flex items-center gap-3 px-4 py-3"
@@ -203,6 +228,171 @@ function Profile() {
       </section>
 
       <div className="h-6" />
+
+      {findOpen && (
+        <FindFriendsSheet
+          existingFriendIds={new Set(allFriends.map((f) => f.id))}
+          onClose={() => setFindOpen(false)}
+          onAccept={(p) => {
+            setExtraFriends((prev) => prev.some((x) => x.id === p.id) ? prev : [...prev, p]);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function RequestRow({ person, onAccept }: { person: Person; onAccept: () => void }) {
+  const [state, setState] = useState<"pending" | "accepted" | "declined">("pending");
+  if (state === "declined") return null;
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+        {person.initial}
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-medium">{person.name}</p>
+        <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+          {person.mutuals} mutual{person.mutuals === 1 ? "" : "s"} · {person.city}
+        </p>
+      </div>
+      {state === "pending" ? (
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => setState("declined")}
+            className="flex h-8 w-8 items-center justify-center rounded-full"
+            style={{ background: "var(--secondary)" }}
+            aria-label="Decline"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => { setState("accepted"); onAccept(); }}
+            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            <Check className="h-3 w-3" /> Accept
+          </button>
+        </div>
+      ) : (
+        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+          Friends
+        </span>
+      )}
+    </div>
+  );
+}
+
+function FindFriendsSheet({
+  existingFriendIds,
+  onClose,
+  onAccept,
+}: {
+  existingFriendIds: Set<string>;
+  onClose: () => void;
+  onAccept: (p: Person) => void;
+}) {
+  const [q, setQ] = useState("");
+  const [requested, setRequested] = useState<Set<string>>(new Set());
+  const [accepted, setAccepted] = useState<Set<string>>(new Set());
+
+  const results = useMemo(() => {
+    const candidates = peoplePool.filter((p) => !existingFriendIds.has(p.id));
+    const term = q.trim().toLowerCase();
+    if (!term) return candidates;
+    return candidates.filter(
+      (p) => p.name.toLowerCase().includes(term) || p.handle.toLowerCase().includes(term) || p.city.toLowerCase().includes(term),
+    );
+  }, [q, existingFriendIds]);
+
+  const sendRequest = (p: Person) => {
+    setRequested((prev) => new Set(prev).add(p.id));
+    toast(`Request sent to ${p.name}`);
+    // Mock acceptance after 1.4s for demo flow
+    window.setTimeout(() => {
+      setAccepted((prev) => new Set(prev).add(p.id));
+      onAccept(p);
+      toast(`${p.name} accepted your request`);
+    }, 1400);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 animate-fade-in bg-black/40" />
+      <div className="relative max-h-[85vh] w-full max-w-md animate-slide-up overflow-hidden rounded-t-3xl bg-white" style={{ boxShadow: "var(--shadow-lg)" }}>
+        <div className="flex items-center justify-between p-4 pb-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Connect</p>
+            <h3 className="font-display text-lg font-bold tracking-tight">Find friends</h3>
+          </div>
+          <button type="button" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-full" style={{ background: "var(--secondary)" }}>
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="px-4">
+          <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2.5" style={{ border: "1px solid var(--border)" }}>
+            <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+            <input
+              autoFocus
+              value={q}
+              onChange={(e) => setQ(e.target.value.slice(0, 60))}
+              placeholder="Search by name, handle, neighborhood…"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--muted-foreground)]"
+            />
+            {q && (
+              <button onClick={() => setQ("")} aria-label="Clear" className="flex h-6 w-6 items-center justify-center rounded-full" style={{ background: "var(--secondary)" }}>
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="max-h-[55vh] overflow-y-auto px-4 pb-5 pt-3">
+          {results.length === 0 ? (
+            <p className="py-10 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
+              No one matches "{q}".
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {results.map((p) => {
+                const isRequested = requested.has(p.id);
+                const isAccepted = accepted.has(p.id);
+                return (
+                  <div key={p.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+                      {p.initial}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm font-medium">{p.name} <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>{p.handle}</span></p>
+                      <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                        {p.city} · {p.mutuals} mutual · {p.reportsCount} reports
+                      </p>
+                    </div>
+                    {isAccepted ? (
+                      <span className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+                        <Check className="h-3 w-3" /> Friends
+                      </span>
+                    ) : isRequested ? (
+                      <span className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ background: "var(--secondary)", color: "var(--muted-foreground)" }}>
+                        <Clock className="h-3 w-3" /> Requested
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => sendRequest(p)}
+                        className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                        style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                      >
+                        <UserPlus className="h-3 w-3" /> Add
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
