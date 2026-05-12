@@ -241,7 +241,7 @@ function Home() {
                     e.stopPropagation();
                     toggle(v.id);
                   }}
-                  className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-90"
+                  className={`absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-90 ${fav ? "heart-pop" : ""}`}
                 >
                   <Heart
                     className="h-3.5 w-3.5 transition-colors"
@@ -299,7 +299,7 @@ function SortMenu({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Sort"
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full text-white transition-transform active:scale-95"
+        className="btn-pop-icon inline-flex h-10 w-10 items-center justify-center rounded-full text-white"
         style={{ background: "var(--primary)", boxShadow: "var(--shadow-sm)" }}
       >
         <SlidersHorizontal className="h-4 w-4" />
@@ -356,7 +356,7 @@ function CategoryRow({
           <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            className="shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300 active:scale-95"
+            className="chip-pop shrink-0 rounded-full px-4 py-2 text-xs font-semibold"
             style={{
               background: on ? "var(--primary)" : "white",
               color: on ? "var(--primary-foreground)" : "var(--primary)",
