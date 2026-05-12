@@ -28,7 +28,7 @@ function Explore() {
   });
 
   return (
-    <div className="px-5 pt-6">
+    <div className="page-enter px-5 pt-6">
       <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--muted-foreground)" }}>
         {list.length} venues live
       </p>

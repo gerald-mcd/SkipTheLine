@@ -54,7 +54,7 @@ function VenueDetail() {
   const lastUpdatedMin = myReports[0] ? 0 : v.lastReportMinutes;
 
   return (
-    <div>
+    <div className="page-enter">
       {/* Hero image */}
       <div className="relative h-80 w-full overflow-hidden">
         <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
