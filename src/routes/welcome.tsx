@@ -27,7 +27,7 @@ const heroSlides: { id: string; categoryLabel: string; waitMinutes: number; imag
   { id: "retail", categoryLabel: "Retail", waitMinutes: 18, image: "https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=1200&q=80&auto=format&fit=crop" },
   { id: "entertainment", categoryLabel: "Entertainment", waitMinutes: 65, image: "https://images.unsplash.com/photo-1545128485-c400e7702796?w=1200&q=80&auto=format&fit=crop" },
   { id: "landmarks", categoryLabel: "Landmarks", waitMinutes: 30, image: "https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1200&q=80&auto=format&fit=crop" },
-  { id: "attractions", categoryLabel: "Attractions", waitMinutes: 45, image: "https://images.unsplash.com/photo-1513107132257-870ae3c52di?w=1200&q=80&auto=format&fit=crop" },
+  { id: "attractions", categoryLabel: "Attractions", waitMinutes: 45, image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=80&auto=format&fit=crop" },
 ];
 
 function Welcome() {
