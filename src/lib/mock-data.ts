@@ -119,6 +119,10 @@ export const categories: { id: Category | "all"; label: string; emoji: string }[
 export function severityColor(s: Severity) {
   return s === "short" ? "var(--wait-short)" : s === "moderate" ? "var(--wait-moderate)" : "var(--wait-long)";
 }
+
+// O(1) lookup map — built once, used by feed cards instead of venues.find() per render.
+export const venuesById: Map<string, Venue> = new Map(venues.map((v) => [v.id, v]));
+
 export function severityLabel(s: Severity) {
   return s === "short" ? "Short" : s === "moderate" ? "Moderate" : "Long";
 }
