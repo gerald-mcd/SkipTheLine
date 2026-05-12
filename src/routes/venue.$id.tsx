@@ -57,7 +57,14 @@ function VenueDetail() {
     <div>
       {/* Hero image */}
       <div className="relative h-80 w-full overflow-hidden">
-        <img src={v.image} alt={v.name} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={v.image}
+          alt={v.name}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%)" }} />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
           <button

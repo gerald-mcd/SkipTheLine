@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   exploreFeed,
-  venues,
+  venuesById,
   severityColor,
   type FeedItem,
 } from "@/lib/mock-data";
@@ -110,7 +110,7 @@ function FeedCard({
   onVote: (dir: "up" | "down") => void;
 }) {
   const venue =
-    item.kind !== "system" ? venues.find((v) => v.id === item.venueId) : undefined;
+    item.kind !== "system" ? venuesById.get(item.venueId) : undefined;
 
   return (
     <article
@@ -223,7 +223,7 @@ function FeedCard({
 }
 
 function Header({ item }: { item: FeedItem }) {
-  const venue = item.kind !== "system" ? venues.find((v) => v.id === item.venueId) : undefined;
+  const venue = item.kind !== "system" ? venuesById.get(item.venueId) : undefined;
   const meta =
     item.kind === "venue"
       ? { icon: <Users className="h-3 w-3" />, text: `${venue?.liveReporters ?? 0} live now` }
