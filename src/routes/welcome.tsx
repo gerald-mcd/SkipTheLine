@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { venues, liveFeed } from "@/lib/mock-data";
+import { venues } from "@/lib/mock-data";
 import { RollingNumber } from "@/components/RollingNumber";
 
 export const Route = createFileRoute("/welcome")({
@@ -45,9 +45,6 @@ function Welcome() {
       y: ((e.clientY - r.top) / r.height) * 100,
     });
   }
-
-  // Live ticker — duplicate the feed for seamless loop
-  const ticker = [...liveFeed, ...liveFeed];
 
   // Mini live-pulse spark bars
   const bars = Array.from({ length: 14 });
