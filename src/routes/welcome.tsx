@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { venues } from "@/lib/mock-data";
 import { MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -16,27 +17,54 @@ export const Route = createFileRoute("/welcome")({
   component: Welcome,
 });
 
-const hero = venues.find((v) => v.id === "v1")!; // Komodo
+// One representative venue per category so the backdrop signals
+// "all places worth waiting for", not just restaurants.
+const heroSlides = [
+  venues.find((v) => v.id === "v1")!, // Komodo — restaurant
+  venues.find((v) => v.id === "v2")!, // LIV — nightclub
+  venues.find((v) => v.id === "v3")!, // LA Barber Co. — barbershop
+  venues.find((v) => v.id === "v4")!, // Miami DMV — gov
+  venues.find((v) => v.id === "v8")!, // Jackson Health ER — health
+].filter(Boolean);
 
 function Welcome() {
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setSlide((s) => (s + 1) % heroSlides.length);
+    }, 4200);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div
       className="font-grotesk relative min-h-screen w-full overflow-hidden"
       style={{ background: "var(--background)" }}
     >
-      {/* Full-bleed background photo */}
+      {/* Full-bleed crossfading background photos — one per category */}
       <div className="absolute inset-0">
-        <img
-          src={hero.image}
-          alt={hero.name}
-          className="h-full w-full object-cover"
-        />
+        {heroSlides.map((v, i) => (
+          <img
+            key={v.id}
+            src={v.image}
+            alt=""
+            aria-hidden={i !== slide}
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1600ms] ease-out will-change-[opacity,transform]"
+            style={{
+              opacity: i === slide ? 1 : 0,
+              transform: i === slide ? "scale(1.06)" : "scale(1.0)",
+              transitionProperty: "opacity, transform",
+              transitionDuration: "1600ms, 6000ms",
+            }}
+          />
+        ))}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, color-mix(in oklab, black 30%, transparent) 0%, color-mix(in oklab, black 20%, transparent) 40%, color-mix(in oklab, black 75%, transparent) 100%)",
+              "linear-gradient(180deg, color-mix(in oklab, black 55%, transparent) 0%, color-mix(in oklab, black 40%, transparent) 38%, color-mix(in oklab, black 85%, transparent) 100%)",
           }}
         />
       </div>
@@ -58,6 +86,20 @@ function Welcome() {
 
         {/* Headline + auth — pushed to bottom */}
         <div className="mt-auto">
+          {/* Category caption — swaps with the photo, no font changes */}
+          <div
+            className="animate-fade-in-up mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80"
+            style={{ animationDelay: "60ms" }}
+          >
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ background: "var(--primary-glow)", boxShadow: "0 0 10px var(--primary-glow)" }}
+            />
+            <span key={heroSlides[slide].id} className="animate-fade-in">
+              {heroSlides[slide].categoryLabel} · {heroSlides[slide].waitMinutes}m wait now
+            </span>
+          </div>
+
           <h1
             className="font-display animate-fade-in-up text-[44px] font-extrabold leading-[0.95] tracking-tight text-white"
             style={{ textShadow: "0 2px 24px rgba(0,0,0,0.4)" }}
@@ -70,7 +112,7 @@ function Welcome() {
             className="animate-fade-in-up mt-4 max-w-[320px] text-[14px] font-medium text-white/85"
             style={{ animationDelay: "120ms" }}
           >
-            Live, crowd-powered wait times for the city around you.
+            Live, crowd-powered wait times for restaurants, clubs, barbers, landmarks — anywhere you'd rather not stand in line.
           </p>
 
           {/* Auth — flush with content, same width and rhythm */}
@@ -123,6 +165,24 @@ function Welcome() {
           >
             By continuing you agree to the Terms & Privacy.
           </p>
+
+          {/* Slide indicators */}
+          <div className="mt-4 flex items-center justify-center gap-1.5">
+            {heroSlides.map((v, i) => (
+              <button
+                key={v.id}
+                type="button"
+                aria-label={`Show ${v.categoryLabel}`}
+                onClick={() => setSlide(i)}
+                className="h-1 rounded-full transition-all duration-500"
+                style={{
+                  width: i === slide ? 18 : 6,
+                  background:
+                    i === slide ? "var(--primary-glow)" : "rgba(255,255,255,0.35)",
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
