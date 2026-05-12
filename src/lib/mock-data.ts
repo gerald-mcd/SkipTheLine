@@ -110,3 +110,31 @@ export const profile = {
     { rank: 48, name: "Nina B.", points: 2770, you: false },
   ],
 };
+
+export interface Person {
+  id: string;
+  name: string;
+  handle: string;
+  initial: string;
+  city: string;
+  reportsCount: number;
+  mutuals: number;
+}
+
+export const peoplePool: Person[] = [
+  { id: "p1", name: "Jasmine K.", handle: "@jasmine", initial: "J", city: "Wynwood", reportsCount: 412, mutuals: 4 },
+  { id: "p2", name: "Rico M.", handle: "@ricom", initial: "R", city: "Brickell", reportsCount: 318, mutuals: 3 },
+  { id: "p3", name: "Priya S.", handle: "@priyas", initial: "P", city: "Midtown", reportsCount: 287, mutuals: 2 },
+  { id: "p4", name: "Devon W.", handle: "@devon", initial: "D", city: "South Beach", reportsCount: 196, mutuals: 5 },
+  { id: "p5", name: "Aisha N.", handle: "@aishan", initial: "A", city: "Coral Gables", reportsCount: 154, mutuals: 1 },
+  { id: "p6", name: "Tyler B.", handle: "@tylerb", initial: "T", city: "Wynwood", reportsCount: 132, mutuals: 3 },
+  { id: "p7", name: "Nina B.", handle: "@ninab", initial: "N", city: "Edgewater", reportsCount: 98, mutuals: 0 },
+  { id: "p8", name: "Carlos R.", handle: "@carlos", initial: "C", city: "Little Havana", reportsCount: 76, mutuals: 2 },
+  { id: "p9", name: "Maya T.", handle: "@mayat", initial: "M", city: "Wynwood", reportsCount: 64, mutuals: 4 },
+];
+
+// People who have requested to be your friend (mock).
+export const incomingRequests: Person[] = [
+  { id: "r1", name: "Liam O.", handle: "@liamo", initial: "L", city: "Brickell", reportsCount: 41, mutuals: 2 },
+  { id: "r2", name: "Zoe P.", handle: "@zoep", initial: "Z", city: "Midtown", reportsCount: 22, mutuals: 1 },
+];

@@ -304,6 +304,34 @@
 .animate-fade-in { animation: fade-in 0.25s ease-out both; }
 .animate-slide-up { animation: slide-up 0.32s cubic-bezier(0.22,1,0.36,1) both; }
 
+/* Report CTA — pulsing glow + sweep shimmer */
+@keyframes cta-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 55%, transparent), 0 12px 32px -8px color-mix(in oklab, var(--primary) 60%, transparent); }
+  50%      { box-shadow: 0 0 0 14px color-mix(in oklab, var(--primary) 0%, transparent), 0 18px 40px -6px color-mix(in oklab, var(--primary) 75%, transparent); }
+}
+@keyframes cta-sweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  60%  { transform: translateX(220%)  skewX(-18deg); }
+  100% { transform: translateX(220%)  skewX(-18deg); }
+}
+.cta-report {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 70%, white) 50%, var(--primary) 100%);
+  background-size: 200% 200%;
+  animation: cta-glow 2.4s ease-in-out infinite, gradient-shift 6s ease-in-out infinite;
+}
+.cta-report::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.45) 50%, transparent 100%);
+  width: 40%;
+  animation: cta-sweep 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.cta-report:active { transform: scale(0.98); }
+
 .card-lift { transition: transform 250ms cubic-bezier(0.22,1,0.36,1), box-shadow 250ms ease; }
 .card-lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .card-lift:active { transform: translateY(0) scale(0.99); }
