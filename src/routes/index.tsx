@@ -75,7 +75,7 @@ function Home() {
           <button
             type="button"
             onClick={() => toast("Sign in coming soon")}
-            className="flex items-center gap-2.5 rounded-full bg-white py-1 pl-1 pr-4"
+            className="btn-pop flex items-center gap-2.5 rounded-full bg-white py-1 pl-1 pr-4"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
           >
             <span
@@ -90,7 +90,7 @@ function Home() {
             <Link
               to="/profile"
               aria-label="Your SkipPoints"
-              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3"
+              className="btn-pop inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
@@ -104,7 +104,7 @@ function Home() {
             <button
               type="button"
               aria-label="Notifications"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white"
+              className="btn-pop-icon relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <Bell className="h-4 w-4" style={{ color: "var(--foreground)" }} />
@@ -132,7 +132,7 @@ function Home() {
             <button
               type="button"
               onClick={() => toast("Voucher claimed", { description: "Check your profile for details." })}
-              className="font-grotesk mt-4 inline-flex items-center rounded-full px-4 py-2 text-xs font-bold text-white"
+              className="btn-pop btn-shine font-grotesk mt-4 inline-flex items-center rounded-full px-4 py-2 text-xs font-bold text-white"
               style={{ background: "var(--primary)", boxShadow: "var(--shadow-sm)" }}
             >
               Claim voucher
@@ -167,7 +167,7 @@ function Home() {
           />
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-white"
+            className="btn-pop-icon inline-flex h-9 w-9 items-center justify-center rounded-full text-white"
             style={{ background: "var(--primary)" }}
             aria-label="Filters"
           >
