@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { profile } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings } from "lucide-react";
+import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -140,8 +141,98 @@ function Profile() {
         </div>
       </section>
 
+      {/* Friends */}
+      <section className="mt-7">
+        <div className="mb-2.5 flex items-center justify-between">
+          <h2 className="text-sm font-semibold">Friends</h2>
+          <button
+            onClick={() => toast("Find friends coming soon")}
+            className="flex items-center gap-1 text-xs font-medium"
+            style={{ color: "var(--primary)" }}
+          >
+            <UserPlus className="h-3 w-3" /> Add
+          </button>
+        </div>
+        <p className="mb-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+          Friends' names appear on their reports. Strangers stay anonymous.
+        </p>
+        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+          {profile.friends.map((f, i) => (
+            <div
+              key={f.id}
+              className="flex items-center gap-3 px-4 py-3"
+              style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
+            >
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
+                style={{ background: "var(--accent)", color: "var(--primary)" }}
+              >
+                {f.initial}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">{f.name}</p>
+                <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{f.handle}</p>
+              </div>
+              <button className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
+                Friends
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Contact info */}
+      <section className="mt-7">
+        <h2 className="mb-2.5 text-sm font-semibold">Contact</h2>
+        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+          <Row icon={<Mail className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Email" value={profile.email} />
+          <Row icon={<Phone className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Phone" value={profile.phone} top />
+          <Row icon={<CalendarDays className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Joined" value={profile.joined} top />
+        </div>
+      </section>
+
+      {/* Settings */}
+      <section className="mt-7">
+        <h2 className="mb-2.5 text-sm font-semibold">Settings</h2>
+        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+          <SettingItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
+          <SettingItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
+          <SettingItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
+          <SettingItem icon={<LogOut className="h-4 w-4" style={{ color: "var(--destructive, #c33)" }} />} label="Log out" top destructive />
+        </div>
+      </section>
+
       <div className="h-6" />
     </div>
+  );
+}
+
+function Row({ icon, label, value, top }: { icon: React.ReactNode; label: string; value: string; top?: boolean }) {
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3"
+      style={{ borderTop: top ? "1px solid var(--border)" : "none" }}
+    >
+      {icon}
+      <span className="flex-1 text-xs" style={{ color: "var(--muted-foreground)" }}>{label}</span>
+      <span className="text-sm font-medium">{value}</span>
+    </div>
+  );
+}
+
+function SettingItem({ icon, label, top, destructive }: { icon: React.ReactNode; label: string; top?: boolean; destructive?: boolean }) {
+  return (
+    <button
+      onClick={() => toast(`${label} coming soon`)}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left"
+      style={{ borderTop: top ? "1px solid var(--border)" : "none" }}
+    >
+      {icon}
+      <span className="flex-1 text-sm font-medium" style={{ color: destructive ? "var(--destructive, #c33)" : "var(--foreground)" }}>
+        {label}
+      </span>
+      <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+    </button>
   );
 }
 
