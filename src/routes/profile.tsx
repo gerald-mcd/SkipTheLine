@@ -465,6 +465,100 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
   );
 }
 
+function QuestCard({ quest }: { quest: Quest }) {
+  const pct = Math.min(100, (quest.progress / quest.goal) * 100);
+  const done = quest.progress >= quest.goal;
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl bg-card p-3"
+      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
+          style={{ background: "var(--accent)" }}
+        >
+          {quest.emoji}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-sm font-semibold">{quest.title}</p>
+            <span
+              className="flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              style={{
+                background: done ? "var(--success)" : "var(--accent)",
+                color: done ? "#fff" : "var(--primary)",
+              }}
+            >
+              <Zap className="h-2.5 w-2.5" /> {quest.reward}
+            </span>
+          </div>
+          <p className="mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            {quest.description}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: "var(--secondary)" }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${pct}%`,
+                  background: done
+                    ? "var(--success)"
+                    : "linear-gradient(90deg, var(--primary), var(--primary-glow))",
+                }}
+              />
+            </div>
+            <span className="text-[10px] font-bold tabular-nums" style={{ color: "var(--muted-foreground)" }}>
+              {quest.progress}/{quest.goal}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number }) {
+  const affordable = userPoints >= reward.cost;
+  const locked = !reward.unlocked || !affordable;
+  return (
+    <button
+      onClick={() => toast(locked ? `Reach ${reward.cost.toLocaleString()} pts to unlock` : `Redeemed ${reward.title}`)}
+      className="relative flex w-40 shrink-0 flex-col overflow-hidden rounded-2xl bg-card p-3 text-left transition-transform hover:scale-[1.02]"
+      style={{
+        border: "1px solid var(--border)",
+        boxShadow: !locked ? "var(--shadow-glow)" : "var(--shadow-sm)",
+        opacity: locked ? 0.85 : 1,
+      }}
+    >
+      {!locked && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rounded-full"
+          style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)", filter: "blur(6px)" }}
+        />
+      )}
+      <div className="flex items-center justify-between">
+        <span className="text-2xl">{reward.emoji}</span>
+        {locked ? (
+          <Lock className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
+        ) : (
+          <span className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider" style={{ background: "var(--success)", color: "#fff" }}>
+            Ready
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        {reward.brand}
+      </p>
+      <p className="mt-0.5 text-sm font-semibold leading-tight">{reward.title}</p>
+      <div className="mt-3 flex items-center gap-1 text-[11px] font-bold" style={{ color: locked ? "var(--muted-foreground)" : "var(--primary)" }}>
+        <Zap className="h-3 w-3" /> {reward.cost.toLocaleString()}
+      </div>
+    </button>
+  );
+}
+
 // ---------- Leaderboard with map / list drill-down ----------
 function LeaderboardSection() {
   const [view, setView] = useState<"map" | "list">("map");
