@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft } from "lucide-react";
+import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -424,8 +424,20 @@ function LeaderboardSection() {
   const [view, setView] = useState<"map" | "list">("map");
   // Drill path: undefined → state, "fl" → cities, "miami" → neighborhoods
   const [parentId, setParentId] = useState<string | undefined>("miami");
+  const [focusYou, setFocusYou] = useState(false);
   const nodes = geoChildren(parentId);
   const parent = parentId ? geoById(parentId) : undefined;
+
+  // When "Focus on You" is on, jump to the deepest scope where the user is ranked
+  // (neighborhoods under Miami) and filter the list to only ranked regions.
+  const handleFocusToggle = () => {
+    setFocusYou((on) => {
+      const next = !on;
+      if (next) setParentId("miami");
+      return next;
+    });
+  };
+  const visibleNodes = focusYou ? nodes.filter((n) => n.yourPoints > 0) : nodes;
 
   const scopeLabel =
     nodes[0]?.scope === "state"
@@ -444,7 +456,21 @@ function LeaderboardSection() {
     <section className="mt-7">
       <div className="mb-2.5 flex items-center justify-between">
         <h2 className="text-sm font-semibold">Rank · {scopeLabel}</h2>
-        <div className="flex items-center gap-1 rounded-full p-0.5" style={{ background: "var(--secondary)" }}>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleFocusToggle}
+            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors"
+            style={{
+              background: focusYou ? "var(--primary)" : "var(--secondary)",
+              color: focusYou ? "var(--primary-foreground)" : "var(--muted-foreground)",
+              boxShadow: focusYou ? "var(--shadow-sm)" : "none",
+            }}
+            aria-pressed={focusYou}
+            title="Highlight your neighborhood and ranked regions only"
+          >
+            <Crosshair className="h-3 w-3" /> Focus on You
+          </button>
+          <div className="flex items-center gap-1 rounded-full p-0.5" style={{ background: "var(--secondary)" }}>
           <button
             onClick={() => setView("map")}
             className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold"
@@ -467,6 +493,7 @@ function LeaderboardSection() {
           >
             <List className="h-3 w-3" /> List
           </button>
+          </div>
         </div>
       </div>
 
@@ -497,9 +524,14 @@ function LeaderboardSection() {
       </div>
 
       {view === "map" ? (
-        <LeaderboardMap nodes={nodes} onDrill={(n) => n.scope !== "neighborhood" && setParentId(n.id)} />
+        <LeaderboardMap nodes={nodes} focusYou={focusYou} onDrill={(n) => n.scope !== "neighborhood" && setParentId(n.id)} />
       ) : (
-        <LeaderboardList nodes={nodes} onDrill={(n) => n.scope !== "neighborhood" && setParentId(n.id)} />
+        <LeaderboardList nodes={visibleNodes} onDrill={(n) => n.scope !== "neighborhood" && setParentId(n.id)} />
+      )}
+      {focusYou && view === "list" && visibleNodes.length === 0 && (
+        <p className="mt-2 text-center text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+          You're not ranked in any region at this scope yet.
+        </p>
       )}
     </section>
   );
@@ -514,7 +546,7 @@ function TrendIcon({ t }: { t: GeoNode["trend"] }) {
   return <Minus className="h-3 w-3" strokeWidth={2.5} style={{ color: trendColor(t) }} />;
 }
 
-function LeaderboardMap({ nodes, onDrill }: { nodes: GeoNode[]; onDrill: (n: GeoNode) => void }) {
+function LeaderboardMap({ nodes, onDrill, focusYou }: { nodes: GeoNode[]; onDrill: (n: GeoNode) => void; focusYou?: boolean }) {
   return (
     <div
       className="relative h-56 w-full overflow-hidden rounded-2xl"
@@ -526,6 +558,7 @@ function LeaderboardMap({ nodes, onDrill }: { nodes: GeoNode[]; onDrill: (n: Geo
     >
       {nodes.map((n) => {
         const youHere = n.yourPoints > 0;
+        const dimmed = focusYou && !youHere;
         return (
           <button
             key={n.id}
@@ -540,8 +573,18 @@ function LeaderboardMap({ nodes, onDrill }: { nodes: GeoNode[]; onDrill: (n: Geo
                 ? "color-mix(in oklab, var(--primary) 22%, transparent)"
                 : "color-mix(in oklab, var(--foreground) 6%, transparent)",
               border: youHere ? "1.5px solid var(--primary)" : "1px dashed var(--border)",
+              opacity: dimmed ? 0.25 : 1,
+              boxShadow: focusYou && youHere ? "0 0 0 3px color-mix(in oklab, var(--primary) 35%, transparent)" : undefined,
+              zIndex: focusYou && youHere ? 2 : 1,
             }}
           >
+            {focusYou && youHere && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-xl animate-ping-soft"
+                style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)" }}
+              />
+            )}
             <div className="flex w-full items-center justify-between gap-1">
               <span
                 className="font-display truncate text-[11px] font-bold"
