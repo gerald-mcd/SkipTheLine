@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { profile, peoplePool, incomingRequests, type Person } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock } from "lucide-react";
+import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode } from "@/lib/mock-data";
+import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -80,7 +80,19 @@ function Profile() {
       <div className="mt-3 grid grid-cols-3 gap-2">
         <Stat icon={<Flame className="h-4 w-4" style={{ color: "var(--warning)" }} />} value={`${profile.streak}d`} label="Streak" />
         <Stat icon={<Trophy className="h-4 w-4" style={{ color: "var(--primary)" }} />} value={`#${profile.rank}`} label={profile.neighborhood} />
-        <Stat icon={<Sparkles className="h-4 w-4" style={{ color: "var(--success)" }} />} value={`${profile.reportsThisWeek}`} label="This week" />
+        <Stat
+          icon={
+            profile.rankTrend === "up" ? (
+              <TrendingUp className="h-4 w-4" style={{ color: "var(--success)" }} />
+            ) : profile.rankTrend === "down" ? (
+              <TrendingDown className="h-4 w-4" style={{ color: "var(--destructive, #dc2626)" }} />
+            ) : (
+              <Minus className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+            )
+          }
+          value={`${profile.rankTrend === "down" ? "−" : profile.rankTrend === "up" ? "+" : "±"}${profile.rankDelta}`}
+          label="Rank trend"
+        />
       </div>
 
       {/* Badges */}
@@ -114,40 +126,7 @@ function Profile() {
       </section>
 
       {/* Leaderboard */}
-      <section className="mt-7">
-        <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">{profile.neighborhood} leaderboard</h2>
-          <span className="text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>
-            This week
-          </span>
-        </div>
-        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
-          {profile.leaderboard.map((u, i) => (
-            <div
-              key={u.rank}
-              className="flex items-center gap-3 px-4 py-3"
-              style={{
-                background: u.you ? "var(--accent)" : "transparent",
-                borderTop: i > 0 ? "1px solid var(--border)" : "none",
-              }}
-            >
-              <span
-                className="w-6 text-center text-xs font-semibold tabular-nums"
-                style={{ color: u.you ? "var(--primary)" : "var(--muted-foreground)" }}
-              >
-                {u.rank}
-              </span>
-              <span className="flex-1 text-sm font-medium" style={{ color: u.you ? "var(--primary)" : "var(--foreground)" }}>
-                {u.name}
-                {u.you && <span className="ml-1.5 text-[10px] uppercase tracking-wider">you</span>}
-              </span>
-              <span className="text-sm font-semibold tabular-nums" style={{ color: u.you ? "var(--primary)" : "var(--muted-foreground)" }}>
-                {u.points.toLocaleString()}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
+      <LeaderboardSection />
 
       {/* Friends */}
       <section className="mt-7">
