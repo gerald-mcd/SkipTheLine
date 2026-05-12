@@ -74,24 +74,27 @@ function Home() {
       {/* Top bar: greeting + bell */}
       <header className="relative px-5 pt-5">
         <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => toast("Sign in coming soon")}
-            className="btn-pop flex items-center gap-2 rounded-full bg-card py-1 pl-1 pr-2"
+          <div
+            className="flex items-center gap-1.5 rounded-full bg-card py-1 pl-1 pr-2"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
           >
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white font-bold text-xs"
-              style={{ background: "var(--primary)" }}
+            <button
+              type="button"
+              onClick={() => toast("Sign in coming soon")}
+              className="btn-pop flex items-center gap-2 rounded-full pr-1"
             >
-              K
-            </span>
-            <span className="font-display text-sm font-bold tracking-tight">Hi, Kate!</span>
+              <span
+                className="flex h-8 w-8 items-center justify-center rounded-full text-white font-bold text-xs"
+                style={{ background: "var(--primary)" }}
+              >
+                K
+              </span>
+              <span className="font-display text-sm font-bold tracking-tight">Hi, Kate!</span>
+            </button>
             <Link
               to="/profile"
-              onClick={(e) => e.stopPropagation()}
               aria-label={`Your ${profile.neighborhood} rank`}
-              className="ml-0.5 inline-flex items-center gap-1 rounded-full px-2 py-1"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1"
               style={{
                 background:
                   profile.rankTrend === "up"
@@ -119,7 +122,7 @@ function Home() {
                 <span className="font-grotesk text-[10px] font-bold tabular-nums">{profile.rankDelta}</span>
               )}
             </Link>
-          </button>
+          </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
