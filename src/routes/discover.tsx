@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CityMap } from "@/components/CityMap";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
-import { MapPin, Search, SlidersHorizontal, Check, Users } from "lucide-react";
+import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -22,32 +22,64 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
   { id: "distance", label: "Closest", emoji: "📍" },
 ];
 
+const DEFAULT_RADIUS_MI = 5;
+
 function Discover() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
+  const [radius, setRadius] = useState<number>(DEFAULT_RADIUS_MI);
   const [filterOpen, setFilterOpen] = useState(false);
-  const filterRef = useRef<HTMLDivElement>(null);
+  // Draft state — only commits on "Show results"
+  const [draftCat, setDraftCat] = useState<Category | "all">("all");
+  const [draftSort, setDraftSort] = useState<SortKey>("trending");
+  const [draftRadius, setDraftRadius] = useState<number>(DEFAULT_RADIUS_MI);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const navigate = useNavigate();
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const list = useMemo(() => {
-    const filtered = cat === "all" ? venues : venues.filter((v) => v.category === cat);
+    const filtered = venues.filter((v) => {
+      if (cat !== "all" && v.category !== cat) return false;
+      if (parseFloat(v.distance) > radius) return false;
+      return true;
+    });
     const sorted = [...filtered];
     if (sort === "wait") sorted.sort((a, b) => a.waitMinutes - b.waitMinutes);
     else if (sort === "distance") sorted.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
     else sorted.sort((a, b) => b.liveReporters - a.liveReporters);
     return sorted;
-  }, [cat, sort]);
+  }, [cat, sort, radius]);
 
-  useEffect(() => {
-    if (!filterOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (filterRef.current && !filterRef.current.contains(e.target as Node)) setFilterOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [filterOpen]);
+  const openFilter = () => {
+    setDraftCat(cat);
+    setDraftSort(sort);
+    setDraftRadius(radius);
+    setFilterOpen(true);
+  };
+  const applyFilter = () => {
+    setCat(draftCat);
+    setSort(draftSort);
+    setRadius(draftRadius);
+    setFilterOpen(false);
+  };
+  const resetFilter = () => {
+    setDraftCat("all");
+    setDraftSort("trending");
+    setDraftRadius(DEFAULT_RADIUS_MI);
+  };
+
+  const filtersActive = cat !== "all" || sort !== "trending" || radius !== DEFAULT_RADIUS_MI;
+
+  // Preview count under the current draft filter
+  const draftCount = useMemo(
+    () =>
+      venues.filter((v) => {
+        if (draftCat !== "all" && v.category !== draftCat) return false;
+        if (parseFloat(v.distance) > draftRadius) return false;
+        return true;
+      }).length,
+    [draftCat, draftRadius],
+  );
 
   useEffect(() => {
     if (!selectedId) return;
@@ -81,75 +113,21 @@ function Discover() {
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--muted-foreground)]"
             />
           </div>
-          <div className="relative" ref={filterRef}>
-            <button
-              type="button"
-              onClick={() => setFilterOpen((v) => !v)}
-              className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white transition-transform active:scale-95"
-              style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
-              aria-label="Filters"
-            >
-              <SlidersHorizontal className="h-5 w-5" />
-              {(cat !== "all" || sort !== "trending") && (
-                <span
-                  className="absolute -right-1 -top-1 h-3 w-3 rounded-full ring-2 ring-white"
-                  style={{ background: "var(--wait-short)" }}
-                />
-              )}
-            </button>
-            {filterOpen && (
-              <div
-                className="animate-fade-in-up absolute right-0 top-14 z-40 w-72 overflow-hidden rounded-2xl bg-white p-3"
-                style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
-              >
-                <p className="font-grotesk px-1 pb-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-                  Category
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {categories.map((c) => {
-                    const on = c.id === cat;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => setCat(c.id)}
-                        className="rounded-full px-3 py-1.5 text-[11px] font-semibold transition-all"
-                        style={{
-                          background: on ? "var(--primary)" : "white",
-                          color: on ? "var(--primary-foreground)" : "var(--primary)",
-                          border: "1.5px solid var(--primary)",
-                        }}
-                      >
-                        {c.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="font-grotesk px-1 pb-1.5 pt-3 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
-                  Sort by
-                </p>
-                {sortOptions.map((s) => {
-                  const on = s.id === sort;
-                  return (
-                    <button
-                      key={s.id}
-                      onClick={() => setSort(s.id)}
-                      className="font-grotesk flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-[12px] font-semibold transition-colors"
-                      style={{
-                        background: on ? "color-mix(in oklab, var(--primary) 10%, white)" : "transparent",
-                        color: on ? "var(--primary)" : "var(--foreground)",
-                      }}
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <span aria-hidden>{s.emoji}</span>
-                        {s.label}
-                      </span>
-                      {on && <Check className="h-3.5 w-3.5" />}
-                    </button>
-                  );
-                })}
-              </div>
+          <button
+            type="button"
+            onClick={openFilter}
+            className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white transition-transform active:scale-95"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
+            aria-label="Filters"
+          >
+            <SlidersHorizontal className="h-5 w-5" />
+            {filtersActive && (
+              <span
+                className="absolute -right-1 -top-1 h-3 w-3 rounded-full ring-2 ring-white"
+                style={{ background: "var(--wait-short)" }}
+              />
             )}
-          </div>
+          </button>
         </div>
       </div>
 
@@ -235,6 +213,155 @@ function Discover() {
           )}
         </div>
       </div>
+
+      {/* Filter bottom sheet */}
+      {filterOpen && (
+        <div className="absolute inset-0 z-50">
+          <button
+            type="button"
+            aria-label="Close filters"
+            onClick={() => setFilterOpen(false)}
+            className="animate-fade-in absolute inset-0 bg-black/45"
+          />
+          <div
+            className="animate-slide-up absolute inset-x-0 bottom-0 rounded-t-3xl bg-white"
+            style={{
+              boxShadow: "0 -16px 40px -12px color-mix(in oklab, black 35%, transparent)",
+              maxHeight: "92%",
+            }}
+          >
+            <div className="flex justify-center pt-2.5">
+              <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+            </div>
+            <div className="grid grid-cols-3 items-center px-5 pt-2">
+              <button
+                type="button"
+                onClick={() => setFilterOpen(false)}
+                className="justify-self-start inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--muted)]"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <h2 className="font-display text-center text-base font-bold tracking-tight">
+                Filter
+              </h2>
+              <button
+                type="button"
+                onClick={resetFilter}
+                className="font-grotesk justify-self-end text-xs font-semibold"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                Reset
+              </button>
+            </div>
+
+            <div className="space-y-6 px-5 pb-32 pt-5">
+              {/* Categories */}
+              <section>
+                <h3 className="font-display text-sm font-bold tracking-tight">Categories</h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {categories.map((c) => {
+                    const on = c.id === draftCat;
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setDraftCat(c.id)}
+                        className="rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                        style={{
+                          background: on ? "var(--primary)" : "white",
+                          color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                          border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                          boxShadow: on ? "var(--shadow-sm)" : "none",
+                        }}
+                      >
+                        {c.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <div className="h-px" style={{ background: "var(--border)" }} />
+
+              {/* Distance */}
+              <section>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-sm font-bold tracking-tight">Distance to me</h3>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      aria-label="Decrease distance"
+                      onClick={() => setDraftRadius((r) => Math.max(1, r - 1))}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                      style={{ border: "1.5px solid var(--border)" }}
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </button>
+                    <span
+                      className="font-display min-w-[3.5rem] text-center text-sm font-bold tabular-nums"
+                      style={{ color: "var(--primary)" }}
+                    >
+                      {draftRadius} mi
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Increase distance"
+                      onClick={() => setDraftRadius((r) => Math.min(25, r + 1))}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                      style={{ border: "1.5px solid var(--border)" }}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <div className="h-px" style={{ background: "var(--border)" }} />
+
+              {/* Sort */}
+              <section>
+                <h3 className="font-display text-sm font-bold tracking-tight">Sort by</h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {sortOptions.map((s) => {
+                    const on = s.id === draftSort;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => setDraftSort(s.id)}
+                        className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                        style={{
+                          background: on ? "var(--primary)" : "white",
+                          color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                          border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                          boxShadow: on ? "var(--shadow-sm)" : "none",
+                        }}
+                      >
+                        <span aria-hidden>{s.emoji}</span>
+                        {s.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            </div>
+
+            {/* Sticky CTA */}
+            <div
+              className="absolute inset-x-0 bottom-0 rounded-b-3xl bg-white px-5 pb-5 pt-3"
+              style={{ borderTop: "1px solid var(--border)" }}
+            >
+              <button
+                type="button"
+                onClick={applyFilter}
+                className="font-display flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
+                style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
+              >
+                Show {draftCount} {draftCount === 1 ? "result" : "results"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
