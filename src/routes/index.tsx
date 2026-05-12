@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Bell, Check, Heart, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
+import { ReportSheet } from "@/components/ReportSheet";
+import { ReportCTA } from "@/components/ReportCTA";
 import { useFavorites } from "@/hooks/use-favorites";
 import { WaitBadge } from "@/components/WaitBadge";
 
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
+  const [reportOpen, setReportOpen] = useState(false);
   const { isFav, toggle } = useFavorites();
 
   const filtered = useMemo(
@@ -260,6 +263,17 @@ function Home() {
           );
         })}
       </div>
+
+      {/* Floating report CTA */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
+        <div className="pointer-events-auto">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+      </div>
+
+      {reportOpen && (
+        <ReportSheet onClose={() => setReportOpen(false)} />
+      )}
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { CityMap } from "@/components/CityMap";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
 import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
+import { ReportSheet } from "@/components/ReportSheet";
+import { ReportCTA } from "@/components/ReportCTA";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -28,6 +30,7 @@ function Discover() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
   const [radius, setRadius] = useState<number>(DEFAULT_RADIUS_MI);
+  const [reportOpen, setReportOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   // Draft state — only commits on "Show results"
   const [draftCat, setDraftCat] = useState<Category | "all">("all");
@@ -362,6 +365,12 @@ function Discover() {
           </div>
         </div>
       )}
+      <div className="pointer-events-none absolute inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
+        <div className="pointer-events-auto">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+      </div>
+      {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
     </div>
   );
 }

@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Sparkles, Calendar, Timer, MessageSquare, UserCircle2, X, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
+import { ReportSheet } from "@/components/ReportSheet";
+import { ReportCTA } from "@/components/ReportCTA";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
 
@@ -209,182 +211,27 @@ function VenueDetail() {
 
       {/* CTA */}
       <div className="sticky bottom-24 mt-6 px-4">
-        <button
-          type="button"
-          onClick={() => setReportOpen(true)}
-          aria-label="Report current wait time"
-          className="cta-report group relative flex w-full items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-white transition-transform"
-          style={{ color: "var(--primary-foreground)" }}
-        >
-          <span className="relative flex items-center gap-3">
-            <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur">
-              <span className="absolute inset-0 animate-ping-soft rounded-full bg-white/30" />
-              <Sparkles className="relative h-5 w-5" />
-            </span>
-            <span className="relative leading-tight">
-              <span className="font-display block text-base font-bold tracking-tight">
-                Report the wait
-              </span>
-              <span className="font-grotesk block text-[11px] font-medium opacity-90">
-                Help the crowd · earn +10 pts
-              </span>
-            </span>
-          </span>
-          <span className="relative flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-            Live
-          </span>
-        </button>
+        <ReportCTA onClick={() => setReportOpen(true)} />
       </div>
       <div className="h-4" />
 
       {reportOpen && (
         <ReportSheet
-          venueName={v.name}
-          initialMinutes={v.waitMinutes}
+          venue={v}
           onClose={() => setReportOpen(false)}
-          onSubmit={(minutes, note) => {
+          onSubmit={({ minutes, note, points }) => {
             const r: MyReport = {
               id: `me-${Date.now()}`,
               minutes,
-              note: note || undefined,
+              note,
               ago: "just now",
             };
             setMyReports((prev) => [r, ...prev]);
             setReportOpen(false);
-            toast("Report submitted", { description: `${minutes} min wait at ${v.name}` });
+            toast("Report submitted", { description: `${minutes} min wait · +${points} pts` });
           }}
         />
       )}
-    </div>
-  );
-}
-
-function ReportSheet({
-  venueName,
-  initialMinutes,
-  onClose,
-  onSubmit,
-}: {
-  venueName: string;
-  initialMinutes: number;
-  onClose: () => void;
-  onSubmit: (minutes: number, note: string) => void;
-}) {
-  const [minutes, setMinutes] = useState(initialMinutes);
-  const [note, setNote] = useState("");
-  const presets = [0, 5, 15, 30, 45, 60, 90];
-  const NOTE_MAX = 140;
-
-  const submit = () => {
-    const m = Math.max(0, Math.min(240, Math.round(minutes)));
-    onSubmit(m, note.trim().slice(0, NOTE_MAX));
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
-      <button
-        aria-label="Close"
-        onClick={onClose}
-        className="absolute inset-0 bg-black/40 animate-fade-in"
-      />
-      <div
-        className="relative w-full max-w-md animate-slide-up rounded-t-3xl bg-white p-5"
-        style={{ boxShadow: "var(--shadow-lg)" }}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Report wait at</p>
-            <h3 className="font-display text-lg font-bold tracking-tight">{venueName}</h3>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full"
-            style={{ background: "var(--secondary)" }}
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Minute stepper */}
-        <div className="rounded-2xl p-4" style={{ background: "var(--surface, #f7f7f8)", border: "1px solid var(--border)" }}>
-          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Wait time</p>
-          <div className="mt-2 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => setMinutes((m) => Math.max(0, m - 5))}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
-              style={{ border: "1px solid var(--border)" }}
-              aria-label="Decrease"
-            >
-              <Minus className="h-4 w-4" />
-            </button>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-5xl font-bold tabular-nums tracking-tight" style={{ color: "var(--primary)" }}>{minutes}</span>
-              <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>min</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setMinutes((m) => Math.min(240, m + 5))}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
-              style={{ border: "1px solid var(--border)" }}
-              aria-label="Increase"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {presets.map((p) => {
-              const on = p === minutes;
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setMinutes(p)}
-                  className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors"
-                  style={{
-                    background: on ? "var(--primary)" : "white",
-                    color: on ? "var(--primary-foreground)" : "var(--foreground)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  {p === 0 ? "No wait" : `${p}m`}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Note */}
-        <label className="mt-4 block">
-          <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-            Add a note <span className="lowercase">(optional)</span>
-          </span>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value.slice(0, NOTE_MAX))}
-            placeholder="e.g. bar seating moves faster"
-            rows={2}
-            maxLength={NOTE_MAX}
-            className="mt-1.5 w-full resize-none rounded-xl bg-white p-3 text-sm outline-none placeholder:text-[var(--muted-foreground)]"
-            style={{ border: "1px solid var(--border)" }}
-          />
-          <p className="mt-1 text-right text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-            {note.length}/{NOTE_MAX}
-          </p>
-        </label>
-
-        <button
-          type="button"
-          onClick={submit}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
-        >
-          <Sparkles className="h-4 w-4" />
-          Submit report
-        </button>
-      </div>
     </div>
   );
 }

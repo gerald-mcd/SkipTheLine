@@ -3,6 +3,8 @@ import { useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor, severityLabel } from "@/lib/mock-data";
 import { Clock, Users, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { ReportSheet } from "@/components/ReportSheet";
+import { ReportCTA } from "@/components/ReportCTA";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/explore")({
 function Explore() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<"wait" | "distance" | "trending">("trending");
+  const [reportOpen, setReportOpen] = useState(false);
   let list = cat === "all" ? venues : venues.filter((v) => v.category === cat);
   list = [...list].sort((a, b) => {
     if (sort === "wait") return a.waitMinutes - b.waitMinutes;
@@ -103,6 +106,14 @@ function Explore() {
           );
         })}
       </div>
+
+      <div className="h-24" />
+      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
+        <div className="pointer-events-auto">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+      </div>
+      {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
     </div>
   );
 }
