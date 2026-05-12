@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair } from "lucide-react";
+import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
+import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -15,8 +15,8 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
-  const goalPoints = 5000;
-  const progress = Math.min(100, (profile.points / goalPoints) * 100);
+  const { current: tier, next: nextTier, progress } = tierFor(profile.points);
+  const pointsToNext = nextTier ? Math.max(0, nextTier.min - profile.points) : 0;
   const [findOpen, setFindOpen] = useState(false);
   // Local extra friends added during this session
   const [extraFriends, setExtraFriends] = useState<Person[]>([]);
@@ -52,53 +52,120 @@ function Profile() {
         </button>
       </div>
 
-      {/* Points card */}
+      {/* Hero gamification card */}
       <div
-        className="mt-5 rounded-2xl bg-card p-5"
-        style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+        className="relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
+        style={{
+          background:
+            "linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 65%, color-mix(in oklab, var(--primary) 60%, #fff) 100%)",
+          boxShadow: "var(--shadow-glow)",
+        }}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-          SkipPoints
-        </p>
-        <div className="mt-1 flex items-baseline gap-1.5">
-          <span className="text-4xl font-bold tabular-nums tracking-tight">
+        {/* Decorative glow blobs */}
+        <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full" style={{ background: "rgba(255,255,255,0.18)", filter: "blur(8px)" }} />
+        <span aria-hidden className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full" style={{ background: "rgba(255,255,255,0.10)", filter: "blur(10px)" }} />
+        <span aria-hidden className="pointer-events-none absolute inset-0 animate-ping-soft rounded-3xl" style={{ background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.25), transparent 50%)" }} />
+
+        <div className="relative flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full text-base" style={{ background: "rgba(255,255,255,0.22)" }}>
+              {tier.emoji}
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-90">Tier · {tier.name}</p>
+              <p className="text-[10px] opacity-80">{tier.perks[0]}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold" style={{ background: "rgba(255,255,255,0.22)" }}>
+            <Zap className="h-3 w-3" /> +{communityImpact.weeklyXP} this week
+          </div>
+        </div>
+
+        <div className="relative mt-3 flex items-baseline gap-1.5">
+          <span className="font-display text-5xl font-bold tabular-nums tracking-tight">
             {profile.points.toLocaleString()}
           </span>
-          <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>
-            / {goalPoints.toLocaleString()}
-          </span>
+          <span className="text-sm font-semibold opacity-90">SkipPoints</span>
         </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full" style={{ background: "var(--secondary)" }}>
-          <div className="h-full rounded-full" style={{ width: `${progress}%`, background: "var(--primary)" }} />
+
+        <div className="relative mt-4">
+          <div className="flex items-center justify-between text-[11px] font-semibold opacity-90">
+            <span>{tier.name}</span>
+            <span>{nextTier ? `${pointsToNext.toLocaleString()} to ${nextTier.name} ${nextTier.emoji}` : "Max tier"}</span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.22)" }}>
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, #fff, rgba(255,255,255,0.85))",
+                boxShadow: "0 0 12px rgba(255,255,255,0.6)",
+              }}
+            />
+          </div>
         </div>
-        <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
-          {goalPoints - profile.points} pts to next tier
-        </p>
       </div>
 
       {/* Stats row */}
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <Stat icon={<Flame className="h-4 w-4" style={{ color: "var(--warning)" }} />} value={`${profile.streak}d`} label="Streak" />
-        <Stat icon={<Trophy className="h-4 w-4" style={{ color: "var(--primary)" }} />} value={`#${profile.rank}`} label={profile.neighborhood} />
+      <div className="mt-3 grid grid-cols-4 gap-2">
+        <Stat icon={<Flame className="h-3.5 w-3.5" style={{ color: "var(--warning)" }} />} value={`${profile.streak}d`} label="Streak" />
+        <Stat icon={<Trophy className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />} value={`#${profile.rank}`} label="Rank" />
         <Stat
           icon={
             profile.rankTrend === "up" ? (
-              <TrendingUp className="h-4 w-4" style={{ color: "var(--success)" }} />
+              <TrendingUp className="h-3.5 w-3.5" style={{ color: "var(--success)" }} />
             ) : profile.rankTrend === "down" ? (
-              <TrendingDown className="h-4 w-4" style={{ color: "var(--destructive, #dc2626)" }} />
+              <TrendingDown className="h-3.5 w-3.5" style={{ color: "var(--destructive)" }} />
             ) : (
-              <Minus className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+              <Minus className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
             )
           }
-          value={`${profile.rankTrend === "down" ? "−" : profile.rankTrend === "up" ? "+" : "±"}${profile.rankDelta}`}
-          label="Rank trend"
+          value={`${profile.rankTrend === "down" ? "−" : "+"}${profile.rankDelta}`}
+          label="Trend"
         />
+        <Stat icon={<Users className="h-3.5 w-3.5" style={{ color: "var(--success)" }} />} value={communityImpact.peopleHelped > 999 ? `${(communityImpact.peopleHelped / 1000).toFixed(1)}k` : `${communityImpact.peopleHelped}`} label="Helped" />
       </div>
+
+      {/* Active Quests — community participation drivers */}
+      <section className="mt-7">
+        <div className="mb-2.5 flex items-center justify-between">
+          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+            <Target className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Active quests
+          </h2>
+          <span className="text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>
+            Resets in 6h
+          </span>
+        </div>
+        <div className="space-y-2">
+          {quests.map((q) => (
+            <QuestCard key={q.id} quest={q} />
+          ))}
+        </div>
+      </section>
+
+      {/* Rewards marketplace — incentive */}
+      <section className="mt-7">
+        <div className="mb-2.5 flex items-center justify-between">
+          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+            <Gift className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Redeem rewards
+          </h2>
+          <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
+            Shop all <ChevronRight className="h-3 w-3" />
+          </button>
+        </div>
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" style={{ scrollbarWidth: "none" }}>
+          {rewards.map((r) => (
+            <RewardCard key={r.id} reward={r} userPoints={profile.points} />
+          ))}
+        </div>
+      </section>
 
       {/* Badges */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Badges</h2>
+          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+            <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Badges
+          </h2>
           <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
             View all <ChevronRight className="h-3 w-3" />
           </button>
@@ -395,6 +462,100 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
         {label}
       </p>
     </div>
+  );
+}
+
+function QuestCard({ quest }: { quest: Quest }) {
+  const pct = Math.min(100, (quest.progress / quest.goal) * 100);
+  const done = quest.progress >= quest.goal;
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl bg-card p-3"
+      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
+          style={{ background: "var(--accent)" }}
+        >
+          {quest.emoji}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-sm font-semibold">{quest.title}</p>
+            <span
+              className="flex shrink-0 items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              style={{
+                background: done ? "var(--success)" : "var(--accent)",
+                color: done ? "#fff" : "var(--primary)",
+              }}
+            >
+              <Zap className="h-2.5 w-2.5" /> {quest.reward}
+            </span>
+          </div>
+          <p className="mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            {quest.description}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full" style={{ background: "var(--secondary)" }}>
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${pct}%`,
+                  background: done
+                    ? "var(--success)"
+                    : "linear-gradient(90deg, var(--primary), var(--primary-glow))",
+                }}
+              />
+            </div>
+            <span className="text-[10px] font-bold tabular-nums" style={{ color: "var(--muted-foreground)" }}>
+              {quest.progress}/{quest.goal}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number }) {
+  const affordable = userPoints >= reward.cost;
+  const locked = !reward.unlocked || !affordable;
+  return (
+    <button
+      onClick={() => toast(locked ? `Reach ${reward.cost.toLocaleString()} pts to unlock` : `Redeemed ${reward.title}`)}
+      className="relative flex w-40 shrink-0 flex-col overflow-hidden rounded-2xl bg-card p-3 text-left transition-transform hover:scale-[1.02]"
+      style={{
+        border: "1px solid var(--border)",
+        boxShadow: !locked ? "var(--shadow-glow)" : "var(--shadow-sm)",
+        opacity: locked ? 0.85 : 1,
+      }}
+    >
+      {!locked && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-6 -top-6 h-16 w-16 rounded-full"
+          style={{ background: "color-mix(in oklab, var(--primary) 18%, transparent)", filter: "blur(6px)" }}
+        />
+      )}
+      <div className="flex items-center justify-between">
+        <span className="text-2xl">{reward.emoji}</span>
+        {locked ? (
+          <Lock className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
+        ) : (
+          <span className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider" style={{ background: "var(--success)", color: "#fff" }}>
+            Ready
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        {reward.brand}
+      </p>
+      <p className="mt-0.5 text-sm font-semibold leading-tight">{reward.title}</p>
+      <div className="mt-3 flex items-center gap-1 text-[11px] font-bold" style={{ color: locked ? "var(--muted-foreground)" : "var(--primary)" }}>
+        <Zap className="h-3 w-3" /> {reward.cost.toLocaleString()}
+      </div>
+    </button>
   );
 }
 
