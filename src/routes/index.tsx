@@ -150,6 +150,11 @@ function Home() {
           />
         </div>
 
+        {/* Report CTA — primary action, inline under hero */}
+        <div className="animate-fade-in-up mt-4" style={{ animationDelay: "120ms" }}>
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+
         {/* Search */}
         <div
           className="mt-5 flex items-center gap-2 rounded-full bg-white px-3 py-2.5"
