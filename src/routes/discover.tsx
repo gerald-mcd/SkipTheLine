@@ -4,6 +4,8 @@ import { CityMap } from "@/components/CityMap";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
 import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
+import { ReportSheet } from "@/components/ReportSheet";
+import { ReportCTA } from "@/components/ReportCTA";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
