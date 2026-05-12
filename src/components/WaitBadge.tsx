@@ -55,7 +55,7 @@ export function WaitBadge({
 
   const styles =
     variant === "solid"
-      ? { background: color, color: "var(--card)", border: "none" }
+      ? { background: color, color: "white", border: "none" }
       : variant === "chip"
         ? {
             background: "var(--card)",

@@ -42,7 +42,7 @@ export function AvatarStack({ names, max = 3, size = 22, ring = "white", classNa
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "var(--card)",
+                color: "white",
                 fontFamily: "var(--font-grotesk, Space Grotesk)",
                 fontWeight: 700,
                 fontSize: Math.round(size * 0.45),
