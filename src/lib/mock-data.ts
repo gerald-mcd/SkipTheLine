@@ -54,6 +54,55 @@ export const liveFeed: { id: string; user: string; venue: string; minutes: numbe
   { id: "f7", user: "Carlos", venue: "Miami DMV", minutes: 95, ago: "6m" },
 ];
 
+export type FeedItem =
+  | {
+      id: string;
+      kind: "venue";
+      ago: string;
+      venueId: string;
+    }
+  | {
+      id: string;
+      kind: "drop";
+      ago: string;
+      venueId: string;
+      from: number;
+      to: number;
+    }
+  | {
+      id: string;
+      kind: "report";
+      ago: string;
+      venueId: string;
+      user: string;
+      initial: string;
+      minutes: number;
+      quote?: string;
+    }
+  | {
+      id: string;
+      kind: "system";
+      ago: string;
+      title: string;
+      body: string;
+      emoji: string;
+    };
+
+export const exploreFeed: FeedItem[] = [
+  { id: "fd1", kind: "drop", ago: "now", venueId: "v5", from: 40, to: 25 },
+  { id: "fd2", kind: "report", ago: "1m", venueId: "v1", user: "Sofía", initial: "S", minutes: 42, quote: "Seated in 38 — bar moves faster." },
+  { id: "fd3", kind: "venue", ago: "2m", venueId: "v2" },
+  { id: "fd4", kind: "system", ago: "3m", title: "+25 SkipPoints", body: "Your report at Coyo Taco was confirmed by 4 people.", emoji: "✨" },
+  { id: "fd5", kind: "report", ago: "4m", venueId: "v3", user: "Marcus", initial: "M", minutes: 8, quote: "Walked right in. Chair open." },
+  { id: "fd6", kind: "drop", ago: "6m", venueId: "v7", from: 50, to: 35 },
+  { id: "fd7", kind: "venue", ago: "8m", venueId: "v6" },
+  { id: "fd8", kind: "system", ago: "12m", title: "Voucher unlocked", body: "20% off at Joe's Stone Crab — tap to claim.", emoji: "🎟️" },
+  { id: "fd9", kind: "report", ago: "14m", venueId: "v4", user: "Carlos", initial: "C", minutes: 95, quote: "Renewals window has no line." },
+  { id: "fd10", kind: "venue", ago: "18m", venueId: "v8" },
+  { id: "fd11", kind: "drop", ago: "22m", venueId: "v9", from: 15, to: 0 },
+  { id: "fd12", kind: "system", ago: "1h", title: "Badge earned: Night Owl", body: "Reported 5 venues after 11pm this week.", emoji: "🦉" },
+];
+
 export const categories: { id: Category | "all"; label: string; emoji: string }[] = [
   { id: "all", label: "All", emoji: "✨" },
   { id: "restaurants", label: "Restaurants", emoji: "🍽️" },
