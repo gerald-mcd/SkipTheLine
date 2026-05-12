@@ -212,11 +212,28 @@ function VenueDetail() {
         <button
           type="button"
           onClick={() => setReportOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+          aria-label="Report current wait time"
+          className="cta-report group relative flex w-full items-center justify-between gap-3 rounded-2xl px-5 py-4 text-left text-white transition-transform"
+          style={{ color: "var(--primary-foreground)" }}
         >
-          <Sparkles className="h-4 w-4" />
-          Report wait here
+          <span className="relative flex items-center gap-3">
+            <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur">
+              <span className="absolute inset-0 animate-ping-soft rounded-full bg-white/30" />
+              <Sparkles className="relative h-5 w-5" />
+            </span>
+            <span className="relative leading-tight">
+              <span className="font-display block text-base font-bold tracking-tight">
+                Report the wait
+              </span>
+              <span className="font-grotesk block text-[11px] font-medium opacity-90">
+                Help the crowd · earn +10 pts
+              </span>
+            </span>
+          </span>
+          <span className="relative flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider backdrop-blur">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+            Live
+          </span>
         </button>
       </div>
       <div className="h-4" />
