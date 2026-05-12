@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun } from "lucide-react";
+import { Bell, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
@@ -77,7 +77,7 @@ function Home() {
           <button
             type="button"
             onClick={() => toast("Sign in coming soon")}
-            className="btn-pop flex items-center gap-2.5 rounded-full bg-card py-1 pl-1 pr-4"
+            className="btn-pop flex items-center gap-2 rounded-full bg-card py-1 pl-1 pr-2"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
           >
             <span
@@ -87,6 +87,38 @@ function Home() {
               K
             </span>
             <span className="font-display text-sm font-bold tracking-tight">Hi, Kate!</span>
+            <Link
+              to="/profile"
+              onClick={(e) => e.stopPropagation()}
+              aria-label={`Your ${profile.neighborhood} rank`}
+              className="ml-0.5 inline-flex items-center gap-1 rounded-full px-2 py-1"
+              style={{
+                background:
+                  profile.rankTrend === "up"
+                    ? "color-mix(in oklab, var(--success, #16a34a) 14%, transparent)"
+                    : profile.rankTrend === "down"
+                      ? "color-mix(in oklab, var(--destructive, #dc2626) 14%, transparent)"
+                      : "var(--secondary)",
+                color:
+                  profile.rankTrend === "up"
+                    ? "var(--success, #16a34a)"
+                    : profile.rankTrend === "down"
+                      ? "var(--destructive, #dc2626)"
+                      : "var(--muted-foreground)",
+              }}
+            >
+              <span className="font-display text-xs font-bold tabular-nums">#{profile.rank}</span>
+              {profile.rankTrend === "up" ? (
+                <TrendingUp className="h-3 w-3" strokeWidth={2.5} />
+              ) : profile.rankTrend === "down" ? (
+                <TrendingDown className="h-3 w-3" strokeWidth={2.5} />
+              ) : (
+                <Minus className="h-3 w-3" strokeWidth={2.5} />
+              )}
+              {profile.rankDelta > 0 && (
+                <span className="font-grotesk text-[10px] font-bold tabular-nums">{profile.rankDelta}</span>
+              )}
+            </Link>
           </button>
           <div className="flex items-center gap-2">
             <button
