@@ -62,7 +62,7 @@ function Home() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px]"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 5%, white) 0%, white 80%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 6%, var(--background)) 0%, var(--background) 80%)",
         }}
       />
       <div
