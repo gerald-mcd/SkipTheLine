@@ -1,10 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Map, Plus, Trophy } from "lucide-react";
+import { Home, Map, Plus, Trophy, Compass } from "lucide-react";
 
 const tabs: { to: string; label: string; icon: typeof Map; hero?: boolean }[] = [
   { to: "/", label: "Home", icon: Home },
-  { to: "/discover", label: "Map", icon: Map },
+  { to: "/explore", label: "Explore", icon: Compass },
   { to: "/report", label: "Report", icon: Plus, hero: true },
+  { to: "/discover", label: "Map", icon: Map },
   { to: "/profile", label: "You", icon: Trophy },
 ];
 
