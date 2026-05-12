@@ -56,7 +56,7 @@ function Welcome() {
     <div
       ref={heroRef}
       onMouseMove={handleMove}
-      className="font-grotesk relative min-h-screen w-full overflow-hidden"
+      className="font-grotesk relative min-h-[100dvh] w-full overflow-x-hidden mx-auto max-w-[480px] sm:max-w-[520px]"
       style={{ background: "color-mix(in oklab, var(--primary) 5%, white)" }}
     >
       {/* Ambient atmosphere */}
@@ -92,10 +92,10 @@ function Welcome() {
       </div>
 
       {/* Top brand strip */}
-      <div className="relative z-10 flex items-center justify-between px-6 pt-7">
+      <div className="relative z-10 flex items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pt-7">
         <div className="animate-fade-in-up flex items-center gap-2">
           <span
-            className="relative flex h-9 w-9 items-center justify-center rounded-2xl text-white"
+            className="relative flex h-10 w-10 items-center justify-center rounded-2xl text-white"
             style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
@@ -110,7 +110,7 @@ function Welcome() {
         </div>
         <Link
           to="/"
-          className="press-depth text-[13px] font-semibold"
+          className="press-depth inline-flex min-h-11 items-center px-2 text-[13px] font-semibold"
           style={{ color: "var(--muted-foreground)" }}
         >
           Skip →
@@ -118,7 +118,7 @@ function Welcome() {
       </div>
 
       {/* Live status pill — with mini equalizer spark */}
-      <div className="relative z-10 mt-6 flex justify-center px-6">
+      <div className="relative z-10 mt-5 flex justify-center px-5 sm:mt-6 sm:px-6">
         <div
           className="animate-fade-in-up inline-flex items-center gap-2.5 rounded-full px-3.5 py-1.5"
           style={{
@@ -152,8 +152,8 @@ function Welcome() {
       </div>
 
       {/* Headline — asymmetric, mixed weights, with shimmering accent */}
-      <div className="relative z-10 mt-7 px-6">
-        <h1 className="font-display text-[44px] font-extrabold leading-[0.98] tracking-tight">
+      <div className="relative z-10 mt-6 px-5 sm:mt-7 sm:px-6">
+        <h1 className="font-display text-[clamp(36px,11vw,52px)] font-extrabold leading-[0.98] tracking-tight">
           <span className="animate-fade-in-up block" style={{ animationDelay: "120ms" }}>
             When to go.
           </span>
@@ -178,7 +178,7 @@ function Welcome() {
           </span>
         </h1>
         <p
-          className="animate-fade-in-up mt-3 max-w-[340px] text-[13px] leading-snug"
+          className="animate-fade-in-up mt-3 max-w-[340px] text-[13px] leading-snug sm:text-sm"
           style={{ color: "var(--muted-foreground)", animationDelay: "420ms" }}
         >
           Crowd-powered wait times, updated by humans on the ground — right now,
@@ -187,10 +187,10 @@ function Welcome() {
       </div>
 
       {/* Live preview composition */}
-      <div className="relative z-10 mx-6 mt-7 h-[260px]">
+      <div className="relative z-10 mx-5 mt-7 h-[clamp(240px,62vw,300px)] sm:mx-6">
         {/* Floating venue card — tilted */}
         <div
-          className="animate-fade-in-up tilt-hover absolute left-0 top-0 w-[78%] origin-bottom-left overflow-hidden rounded-3xl bg-white"
+          className="animate-fade-in-up tilt-hover absolute left-0 top-0 w-[78%] max-w-[300px] origin-bottom-left overflow-hidden rounded-3xl bg-white"
           style={{
             transform: "rotate(-3deg)",
             ["--tilt-hover" as string]: "-1.5deg",
@@ -200,7 +200,7 @@ function Welcome() {
             animationDelay: "520ms",
           }}
         >
-          <div className="relative h-[140px]">
+          <div className="relative h-[clamp(120px,34vw,160px)]">
             <img
               src={featured.image}
               alt={featured.name}
@@ -281,7 +281,7 @@ function Welcome() {
 
         {/* Mini map chip — tilted opposite */}
         <div
-          className="animate-fade-in-up tilt-hover absolute right-0 top-[110px] w-[58%] origin-top-right overflow-hidden rounded-3xl"
+          className="animate-fade-in-up tilt-hover absolute right-0 top-[42%] w-[58%] max-w-[240px] origin-top-right overflow-hidden rounded-3xl"
           style={{
             transform: "rotate(4deg)",
             ["--tilt-hover" as string]: "2deg",
@@ -293,7 +293,7 @@ function Welcome() {
           }}
         >
           <div
-            className="relative h-[150px]"
+            className="relative h-[clamp(130px,38vw,170px)]"
             style={{
               background:
                 "linear-gradient(135deg, color-mix(in oklab, var(--primary) 8%, white), color-mix(in oklab, var(--primary-glow) 14%, white))",
@@ -382,7 +382,7 @@ function Welcome() {
 
       {/* Live ticker — edge-bleed */}
       <div
-        className="animate-fade-in-up relative z-10 mt-5 overflow-hidden"
+        className="animate-fade-in-up relative z-10 mt-6 overflow-hidden"
         style={{ animationDelay: "780ms" }}
       >
         <div
@@ -436,17 +436,19 @@ function Welcome() {
 
       {/* Auth section — feels like a continuation, not a card-in-a-card */}
       <div
-        className="animate-fade-in-up relative z-10 mt-8 px-6 pb-10"
+        className="animate-fade-in-up relative z-10 mt-8 px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-6"
         style={{ animationDelay: "880ms" }}
       >
         <form
-          className="space-y-2.5"
+          className="space-y-3"
           onSubmit={(e) => e.preventDefault()}
         >
           <input
             type="email"
+            inputMode="email"
+            autoComplete="email"
             placeholder="Email address"
-            className="w-full rounded-2xl bg-white px-5 py-4 text-[15px] outline-none transition-all placeholder:text-neutral-400"
+            className="w-full rounded-2xl bg-white px-5 py-4 text-[16px] outline-none transition-all placeholder:text-neutral-400"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             onFocus={(e) => {
               e.currentTarget.style.borderColor = "var(--primary)";
@@ -460,7 +462,7 @@ function Welcome() {
           />
           <Link
             to="/"
-            className="press-depth font-display animate-gradient flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white"
+            className="press-depth font-display animate-gradient flex min-h-[56px] w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white active:scale-[0.99]"
             style={{
               background:
                 "linear-gradient(120deg, var(--primary) 0%, var(--primary-glow) 50%, var(--primary) 100%)",
@@ -483,10 +485,10 @@ function Welcome() {
           <div className="h-px flex-1" style={{ background: "var(--border)" }} />
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            className="press-depth flex items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold"
+            className="press-depth flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-white py-3.5 text-sm font-semibold active:scale-[0.98]"
             style={{ border: "1px solid var(--border)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -511,7 +513,7 @@ function Welcome() {
           </button>
           <button
             type="button"
-            className="press-depth flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white"
+            className="press-depth flex min-h-[52px] items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white active:scale-[0.98]"
             style={{ background: "var(--foreground)" }}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
