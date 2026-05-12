@@ -235,10 +235,10 @@ function Profile() {
               style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-full text-xl"
+                className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
                 style={{ background: "var(--accent)" }}
               >
-                {f.avatar ?? f.initial}
+                {f.initial}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium">{f.name}</p>
