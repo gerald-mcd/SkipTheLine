@@ -64,7 +64,7 @@ function Report() {
   }
 
   return (
-    <div className="px-4 pt-6 pb-6">
+    <div className="page-enter px-4 pt-6 pb-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
