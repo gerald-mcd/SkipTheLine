@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Sparkles, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
 import { ReportSheet } from "@/components/ReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
 
