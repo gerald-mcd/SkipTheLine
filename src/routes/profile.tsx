@@ -1,7 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
+import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles, Medal, Award, Crown, Compass, Handshake, Moon, Tent, Hash, UtensilsCrossed, Scissors, Ticket, type LucideIcon } from "lucide-react";
+
+// Icon maps — keep visuals consistent with the rest of the app (Lucide icons,
+// not emojis). Mock-data still carries emoji fields for other surfaces.
+const tierIcon: Record<string, LucideIcon> = {
+  scout: Medal,
+  ranger: Award,
+  captain: Trophy,
+  legend: Crown,
+};
+const questIcon: Record<string, LucideIcon> = {
+  q1: MapPin,
+  q2: Handshake,
+  q3: Compass,
+  q4: Flame,
+};
+const rewardIcon: Record<string, LucideIcon> = {
+  r1: UtensilsCrossed,
+  r2: Scissors,
+  r3: Ticket,
+  r4: Zap,
+};
+const badgeIcon: Record<string, LucideIcon> = {
+  b1: Target,
+  b2: Moon,
+  b3: Flame,
+  b4: Trophy,
+  b5: Tent,
+  b6: Hash,
+};
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -64,12 +93,14 @@ function Profile() {
         {/* Decorative glow blobs */}
         <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full" style={{ background: "rgba(255,255,255,0.18)", filter: "blur(8px)" }} />
         <span aria-hidden className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full" style={{ background: "rgba(255,255,255,0.10)", filter: "blur(10px)" }} />
-        <span aria-hidden className="pointer-events-none absolute inset-0 animate-ping-soft rounded-3xl" style={{ background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.25), transparent 50%)" }} />
 
         <div className="relative flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full text-base" style={{ background: "rgba(255,255,255,0.22)" }}>
-              {tier.emoji}
+            <span className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(255,255,255,0.22)" }}>
+              {(() => {
+                const Icon = tierIcon[tier.id] ?? Medal;
+                return <Icon className="h-4 w-4" strokeWidth={2.25} />;
+              })()}
             </span>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-90">Tier · {tier.name}</p>
@@ -177,11 +208,22 @@ function Profile() {
               className="flex flex-col items-center rounded-xl bg-card p-3"
               style={{
                 border: "1px solid var(--border)",
-                opacity: b.earned ? 1 : 0.45,
+              opacity: b.earned ? 1 : 0.6,
               }}
             >
-              <span className="text-2xl">{b.emoji}</span>
-              <span className="mt-1 text-[11px] font-medium">{b.name}</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-full"
+                style={{
+                  background: b.earned ? "var(--accent)" : "var(--secondary)",
+                  color: b.earned ? "var(--primary)" : "var(--muted-foreground)",
+                }}
+              >
+                {(() => {
+                  const Icon = badgeIcon[b.id] ?? Sparkles;
+                  return <Icon className="h-4 w-4" strokeWidth={2.25} />;
+                })()}
+              </span>
+              <span className="mt-1.5 text-[11px] font-medium">{b.name}</span>
               {!b.earned && (
                 <span className="text-[9px]" style={{ color: "var(--muted-foreground)" }}>
                   Locked
@@ -468,6 +510,7 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
 function QuestCard({ quest }: { quest: Quest }) {
   const pct = Math.min(100, (quest.progress / quest.goal) * 100);
   const done = quest.progress >= quest.goal;
+  const Icon = questIcon[quest.id] ?? Target;
   return (
     <div
       className="relative overflow-hidden rounded-2xl bg-card p-3"
@@ -475,10 +518,10 @@ function QuestCard({ quest }: { quest: Quest }) {
     >
       <div className="flex items-start gap-3">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
-          style={{ background: "var(--accent)" }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "var(--accent)", color: "var(--primary)" }}
         >
-          {quest.emoji}
+          <Icon className="h-4.5 w-4.5" strokeWidth={2.25} style={{ width: 18, height: 18 }} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
@@ -521,6 +564,7 @@ function QuestCard({ quest }: { quest: Quest }) {
 function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number }) {
   const affordable = userPoints >= reward.cost;
   const locked = !reward.unlocked || !affordable;
+  const Icon = rewardIcon[reward.id] ?? Gift;
   return (
     <button
       onClick={() => toast(locked ? `Reach ${reward.cost.toLocaleString()} pts to unlock` : `Redeemed ${reward.title}`)}
@@ -539,7 +583,15 @@ function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number
         />
       )}
       <div className="flex items-center justify-between">
-        <span className="text-2xl">{reward.emoji}</span>
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-xl"
+          style={{
+            background: locked ? "var(--secondary)" : "var(--accent)",
+            color: locked ? "var(--muted-foreground)" : "var(--primary)",
+          }}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2.25} />
+        </span>
         {locked ? (
           <Lock className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
         ) : (
