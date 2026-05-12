@@ -146,7 +146,10 @@ function Discover() {
         <div className="flex justify-center pt-2.5">
           <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
         </div>
-        <div className="mt-2 flex items-center justify-between px-5">
+        <div className="px-5 pt-1">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+        <div className="mt-3 flex items-center justify-between px-5">
           <h2 className="font-display text-base font-bold tracking-tight">
             {list.length} {list.length === 1 ? "place" : "places"} nearby
           </h2>
@@ -365,11 +368,6 @@ function Discover() {
           </div>
         </div>
       )}
-      <div className="pointer-events-none absolute inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
       {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
     </div>
   );
