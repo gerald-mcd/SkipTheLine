@@ -205,6 +205,72 @@ export function geoById(id: string) {
   return geoNodes.find((n) => n.id === id);
 }
 
+// ---------- Gamification: tiers, quests, rewards, impact ----------
+export interface Tier {
+  id: string;
+  name: string;
+  emoji: string;
+  min: number;
+  max: number;
+  perks: string[];
+}
+
+export const tiers: Tier[] = [
+  { id: "scout",   name: "Scout",   emoji: "🥉", min: 0,    max: 1000,  perks: ["Basic vouchers"] },
+  { id: "ranger",  name: "Ranger",  emoji: "🥈", min: 1000, max: 2500,  perks: ["2x weekend points"] },
+  { id: "captain", name: "Captain", emoji: "🥇", min: 2500, max: 5000,  perks: ["Skip-line passes", "Premium vouchers"] },
+  { id: "legend",  name: "Legend",  emoji: "👑", min: 5000, max: 10000, perks: ["VIP events", "Founder badge"] },
+];
+
+export function tierFor(points: number): { current: Tier; next?: Tier; progress: number } {
+  const current = tiers.findLast ? tiers.findLast((t) => points >= t.min)! : [...tiers].reverse().find((t) => points >= t.min)!;
+  const next = tiers.find((t) => t.min > current.min);
+  const span = current.max - current.min;
+  const progress = Math.min(100, Math.max(0, ((points - current.min) / span) * 100));
+  return { current, next, progress };
+}
+
+export interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  reward: number;
+  progress: number;
+  goal: number;
+  emoji: string;
+  type: "daily" | "weekly";
+}
+
+export const quests: Quest[] = [
+  { id: "q1", title: "Drop 3 reports today", description: "Help your neighborhood stay fresh", reward: 75, progress: 2, goal: 3, emoji: "📍", type: "daily" },
+  { id: "q2", title: "Confirm a friend's report", description: "Back up the community", reward: 25, progress: 0, goal: 1, emoji: "🤝", type: "daily" },
+  { id: "q3", title: "Scout a new venue", description: "First report on an unmapped spot", reward: 150, progress: 0, goal: 1, emoji: "🧭", type: "weekly" },
+  { id: "q4", title: "Maintain 14-day streak", description: "Two more days to go", reward: 200, progress: 12, goal: 14, emoji: "🔥", type: "weekly" },
+];
+
+export interface Reward {
+  id: string;
+  title: string;
+  brand: string;
+  cost: number;
+  emoji: string;
+  unlocked: boolean;
+}
+
+export const rewards: Reward[] = [
+  { id: "r1", title: "20% off entrée",    brand: "Joe's Stone Crab", cost: 1500, emoji: "🦀", unlocked: true },
+  { id: "r2", title: "Free fade",         brand: "LA Barber Co.",    cost: 2000, emoji: "💈", unlocked: true },
+  { id: "r3", title: "VIP entry",         brand: "Story Nightclub",  cost: 3500, emoji: "🎟️", unlocked: false },
+  { id: "r4", title: "Skip-line pass",    brand: "Komodo",           cost: 5000, emoji: "⚡", unlocked: false },
+];
+
+export const communityImpact = {
+  reportsAllTime: 184,
+  peopleHelped: 1240,
+  confirmations: 312,
+  weeklyXP: 420,
+};
+
 export interface Person {
   id: string;
   name: string;
