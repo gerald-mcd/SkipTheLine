@@ -1,7 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
+import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles, Medal, Award, Crown, Compass, Handshake, Moon, Tent, Hash, UtensilsCrossed, Scissors, Ticket, type LucideIcon } from "lucide-react";
+
+// Icon maps — keep visuals consistent with the rest of the app (Lucide icons,
+// not emojis). Mock-data still carries emoji fields for other surfaces.
+const tierIcon: Record<string, LucideIcon> = {
+  scout: Medal,
+  ranger: Award,
+  captain: Trophy,
+  legend: Crown,
+};
+const questIcon: Record<string, LucideIcon> = {
+  q1: MapPin,
+  q2: Handshake,
+  q3: Compass,
+  q4: Flame,
+};
+const rewardIcon: Record<string, LucideIcon> = {
+  r1: UtensilsCrossed,
+  r2: Scissors,
+  r3: Ticket,
+  r4: Zap,
+};
+const badgeIcon: Record<string, LucideIcon> = {
+  b1: Target,
+  b2: Moon,
+  b3: Flame,
+  b4: Trophy,
+  b5: Tent,
+  b6: Hash,
+};
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
