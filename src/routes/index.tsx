@@ -55,7 +55,7 @@ function Home() {
   }, [filtered, sort]);
 
   return (
-    <div className="relative overflow-hidden pb-4">
+    <div className="relative overflow-hidden pb-28">
       {/* Soft ambient — very light */}
       <div
         aria-hidden
@@ -163,11 +163,6 @@ function Home() {
               boxShadow: "inset 0 0 0 6px white",
             }}
           />
-        </div>
-
-        {/* Report CTA — primary action, inline under hero */}
-        <div className="animate-fade-in-up mt-4" style={{ animationDelay: "120ms" }}>
-          <ReportCTA onClick={() => setReportOpen(true)} />
         </div>
 
         {/* Search */}
@@ -287,6 +282,13 @@ function Home() {
       {reportOpen && (
         <ReportSheet onClose={() => setReportOpen(false)} />
       )}
+
+      {/* Floating Report CTA — mirrors Explore placement, sits above bottom nav */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
+        <div className="pointer-events-auto animate-fade-in-up">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+      </div>
     </div>
   );
 }
