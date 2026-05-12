@@ -274,7 +274,7 @@ function Discover() {
                         onClick={() => setDraftCat(c.id)}
                         className="rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
                         style={{
-                          background: on ? "var(--primary)" : "white",
+                          background: on ? "var(--primary)" : "var(--card)",
                           color: on ? "var(--primary-foreground)" : "var(--foreground)",
                           border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
                           boxShadow: on ? "var(--shadow-sm)" : "none",
@@ -336,7 +336,7 @@ function Discover() {
                         onClick={() => setDraftSort(s.id)}
                         className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
                         style={{
-                          background: on ? "var(--primary)" : "white",
+                          background: on ? "var(--primary)" : "var(--card)",
                           color: on ? "var(--primary-foreground)" : "var(--foreground)",
                           border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
                           boxShadow: on ? "var(--shadow-sm)" : "none",

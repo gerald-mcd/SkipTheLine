@@ -116,7 +116,7 @@ function Report() {
               onClick={() => setWait(w)}
               className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-semibold tabular-nums transition-colors"
               style={{
-                background: w === wait ? "var(--primary)" : "white",
+                background: w === wait ? "var(--primary)" : "var(--card)",
                 color: w === wait ? "var(--primary-foreground)" : "var(--foreground)",
                 border: "1px solid",
                 borderColor: w === wait ? "transparent" : "var(--border)",
@@ -140,7 +140,7 @@ function Report() {
               onClick={() => setType(t.id)}
               className="rounded-xl bg-card p-3 text-center transition-colors"
               style={{
-                background: type === t.id ? "var(--accent)" : "white",
+                background: type === t.id ? "var(--accent)" : "var(--card)",
                 border: "1px solid",
                 borderColor: type === t.id ? "var(--primary)" : "var(--border)",
               }}
@@ -164,7 +164,7 @@ function Report() {
               onClick={() => setEvent(e)}
               className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium"
               style={{
-                background: event === e ? "var(--primary)" : "white",
+                background: event === e ? "var(--primary)" : "var(--card)",
                 color: event === e ? "var(--primary-foreground)" : "var(--muted-foreground)",
                 border: "1px solid",
                 borderColor: event === e ? "transparent" : "var(--border)",

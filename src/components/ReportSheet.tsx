@@ -230,7 +230,7 @@ export function ReportSheet({
                       onClick={() => setMinutes(p)}
                       className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors"
                       style={{
-                        background: on ? "var(--primary)" : "white",
+                        background: on ? "var(--primary)" : "var(--card)",
                         color: on ? "var(--primary-foreground)" : "var(--foreground)",
                         border: "1px solid var(--border)",
                       }}
@@ -257,7 +257,7 @@ export function ReportSheet({
                       onClick={() => setEntryType(t.id)}
                       className="rounded-xl p-2.5 text-center transition-colors"
                       style={{
-                        background: on ? "var(--accent)" : "white",
+                        background: on ? "var(--accent)" : "var(--card)",
                         border: "1px solid",
                         borderColor: on ? "var(--primary)" : "var(--border)",
                       }}
@@ -285,7 +285,7 @@ export function ReportSheet({
                       onClick={() => setDriver(d.id)}
                       className="rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"
                       style={{
-                        background: on ? "var(--primary)" : "white",
+                        background: on ? "var(--primary)" : "var(--card)",
                         color: on ? "var(--primary-foreground)" : "var(--foreground)",
                         border: "1px solid",
                         borderColor: on ? "transparent" : "var(--border)",

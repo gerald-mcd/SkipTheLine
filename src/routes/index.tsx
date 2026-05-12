@@ -358,7 +358,7 @@ function CategoryRow({
             onClick={() => onChange(c.id)}
             className="chip-pop shrink-0 rounded-full px-4 py-2 text-xs font-semibold"
             style={{
-              background: on ? "var(--primary)" : "white",
+              background: on ? "var(--primary)" : "var(--card)",
               color: on ? "var(--primary-foreground)" : "var(--primary)",
               border: "1.5px solid var(--primary)",
             }}
