@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Check, Heart, Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import { Bell, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
@@ -39,6 +40,7 @@ function Home() {
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportOpen, setReportOpen] = useState(false);
   const { isFav, toggle } = useFavorites();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const filtered = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
@@ -87,6 +89,19 @@ function Home() {
             <span className="font-display text-sm font-bold tracking-tight">Hi, Kate!</span>
           </button>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              className="btn-pop-icon inline-flex h-10 w-10 items-center justify-center rounded-full bg-card"
+              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" style={{ color: "var(--primary)" }} />
+              ) : (
+                <Moon className="h-4 w-4" style={{ color: "var(--foreground)" }} />
+              )}
+            </button>
             <Link
               to="/profile"
               aria-label="Your SkipPoints"
