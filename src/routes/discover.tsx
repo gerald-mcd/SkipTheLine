@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { CityMap } from "@/components/CityMap";
+import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
+const CityMap = lazy(() =>
+  import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
+);
 import { venues, Category, categories } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
 import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
@@ -101,7 +103,9 @@ function Discover() {
   return (
     <div className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Map layer */}
-      <CityMap venues={list} focusedId={selectedId} />
+      <Suspense fallback={<div className="absolute inset-0" style={{ background: "oklch(0.965 0.005 245)" }} />}>
+        <CityMap venues={list} focusedId={selectedId} />
+      </Suspense>
 
       {/* Floating search + filter */}
       <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
@@ -185,6 +189,8 @@ function Discover() {
                 <img
                   src={v.image}
                   alt={v.name}
+                  loading="lazy"
+                  decoding="async"
                   className="h-14 w-14 shrink-0 rounded-xl object-cover"
                 />
                 <div className="min-w-0 flex-1">

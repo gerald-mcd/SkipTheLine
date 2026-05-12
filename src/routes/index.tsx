@@ -237,6 +237,9 @@ function Home() {
                 <img
                   src={v.image}
                   alt={v.name}
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  fetchPriority={idx === 0 ? "high" : "auto"}
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src =
                       "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80&auto=format&fit=crop";
