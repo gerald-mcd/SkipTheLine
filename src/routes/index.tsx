@@ -269,13 +269,6 @@ function Home() {
         })}
       </div>
 
-      {/* Floating report CTA */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
-
       {reportOpen && (
         <ReportSheet onClose={() => setReportOpen(false)} />
       )}
