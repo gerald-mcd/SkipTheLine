@@ -510,6 +510,7 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
 function QuestCard({ quest }: { quest: Quest }) {
   const pct = Math.min(100, (quest.progress / quest.goal) * 100);
   const done = quest.progress >= quest.goal;
+  const Icon = questIcon[quest.id] ?? Target;
   return (
     <div
       className="relative overflow-hidden rounded-2xl bg-card p-3"
@@ -517,10 +518,10 @@ function QuestCard({ quest }: { quest: Quest }) {
     >
       <div className="flex items-start gap-3">
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
-          style={{ background: "var(--accent)" }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "var(--accent)", color: "var(--primary)" }}
         >
-          {quest.emoji}
+          <Icon className="h-4.5 w-4.5" strokeWidth={2.25} style={{ width: 18, height: 18 }} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
@@ -563,6 +564,7 @@ function QuestCard({ quest }: { quest: Quest }) {
 function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number }) {
   const affordable = userPoints >= reward.cost;
   const locked = !reward.unlocked || !affordable;
+  const Icon = rewardIcon[reward.id] ?? Gift;
   return (
     <button
       onClick={() => toast(locked ? `Reach ${reward.cost.toLocaleString()} pts to unlock` : `Redeemed ${reward.title}`)}
@@ -581,7 +583,15 @@ function RewardCard({ reward, userPoints }: { reward: Reward; userPoints: number
         />
       )}
       <div className="flex items-center justify-between">
-        <span className="text-2xl">{reward.emoji}</span>
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-xl"
+          style={{
+            background: locked ? "var(--secondary)" : "var(--accent)",
+            color: locked ? "var(--muted-foreground)" : "var(--primary)",
+          }}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2.25} />
+        </span>
         {locked ? (
           <Lock className="h-3.5 w-3.5" style={{ color: "var(--muted-foreground)" }} />
         ) : (
