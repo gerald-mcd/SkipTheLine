@@ -84,6 +84,15 @@ export const profile = {
   rank: 47,
   cityRank: 312,
   reportsThisWeek: 23,
+  email: "alex@skiptheline.app",
+  phone: "+1 (305) 555-0142",
+  joined: "Mar 2024",
+  friends: [
+    { id: "fr1", name: "Sofía", handle: "@sofia", initial: "S" },
+    { id: "fr2", name: "Marcus", handle: "@marcus", initial: "M" },
+    { id: "fr3", name: "Maya", handle: "@maya", initial: "M" },
+    { id: "fr4", name: "Theo", handle: "@theo", initial: "T" },
+  ],
   badges: [
     { id: "b1", name: "First Drop", emoji: "🎯", earned: true },
     { id: "b2", name: "Night Owl", emoji: "🦉", earned: true },
