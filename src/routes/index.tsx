@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Bell, Check, Heart, Search, SlidersHorizontal, Sparkles } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
-import { ReportSheet } from "@/components/ReportSheet";
+import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
 import { useFavorites } from "@/hooks/use-favorites";
 import { WaitBadge } from "@/components/WaitBadge";

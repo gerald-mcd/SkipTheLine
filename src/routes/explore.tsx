@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CategoryChips } from "@/components/CategoryChips";
 import { venues, Category, severityColor, severityLabel } from "@/lib/mock-data";
 import { Clock, Users, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
-import { ReportSheet } from "@/components/ReportSheet";
+import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
 
 export const Route = createFileRoute("/explore")({
