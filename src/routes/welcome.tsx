@@ -380,60 +380,6 @@ function Welcome() {
         </div>
       </div>
 
-      {/* Live ticker — edge-bleed */}
-      <div
-        className="animate-fade-in-up relative z-10 mt-5 overflow-hidden"
-        style={{ animationDelay: "780ms" }}
-      >
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12"
-          style={{
-            background:
-              "linear-gradient(to right, color-mix(in oklab, var(--primary) 5%, white), transparent)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12"
-          style={{
-            background:
-              "linear-gradient(to left, color-mix(in oklab, var(--primary) 5%, white), transparent)",
-          }}
-        />
-        <div
-          className="flex gap-2 whitespace-nowrap"
-          style={{ animation: "ticker-x 38s linear infinite" }}
-        >
-          {ticker.map((r, i) => (
-            <div
-              key={i}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px]"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  background:
-                    r.minutes <= 15
-                      ? "var(--wait-short)"
-                      : r.minutes <= 45
-                        ? "var(--wait-moderate)"
-                        : "var(--wait-long)",
-                }}
-              />
-              <span className="font-bold">{r.user}</span>
-              <span style={{ color: "var(--muted-foreground)" }}>at</span>
-              <span className="font-semibold">{r.venue}</span>
-              <span className="tabular-nums" style={{ color: "var(--primary)" }}>
-                · <RollingNumber value={r.minutes} />m
-              </span>
-              <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-                {r.ago}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Auth section — feels like a continuation, not a card-in-a-card */}
       <div
         className="animate-fade-in-up relative z-10 mt-8 px-6 pb-10"
