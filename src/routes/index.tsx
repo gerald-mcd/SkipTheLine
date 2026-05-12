@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Check, Heart, Search, SlidersHorizontal } from "lucide-react";
-import { venues, Category, categories } from "@/lib/mock-data";
+import { Bell, Check, Heart, Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
 import { WaitBadge } from "@/components/WaitBadge";
 
@@ -83,18 +83,34 @@ function Home() {
             </span>
             <span className="font-display text-sm font-bold tracking-tight">Hi, Kate!</span>
           </button>
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white"
-            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
-          >
-            <Bell className="h-4 w-4" style={{ color: "var(--foreground)" }} />
-            <span
-              className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full ring-2 ring-white"
-              style={{ background: "var(--primary)" }}
-            />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/profile"
+              aria-label="Your SkipPoints"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3"
+              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            >
+              <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
+              <span className="font-display text-sm font-bold tabular-nums tracking-tight">
+                {profile.points.toLocaleString()}
+              </span>
+              <span className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                pts
+              </span>
+            </Link>
+            <button
+              type="button"
+              aria-label="Notifications"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white"
+              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            >
+              <Bell className="h-4 w-4" style={{ color: "var(--foreground)" }} />
+              <span
+                className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full ring-2 ring-white"
+                style={{ background: "var(--primary)" }}
+              />
+            </button>
+          </div>
         </div>
 
         {/* Voucher banner */}
