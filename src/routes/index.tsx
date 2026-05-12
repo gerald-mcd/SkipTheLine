@@ -172,7 +172,7 @@ function Home() {
         >
           <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
           <input
-            placeholder="Restaurant name or dish..."
+            placeholder="Search venues, food, vibes..."
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--muted-foreground)]"
           />
           <button
