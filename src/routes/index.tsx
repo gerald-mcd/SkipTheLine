@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Bell, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { ReportCTA } from "@/components/ReportCTA";
@@ -39,6 +39,7 @@ function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportOpen, setReportOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { isFav, toggle } = useFavorites();
   const { theme, toggle: toggleTheme } = useTheme();
 
@@ -153,15 +154,12 @@ function Home() {
             </Link>
             <button
               type="button"
-              aria-label="Notifications"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Settings"
               className="btn-pop-icon relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-card"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
-              <Bell className="h-4 w-4" style={{ color: "var(--foreground)" }} />
-              <span
-                className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full ring-2 ring-white"
-                style={{ background: "var(--primary)" }}
-              />
+              <Settings className="h-4 w-4" style={{ color: "var(--foreground)" }} />
             </button>
           </div>
         </div>
@@ -321,6 +319,8 @@ function Home() {
         <ReportSheet onClose={() => setReportOpen(false)} />
       )}
 
+      {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
+
       {/* Floating Report CTA — mirrors Explore placement, sits above bottom nav */}
       <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
         <div className="pointer-events-auto animate-fade-in-up">
@@ -328,6 +328,82 @@ function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SettingsSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 animate-fade-in bg-black/40" />
+      <div
+        className="relative max-h-[88vh] w-full max-w-md animate-slide-up overflow-y-auto rounded-t-3xl bg-card px-4 pb-8 pt-4"
+        style={{ boxShadow: "var(--shadow-lg)" }}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+              Account
+            </p>
+            <h3 className="font-display text-lg font-bold tracking-tight">Settings</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-full"
+            style={{ background: "var(--secondary)" }}
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <section className="mt-3">
+          <h4 className="mb-2.5 text-sm font-semibold">Contact</h4>
+          <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
+            <SettingsRow icon={<Mail className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Email" value={profile.email} />
+            <SettingsRow icon={<Phone className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Phone" value={profile.phone} top />
+            <SettingsRow icon={<CalendarDays className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Joined" value={profile.joined} top />
+          </div>
+        </section>
+
+        <section className="mt-6">
+          <h4 className="mb-2.5 text-sm font-semibold">Settings</h4>
+          <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
+            <SettingsItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
+            <SettingsItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
+            <SettingsItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
+            <SettingsItem icon={<LogOut className="h-4 w-4" style={{ color: "var(--destructive, #c33)" }} />} label="Log out" top destructive />
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function SettingsRow({ icon, label, value, top }: { icon: React.ReactNode; label: string; value: string; top?: boolean }) {
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3"
+      style={{ borderTop: top ? "1px solid var(--border)" : "none" }}
+    >
+      {icon}
+      <span className="flex-1 text-xs" style={{ color: "var(--muted-foreground)" }}>{label}</span>
+      <span className="text-sm font-medium">{value}</span>
+    </div>
+  );
+}
+
+function SettingsItem({ icon, label, top, destructive }: { icon: React.ReactNode; label: string; top?: boolean; destructive?: boolean }) {
+  return (
+    <button
+      onClick={() => toast(`${label} coming soon`)}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left"
+      style={{ borderTop: top ? "1px solid var(--border)" : "none" }}
+    >
+      {icon}
+      <span className="flex-1 text-sm font-medium" style={{ color: destructive ? "var(--destructive, #c33)" : "var(--foreground)" }}>{label}</span>
+      <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+    </button>
   );
 }
 
