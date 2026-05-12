@@ -4,8 +4,8 @@ import { Home, Map, Plus, Trophy, Compass } from "lucide-react";
 const tabs: { to: string; label: string; icon: typeof Map; hero?: boolean }[] = [
   { to: "/", label: "Home", icon: Home },
   { to: "/explore", label: "Explore", icon: Compass },
-  { to: "/discover", label: "Map", icon: Map },
   { to: "/report", label: "Report", icon: Plus, hero: true },
+  { to: "/discover", label: "Map", icon: Map },
   { to: "/profile", label: "You", icon: Trophy },
 ];
 
