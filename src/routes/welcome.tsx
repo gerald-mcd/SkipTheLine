@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { venues } from "@/lib/mock-data";
 import { MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -16,52 +17,54 @@ export const Route = createFileRoute("/welcome")({
   component: Welcome,
 });
 
-// Six establishments across categories — communicates "many places"
-// at a glance via a 2×3 collage behind a heavy dark overlay.
-const collage = [
+// One representative venue per category so the backdrop signals
+// "all places worth waiting for", not just restaurants.
+const heroSlides = [
   venues.find((v) => v.id === "v1")!, // Komodo — restaurant
   venues.find((v) => v.id === "v2")!, // LIV — nightclub
   venues.find((v) => v.id === "v3")!, // LA Barber Co. — barbershop
   venues.find((v) => v.id === "v4")!, // Miami DMV — gov
   venues.find((v) => v.id === "v8")!, // Jackson Health ER — health
-  venues.find((v) => v.id === "v5")!, // Joe's Stone Crab — restaurant
 ].filter(Boolean);
 
 function Welcome() {
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setSlide((s) => (s + 1) % heroSlides.length);
+    }, 4200);
+    return () => window.clearInterval(id);
+  }, []);
+
   return (
     <div
       className="font-grotesk relative min-h-screen w-full overflow-hidden"
       style={{ background: "var(--background)" }}
     >
-      {/* Full-bleed 2×3 collage of muted establishment photos */}
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-3 gap-0.5">
-        {collage.map((v) => (
-          <div key={v.id} className="relative overflow-hidden">
-            <img
-              src={v.image}
-              alt=""
-              aria-hidden
-              className="h-full w-full object-cover"
-              style={{ filter: "grayscale(35%) saturate(85%) brightness(0.7)" }}
-            />
-          </div>
+      {/* Full-bleed crossfading background photos — one per category */}
+      <div className="absolute inset-0">
+        {heroSlides.map((v, i) => (
+          <img
+            key={v.id}
+            src={v.image}
+            alt=""
+            aria-hidden={i !== slide}
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1600ms] ease-out will-change-[opacity,transform]"
+            style={{
+              opacity: i === slide ? 1 : 0,
+              transform: i === slide ? "scale(1.06)" : "scale(1.0)",
+              transitionProperty: "opacity, transform",
+              transitionDuration: "1600ms, 6000ms",
+            }}
+          />
         ))}
-        {/* Heavy dark overlay so type stays crisp */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, color-mix(in oklab, black 65%, transparent) 0%, color-mix(in oklab, black 70%, transparent) 45%, color-mix(in oklab, black 92%, transparent) 100%)",
-          }}
-        />
-        {/* Subtle primary glow to keep the brand feel */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(60% 40% at 50% 85%, color-mix(in oklab, var(--primary) 22%, transparent) 0%, transparent 70%)",
+              "linear-gradient(180deg, color-mix(in oklab, black 55%, transparent) 0%, color-mix(in oklab, black 40%, transparent) 38%, color-mix(in oklab, black 85%, transparent) 100%)",
           }}
         />
       </div>
@@ -92,7 +95,9 @@ function Welcome() {
               className="inline-block h-1.5 w-1.5 rounded-full"
               style={{ background: "var(--primary-glow)", boxShadow: "0 0 10px var(--primary-glow)" }}
             />
-            <span>Restaurants · Clubs · Barbers · Gov · Health</span>
+            <span key={heroSlides[slide].id} className="animate-fade-in">
+              {heroSlides[slide].categoryLabel} · {heroSlides[slide].waitMinutes}m wait now
+            </span>
           </div>
 
           <h1
@@ -160,6 +165,24 @@ function Welcome() {
           >
             By continuing you agree to the Terms & Privacy.
           </p>
+
+          {/* Slide indicators */}
+          <div className="mt-4 flex items-center justify-center gap-1.5">
+            {heroSlides.map((v, i) => (
+              <button
+                key={v.id}
+                type="button"
+                aria-label={`Show ${v.categoryLabel}`}
+                onClick={() => setSlide(i)}
+                className="h-1 rounded-full transition-all duration-500"
+                style={{
+                  width: i === slide ? 18 : 6,
+                  background:
+                    i === slide ? "var(--primary-glow)" : "rgba(255,255,255,0.35)",
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
