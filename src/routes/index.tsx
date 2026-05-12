@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Bell, Check, Heart, Search, SlidersHorizontal } from "lucide-react";
 import { venues, Category, categories } from "@/lib/mock-data";
 import { useFavorites } from "@/hooks/use-favorites";
+import { WaitBadge } from "@/components/WaitBadge";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
@@ -231,16 +232,12 @@ function Home() {
                   <p className="font-grotesk text-[10px]" style={{ color: "var(--muted-foreground)" }}>
                     <span className="font-bold" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span> reporting · {v.distance}
                   </p>
-                  <span
-                    key={`wait-${v.id}-${v.waitMinutes}`}
-                    className={`font-display animate-pop-in shrink-0 tabular-nums leading-none ${
-                      isWaitSort ? "text-base font-extrabold" : "text-sm font-bold"
-                    }`}
-                    style={{ color: "var(--primary)" }}
-                  >
-                    {v.waitMinutes}
-                    <span className="text-[10px] font-bold"> min</span>
-                  </span>
+                  <WaitBadge
+                    minutes={v.waitMinutes}
+                    severity={v.severity}
+                    size={isWaitSort ? "md" : "sm"}
+                    variant="solid"
+                  />
                 </div>
               </div>
             </Link>
