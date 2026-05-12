@@ -223,7 +223,7 @@ export const tiers: Tier[] = [
 ];
 
 export function tierFor(points: number): { current: Tier; next?: Tier; progress: number } {
-  const current = tiers.findLast ? tiers.findLast((t) => points >= t.min)! : [...tiers].reverse().find((t) => points >= t.min)!;
+  const current = [...tiers].reverse().find((t) => points >= t.min) ?? tiers[0];
   const next = tiers.find((t) => t.min > current.min);
   const span = current.max - current.min;
   const progress = Math.min(100, Math.max(0, ((points - current.min) / span) * 100));
