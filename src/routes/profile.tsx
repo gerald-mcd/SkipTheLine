@@ -21,7 +21,7 @@ function Profile() {
   // Local extra friends added during this session
   const [extraFriends, setExtraFriends] = useState<Person[]>([]);
   const allFriends = useMemo(
-    () => [...profile.friends, ...extraFriends.map((p) => ({ id: p.id, name: p.name, handle: p.handle, initial: p.initial }))],
+    () => [...profile.friends, ...extraFriends.map((p) => ({ id: p.id, name: p.name, handle: p.handle, initial: p.initial, avatar: p.avatar }))],
     [extraFriends],
   );
 
@@ -31,10 +31,10 @@ function Profile() {
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-full text-base font-semibold"
-            style={{ background: "var(--accent)", color: "var(--primary)" }}
+            className="flex h-12 w-12 items-center justify-center rounded-full text-2xl"
+            style={{ background: "var(--accent)" }}
           >
-            {profile.name[0]}
+            {profile.avatar}
           </div>
           <div>
             <p className="text-base font-semibold">{profile.name}</p>
@@ -235,10 +235,10 @@ function Profile() {
               style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold"
-                style={{ background: "var(--accent)", color: "var(--primary)" }}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-xl"
+                style={{ background: "var(--accent)" }}
               >
-                {f.initial}
+                {f.avatar ?? f.initial}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium">{f.name}</p>
@@ -272,8 +272,8 @@ function RequestRow({ person, onAccept }: { person: Person; onAccept: () => void
   if (state === "declined") return null;
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
-        {person.initial}
+      <div className="flex h-9 w-9 items-center justify-center rounded-full text-xl" style={{ background: "var(--accent)" }}>
+        {person.avatar ?? person.initial}
       </div>
       <div className="flex-1">
         <p className="text-sm font-medium">{person.name}</p>
@@ -385,8 +385,8 @@ function FindFriendsSheet({
                 const isAccepted = accepted.has(p.id);
                 return (
                   <div key={p.id} className="flex items-center gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
-                      {p.initial}
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-xl" style={{ background: "var(--accent)" }}>
+                      {p.avatar ?? p.initial}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium">{p.name} <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>{p.handle}</span></p>
