@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { venues } from "@/lib/mock-data";
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -17,15 +16,19 @@ export const Route = createFileRoute("/welcome")({
   component: Welcome,
 });
 
-// One representative venue per category so the backdrop signals
+// One representative slide per category so the backdrop signals
 // "all places worth waiting for", not just restaurants.
-const heroSlides = [
-  venues.find((v) => v.id === "v1")!, // Komodo — restaurant
-  venues.find((v) => v.id === "v2")!, // LIV — nightclub
-  venues.find((v) => v.id === "v3")!, // LA Barber Co. — barbershop
-  venues.find((v) => v.id === "v4")!, // Miami DMV — gov
-  venues.find((v) => v.id === "v8")!, // Jackson Health ER — health
-].filter(Boolean);
+const heroSlides: { id: string; categoryLabel: string; waitMinutes: number; image: string }[] = [
+  { id: "restaurants", categoryLabel: "Restaurants", waitMinutes: 42, image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80&auto=format&fit=crop" },
+  { id: "barbershops", categoryLabel: "Barbershops", waitMinutes: 8, image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=80&auto=format&fit=crop" },
+  { id: "grocery", categoryLabel: "Grocery", waitMinutes: 12, image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80&auto=format&fit=crop" },
+  { id: "government", categoryLabel: "Government", waitMinutes: 95, image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&q=80&auto=format&fit=crop" },
+  { id: "healthcare", categoryLabel: "Healthcare", waitMinutes: 110, image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1200&q=80&auto=format&fit=crop" },
+  { id: "retail", categoryLabel: "Retail", waitMinutes: 18, image: "https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=1200&q=80&auto=format&fit=crop" },
+  { id: "entertainment", categoryLabel: "Entertainment", waitMinutes: 65, image: "https://images.unsplash.com/photo-1545128485-c400e7702796?w=1200&q=80&auto=format&fit=crop" },
+  { id: "landmarks", categoryLabel: "Landmarks", waitMinutes: 30, image: "https://images.unsplash.com/photo-1473625247510-8ceb1760943f?w=1200&q=80&auto=format&fit=crop" },
+  { id: "attractions", categoryLabel: "Attractions", waitMinutes: 45, image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=80&auto=format&fit=crop" },
+];
 
 function Welcome() {
   const [slide, setSlide] = useState(0);
