@@ -58,7 +58,7 @@ export function WaitBadge({
       ? { background: color, color: "white", border: "none" }
       : variant === "chip"
         ? {
-            background: "white",
+            background: "var(--card)",
             color,
             border: `1px solid color-mix(in oklab, ${color} 35%, var(--border))`,
           }

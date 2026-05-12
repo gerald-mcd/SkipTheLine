@@ -135,7 +135,7 @@ function VenueDetail() {
 
       {/* Event banner */}
       {v.event && (
-        <div className="mx-4 mt-4 flex items-center gap-2 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+        <div className="mx-4 mt-4 flex items-center gap-2 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
           <Calendar className="h-4 w-4" style={{ color: "var(--primary)" }} />
           <div className="flex-1">
             <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Driving the crowd</p>
@@ -159,7 +159,7 @@ function VenueDetail() {
         </div>
         <div className="mt-2 space-y-2">
           {myReports.map((r) => (
-            <div key={r.id} className="animate-fade-in flex items-start gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--primary)", boxShadow: "var(--shadow-sm)" }}>
+            <div key={r.id} className="animate-fade-in flex items-start gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--primary)", boxShadow: "var(--shadow-sm)" }}>
               <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
                 {profile.name[0]}
               </div>
@@ -181,7 +181,7 @@ function VenueDetail() {
           {recent.map((r) => {
             const friend = profile.friends.find((f) => f.name === r.user);
             return (
-              <div key={r.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+              <div key={r.id} className="flex items-center gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
                 {friend ? (
                   <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
                     {r.user[0]}
@@ -238,7 +238,7 @@ function VenueDetail() {
 
 function Mini({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+    <div className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-1.5">{icon}<span className="text-sm font-bold">{value}</span></div>
       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>{label}</p>
     </div>

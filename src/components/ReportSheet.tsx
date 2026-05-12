@@ -96,7 +96,7 @@ export function ReportSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
       <button aria-label="Close" onClick={onClose} className="animate-fade-in absolute inset-0 bg-black/40" />
       <div
-        className="animate-slide-up relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5"
+        className="animate-slide-up relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-card p-5"
         style={{ boxShadow: "var(--shadow-lg)" }}
       >
         {/* Header */}
@@ -136,7 +136,7 @@ export function ReportSheet({
         {!picked ? (
           <>
             <div
-              className="flex items-center gap-2 rounded-full bg-white px-3 py-2.5"
+              className="flex items-center gap-2 rounded-full bg-card px-3 py-2.5"
               style={{ border: "1px solid var(--border)" }}
             >
               <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
@@ -160,7 +160,7 @@ export function ReportSheet({
                     setPicked(v);
                     setMinutes(v.waitMinutes);
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl bg-white p-2.5 text-left"
+                  className="flex w-full items-center gap-3 rounded-xl bg-card p-2.5 text-left"
                   style={{ border: "1px solid var(--border)" }}
                 >
                   <div
@@ -198,7 +198,7 @@ export function ReportSheet({
                 <button
                   type="button"
                   onClick={() => setMinutes((m) => Math.max(0, m - 5))}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-card"
                   style={{ border: "1px solid var(--border)" }}
                   aria-label="Decrease"
                 >
@@ -213,7 +213,7 @@ export function ReportSheet({
                 <button
                   type="button"
                   onClick={() => setMinutes((m) => Math.min(240, m + 5))}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-card"
                   style={{ border: "1px solid var(--border)" }}
                   aria-label="Increase"
                 >
@@ -230,7 +230,7 @@ export function ReportSheet({
                       onClick={() => setMinutes(p)}
                       className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors"
                       style={{
-                        background: on ? "var(--primary)" : "white",
+                        background: on ? "var(--primary)" : "var(--card)",
                         color: on ? "var(--primary-foreground)" : "var(--foreground)",
                         border: "1px solid var(--border)",
                       }}
@@ -257,7 +257,7 @@ export function ReportSheet({
                       onClick={() => setEntryType(t.id)}
                       className="rounded-xl p-2.5 text-center transition-colors"
                       style={{
-                        background: on ? "var(--accent)" : "white",
+                        background: on ? "var(--accent)" : "var(--card)",
                         border: "1px solid",
                         borderColor: on ? "var(--primary)" : "var(--border)",
                       }}
@@ -285,7 +285,7 @@ export function ReportSheet({
                       onClick={() => setDriver(d.id)}
                       className="rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"
                       style={{
-                        background: on ? "var(--primary)" : "white",
+                        background: on ? "var(--primary)" : "var(--card)",
                         color: on ? "var(--primary-foreground)" : "var(--foreground)",
                         border: "1px solid",
                         borderColor: on ? "transparent" : "var(--border)",
@@ -309,7 +309,7 @@ export function ReportSheet({
                 placeholder="e.g. bar seating moves faster"
                 rows={2}
                 maxLength={NOTE_MAX}
-                className="mt-1.5 w-full resize-none rounded-xl bg-white p-3 text-sm outline-none placeholder:text-[var(--muted-foreground)]"
+                className="mt-1.5 w-full resize-none rounded-xl bg-card p-3 text-sm outline-none placeholder:text-[var(--muted-foreground)]"
                 style={{ border: "1px solid var(--border)" }}
               />
               <p className="mt-1 text-right text-[10px]" style={{ color: "var(--muted-foreground)" }}>
@@ -319,7 +319,7 @@ export function ReportSheet({
 
             {/* Reward summary */}
             <div
-              className="mt-2 flex items-center justify-between rounded-xl bg-white p-3"
+              className="mt-2 flex items-center justify-between rounded-xl bg-card p-3"
               style={{ border: "1px solid var(--border)" }}
             >
               <div className="flex items-center gap-2">
