@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, Mail, Phone, UserPlus, Bell, Shield, LogOut, CalendarDays, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair } from "lucide-react";
+import { Flame, Trophy, MapPin, Sparkles, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -182,27 +182,6 @@ function Profile() {
               </button>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Contact info */}
-      <section className="mt-7">
-        <h2 className="mb-2.5 text-sm font-semibold">Contact</h2>
-        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
-          <Row icon={<Mail className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Email" value={profile.email} />
-          <Row icon={<Phone className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Phone" value={profile.phone} top />
-          <Row icon={<CalendarDays className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Joined" value={profile.joined} top />
-        </div>
-      </section>
-
-      {/* Settings */}
-      <section className="mt-7">
-        <h2 className="mb-2.5 text-sm font-semibold">Settings</h2>
-        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
-          <SettingItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
-          <SettingItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
-          <SettingItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
-          <SettingItem icon={<LogOut className="h-4 w-4" style={{ color: "var(--destructive, #c33)" }} />} label="Log out" top destructive />
         </div>
       </section>
 
