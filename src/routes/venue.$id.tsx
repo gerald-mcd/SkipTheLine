@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { venues, severityColor, severityLabel, liveFeed } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, Users, MapPin, TrendingUp, Sparkles, Calendar } from "lucide-react";
+import { venues, severityColor, severityLabel, liveFeed, profile } from "@/lib/mock-data";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Sparkles, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/venue/$id")({
   head: ({ params }) => {
@@ -124,27 +124,46 @@ function VenueDetail() {
 
       {/* Quick stats */}
       <div className="mt-4 grid grid-cols-3 gap-2 px-4">
-        <Mini icon={<Users className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />} value={`${v.liveReporters}`} label="Live reporters" />
-        <Mini icon={<TrendingUp className="h-3.5 w-3.5" style={{ color: color as any }} />} value={v.trend === "up" ? "Rising" : v.trend === "down" ? "Falling" : "Steady"} label="Trend" />
+        <Mini icon={<Timer className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />} value={`${v.typicalWaitMinutes}m`} label="Avg wait" />
+        <Mini icon={<MessageSquare className="h-3.5 w-3.5" style={{ color: color as any }} />} value={`${v.reportsCount}`} label="Reports" />
         <Mini icon={<Clock className="h-3.5 w-3.5" />} value={v.hours} label="Open" />
       </div>
 
       {/* Recent reports */}
       <section className="mt-6 px-4">
-        <h2 className="text-sm font-semibold">Recent reports</h2>
+        <div className="flex items-end justify-between">
+          <h2 className="text-sm font-semibold">Recent reports</h2>
+          <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>Names shown for friends only</p>
+        </div>
         <div className="mt-2 space-y-2">
-          {recent.map((r) => (
-            <div key={r.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
-              <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
-                {r.user[0]}
+          {recent.map((r) => {
+            const friend = profile.friends.find((f) => f.name === r.user);
+            return (
+              <div key={r.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+                {friend ? (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+                    {r.user[0]}
+                  </div>
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "var(--secondary)", color: "var(--muted-foreground)" }}>
+                    <UserCircle2 className="h-5 w-5" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <p className="text-sm font-medium">
+                    {friend ? r.user : "Someone nearby"}
+                    {friend && (
+                      <span className="ml-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+                        Friend
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>walk-in · {r.ago}</p>
+                </div>
+                <span className="text-base font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>{r.minutes}m</span>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium">{r.user}</p>
-                <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>walk-in · {r.ago}</p>
-              </div>
-              <span className="text-base font-semibold tabular-nums" style={{ color: severityColor(v.severity) }}>{r.minutes}m</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
