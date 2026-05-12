@@ -93,12 +93,14 @@ function Profile() {
         {/* Decorative glow blobs */}
         <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full" style={{ background: "rgba(255,255,255,0.18)", filter: "blur(8px)" }} />
         <span aria-hidden className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full" style={{ background: "rgba(255,255,255,0.10)", filter: "blur(10px)" }} />
-        <span aria-hidden className="pointer-events-none absolute inset-0 animate-ping-soft rounded-3xl" style={{ background: "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.25), transparent 50%)" }} />
 
         <div className="relative flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full text-base" style={{ background: "rgba(255,255,255,0.22)" }}>
-              {tier.emoji}
+            <span className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "rgba(255,255,255,0.22)" }}>
+              {(() => {
+                const Icon = tierIcon[tier.id] ?? Medal;
+                return <Icon className="h-4 w-4" strokeWidth={2.25} />;
+              })()}
             </span>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-90">Tier · {tier.name}</p>
@@ -206,11 +208,22 @@ function Profile() {
               className="flex flex-col items-center rounded-xl bg-card p-3"
               style={{
                 border: "1px solid var(--border)",
-                opacity: b.earned ? 1 : 0.45,
+              opacity: b.earned ? 1 : 0.6,
               }}
             >
-              <span className="text-2xl">{b.emoji}</span>
-              <span className="mt-1 text-[11px] font-medium">{b.name}</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-full"
+                style={{
+                  background: b.earned ? "var(--accent)" : "var(--secondary)",
+                  color: b.earned ? "var(--primary)" : "var(--muted-foreground)",
+                }}
+              >
+                {(() => {
+                  const Icon = badgeIcon[b.id] ?? Sparkles;
+                  return <Icon className="h-4 w-4" strokeWidth={2.25} />;
+                })()}
+              </span>
+              <span className="mt-1.5 text-[11px] font-medium">{b.name}</span>
               {!b.earned && (
                 <span className="text-[9px]" style={{ color: "var(--muted-foreground)" }}>
                   Locked
