@@ -107,7 +107,7 @@ function Discover() {
       <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
         <div className="flex items-center gap-2">
           <div
-            className="flex flex-1 items-center gap-2 rounded-full bg-white px-4 py-3"
+            className="flex flex-1 items-center gap-2 rounded-full bg-card px-4 py-3"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-md)" }}
           >
             <Search className="h-4 w-4" style={{ color: "var(--primary)" }} />
@@ -136,7 +136,7 @@ function Discover() {
 
       {/* Bottom card sheet */}
       <div
-        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-white"
+        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-card"
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
@@ -172,7 +172,7 @@ function Discover() {
                   cardRefs.current[v.id] = el;
                 }}
                 onClick={() => handleSelect(v.id)}
-                className="card-lift animate-fade-in-up flex w-full items-center gap-3 rounded-2xl bg-white p-2.5 text-left transition-all active:scale-[0.98]"
+                className="card-lift animate-fade-in-up flex w-full items-center gap-3 rounded-2xl bg-card p-2.5 text-left transition-all active:scale-[0.98]"
                 style={{
                   border: on
                     ? "1.5px solid var(--primary)"
@@ -230,7 +230,7 @@ function Discover() {
             className="animate-fade-in absolute inset-0 bg-black/45"
           />
           <div
-            className="animate-slide-up absolute inset-x-0 bottom-0 rounded-t-3xl bg-white"
+            className="animate-slide-up absolute inset-x-0 bottom-0 rounded-t-3xl bg-card"
             style={{
               boxShadow: "0 -16px 40px -12px color-mix(in oklab, black 35%, transparent)",
               maxHeight: "92%",
@@ -353,7 +353,7 @@ function Discover() {
 
             {/* Sticky CTA */}
             <div
-              className="absolute inset-x-0 bottom-0 rounded-b-3xl bg-white px-5 pb-5 pt-3"
+              className="absolute inset-x-0 bottom-0 rounded-b-3xl bg-card px-5 pb-5 pt-3"
               style={{ borderTop: "1px solid var(--border)" }}
             >
               <button

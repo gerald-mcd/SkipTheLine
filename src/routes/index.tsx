@@ -75,7 +75,7 @@ function Home() {
           <button
             type="button"
             onClick={() => toast("Sign in coming soon")}
-            className="btn-pop flex items-center gap-2.5 rounded-full bg-white py-1 pl-1 pr-4"
+            className="btn-pop flex items-center gap-2.5 rounded-full bg-card py-1 pl-1 pr-4"
             style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
           >
             <span
@@ -90,7 +90,7 @@ function Home() {
             <Link
               to="/profile"
               aria-label="Your SkipPoints"
-              className="btn-pop inline-flex h-10 items-center gap-1.5 rounded-full bg-white px-3"
+              className="btn-pop inline-flex h-10 items-center gap-1.5 rounded-full bg-card px-3"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
@@ -104,7 +104,7 @@ function Home() {
             <button
               type="button"
               aria-label="Notifications"
-              className="btn-pop-icon relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white"
+              className="btn-pop-icon relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-card"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <Bell className="h-4 w-4" style={{ color: "var(--foreground)" }} />
@@ -157,7 +157,7 @@ function Home() {
 
         {/* Search */}
         <div
-          className="mt-5 flex items-center gap-2 rounded-full bg-white px-3 py-2.5"
+          className="mt-5 flex items-center gap-2 rounded-full bg-card px-3 py-2.5"
           style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
         >
           <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
@@ -216,7 +216,7 @@ function Home() {
               key={v.id}
               to="/venue/$id"
               params={{ id: v.id }}
-              className="card-lift animate-fade-in-up group block overflow-hidden rounded-2xl bg-white"
+              className="card-lift animate-fade-in-up group block overflow-hidden rounded-2xl bg-card"
               style={{
                 border: "1px solid var(--border)",
                 boxShadow: "var(--shadow-sm)",
@@ -306,7 +306,7 @@ function SortMenu({
       </button>
       {open && (
         <div
-          className="animate-fade-in-up absolute right-0 top-12 z-30 w-56 overflow-hidden rounded-2xl bg-white p-1.5"
+          className="animate-fade-in-up absolute right-0 top-12 z-30 w-56 overflow-hidden rounded-2xl bg-card p-1.5"
           style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
         >
           <p className="font-grotesk px-3 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>

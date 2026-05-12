@@ -83,7 +83,7 @@ function Report() {
 
       {/* Venue */}
       <button
-        className="mt-5 flex w-full items-center gap-3 rounded-xl bg-white p-3.5"
+        className="mt-5 flex w-full items-center gap-3 rounded-xl bg-card p-3.5"
         style={{ border: "1px solid var(--border)" }}
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "var(--accent)" }}>
@@ -138,7 +138,7 @@ function Report() {
             <button
               key={t.id}
               onClick={() => setType(t.id)}
-              className="rounded-xl bg-white p-3 text-center transition-colors"
+              className="rounded-xl bg-card p-3 text-center transition-colors"
               style={{
                 background: type === t.id ? "var(--accent)" : "white",
                 border: "1px solid",
@@ -178,7 +178,7 @@ function Report() {
 
       {/* Reward + submit */}
       <div
-        className="mt-6 flex items-center justify-between rounded-xl bg-white p-3.5"
+        className="mt-6 flex items-center justify-between rounded-xl bg-card p-3.5"
         style={{ border: "1px solid var(--border)" }}
       >
         <div className="flex items-center gap-2">

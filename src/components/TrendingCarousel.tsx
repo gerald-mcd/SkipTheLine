@@ -116,7 +116,7 @@ export function TrendingCarousel({ items, loading }: { items: Venue[]; loading?:
           aria-label="Previous"
           onClick={() => scrollTo(Math.max(0, active - 1))}
           disabled={active === 0}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white disabled:opacity-40"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-card disabled:opacity-40"
           style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function TrendingCarousel({ items, loading }: { items: Venue[]; loading?:
           aria-label="Next"
           onClick={() => scrollTo(Math.min(items.length - 1, active + 1))}
           disabled={active === items.length - 1}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white disabled:opacity-40"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-card disabled:opacity-40"
           style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
         >
           <ChevronRight className="h-4 w-4" />

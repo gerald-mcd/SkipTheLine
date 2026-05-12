@@ -54,7 +54,7 @@ function Profile() {
 
       {/* Points card */}
       <div
-        className="mt-5 rounded-2xl bg-white p-5"
+        className="mt-5 rounded-2xl bg-card p-5"
         style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
       >
         <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
@@ -95,7 +95,7 @@ function Profile() {
           {profile.badges.map((b) => (
             <div
               key={b.id}
-              className="flex flex-col items-center rounded-xl bg-white p-3"
+              className="flex flex-col items-center rounded-xl bg-card p-3"
               style={{
                 border: "1px solid var(--border)",
                 opacity: b.earned ? 1 : 0.45,
@@ -121,7 +121,7 @@ function Profile() {
             This week
           </span>
         </div>
-        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
           {profile.leaderboard.map((u, i) => (
             <div
               key={u.rank}
@@ -167,7 +167,7 @@ function Profile() {
           Friends' names appear on their reports. Strangers stay anonymous.
         </p>
         {incomingRequests.length > 0 && (
-          <div className="mb-3 rounded-2xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+          <div className="mb-3 rounded-2xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
             <p className="mb-2 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
               {incomingRequests.length} pending request{incomingRequests.length === 1 ? "" : "s"}
             </p>
@@ -181,7 +181,7 @@ function Profile() {
             </div>
           </div>
         )}
-        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
           {allFriends.map((f, i) => (
             <div
               key={f.id}
@@ -209,7 +209,7 @@ function Profile() {
       {/* Contact info */}
       <section className="mt-7">
         <h2 className="mb-2.5 text-sm font-semibold">Contact</h2>
-        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
           <Row icon={<Mail className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Email" value={profile.email} />
           <Row icon={<Phone className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Phone" value={profile.phone} top />
           <Row icon={<CalendarDays className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Joined" value={profile.joined} top />
@@ -219,7 +219,7 @@ function Profile() {
       {/* Settings */}
       <section className="mt-7">
         <h2 className="mb-2.5 text-sm font-semibold">Settings</h2>
-        <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid var(--border)" }}>
+        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
           <SettingItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
           <SettingItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
           <SettingItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
@@ -319,7 +319,7 @@ function FindFriendsSheet({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
       <button aria-label="Close" onClick={onClose} className="absolute inset-0 animate-fade-in bg-black/40" />
-      <div className="relative max-h-[85vh] w-full max-w-md animate-slide-up overflow-hidden rounded-t-3xl bg-white" style={{ boxShadow: "var(--shadow-lg)" }}>
+      <div className="relative max-h-[85vh] w-full max-w-md animate-slide-up overflow-hidden rounded-t-3xl bg-card" style={{ boxShadow: "var(--shadow-lg)" }}>
         <div className="flex items-center justify-between p-4 pb-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>Connect</p>
@@ -331,7 +331,7 @@ function FindFriendsSheet({
         </div>
 
         <div className="px-4">
-          <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2.5" style={{ border: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 rounded-full bg-card px-3 py-2.5" style={{ border: "1px solid var(--border)" }}>
             <Search className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
             <input
               autoFocus
@@ -359,7 +359,7 @@ function FindFriendsSheet({
                 const isRequested = requested.has(p.id);
                 const isAccepted = accepted.has(p.id);
                 return (
-                  <div key={p.id} className="flex items-center gap-3 rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+                  <div key={p.id} className="flex items-center gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
                     <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
                       {p.initial}
                     </div>
@@ -428,7 +428,7 @@ function SettingItem({ icon, label, top, destructive }: { icon: React.ReactNode;
 
 function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
-    <div className="rounded-xl bg-white p-3" style={{ border: "1px solid var(--border)" }}>
+    <div className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-1.5">
         {icon}
         <span className="text-lg font-semibold tabular-nums">{value}</span>
