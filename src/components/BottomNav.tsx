@@ -27,7 +27,7 @@ export function BottomNav() {
               <Link
                 key={t.to}
                 to={t.to as any}
-                className="relative -mt-7 flex h-14 w-14 items-center justify-center rounded-full tap icon-pop"
+                className="relative -mt-7 flex h-14 w-14 items-center justify-center rounded-full"
                 style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
               >
                 <Icon className="relative h-6 w-6" style={{ color: "var(--primary-foreground)" }} strokeWidth={2.25} />
@@ -38,8 +38,7 @@ export function BottomNav() {
             <Link
               key={t.to}
               to={t.to as any}
-              className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors tap icon-pop"
-              data-active={active ? "true" : "false"}
+              className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors"
               style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
             >
               <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />

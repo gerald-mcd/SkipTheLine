@@ -99,7 +99,7 @@ function Discover() {
   };
 
   return (
-    <div className="page-enter relative h-[calc(100vh-80px)] overflow-hidden">
+    <div className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Map layer */}
       <CityMap venues={list} focusedId={selectedId} />
 

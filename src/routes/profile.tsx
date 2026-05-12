@@ -26,7 +26,7 @@ function Profile() {
   );
 
   return (
-    <div className="page-enter px-4 pt-6">
+    <div className="px-4 pt-6">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">

@@ -15,7 +15,7 @@ export function CategoryChips({
           <button
             key={c.id}
             onClick={() => onChange(c.id)}
-            className="chip-tap flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all"
+            className="flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all"
             style={{
               background: on ? "var(--primary)" : "white",
               color: on ? "var(--primary-foreground)" : "var(--primary)",
