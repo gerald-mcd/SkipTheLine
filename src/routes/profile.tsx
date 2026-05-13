@@ -34,7 +34,7 @@ function Profile() {
             className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold"
             style={{ background: "var(--accent)" }}
           >
-            {profile.initial ?? profile.name?.charAt(0)}
+            {profile.name?.charAt(0)}
           </div>
           <div>
             <p className="text-base font-semibold">{profile.name}</p>
