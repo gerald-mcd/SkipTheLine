@@ -139,6 +139,92 @@ export function SendClockGlyph({ className = "h-4 w-4" }: { className?: string }
   );
 }
 
+/* ─────────── "Skip the line" themed glyphs ─────────── */
+
+/* 12. Line Jump — arrow leaping over queued dots. */
+export function LineJumpGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <circle cx="4" cy="17" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="8" cy="17" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="17" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="16" cy="17" r="1.4" fill="currentColor" stroke="none" />
+      <path d="M3 12c3-7 13-7 18 0" />
+      <path d="M17 8l4 4-4 4" />
+    </svg>
+  );
+}
+
+/* 13. Fast Pass — ticket with a lightning bolt. */
+export function FastPassGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z" />
+      <path d="M13 8l-3 5h3l-1 3 3-5h-3l1-3z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/* 14. Velvet Rope — stanchion posts with a curving rope and a skip arrow. */
+export function VelvetRopeGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <circle cx="5" cy="7" r="1.6" />
+      <path d="M5 8.5V20" />
+      <circle cx="15" cy="7" r="1.6" />
+      <path d="M15 8.5V20" />
+      <path d="M6.5 7.5c2 3 6.5 3 8.5 0" />
+      <path d="M18 14h3m-2-2 2 2-2 2" />
+    </svg>
+  );
+}
+
+/* 15. Door Skip — open door with a forward arrow. */
+export function DoorSkipGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <path d="M5 21V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v16" />
+      <path d="M3 21h13" />
+      <circle cx="11.5" cy="13" r="0.6" fill="currentColor" stroke="none" />
+      <path d="M16 13h5m-2-2 2 2-2 2" />
+    </svg>
+  );
+}
+
+/* 16. Skip Arrow — chevron-double "skip forward" mark with a clock dot. */
+export function SkipArrowGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <path d="M4 7l5 5-5 5" />
+      <path d="M11 7l5 5-5 5" />
+      <circle cx="20" cy="12" r="2" />
+    </svg>
+  );
+}
+
+/* 17. VIP Wristband — wristband loop with a star. */
+export function VipBandGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <path d="M4 9a8 4 0 1 0 16 0 8 4 0 1 0-16 0" />
+      <path d="M4 9v4a8 4 0 0 0 16 0V9" />
+      <path d="M12 7l0.7 1.4 1.6.2-1.2 1.1.3 1.5-1.4-.7-1.4.7.3-1.5L9.7 8.6l1.6-.2L12 7z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/* 18. Cut-the-Line — scissors snipping through a queue line. */
+export function CutLineGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      <path d="M3 12h18" strokeDasharray="2 2" />
+      <circle cx="7" cy="7" r="2" />
+      <circle cx="7" cy="17" r="2" />
+      <path d="M9 8.5l10 7M9 15.5l10-7" />
+    </svg>
+  );
+}
+
 /* Catalog for preview/picker. */
 export const GLYPH_CATALOG = [
   { key: "queue", label: "Queue + Clock", node: QueueClockGlyph },
@@ -152,6 +238,13 @@ export const GLYPH_CATALOG = [
   { key: "bell", label: "Bell Timer", node: BellTimerGlyph },
   { key: "gauge", label: "Speed Gauge", node: SpeedGaugeGlyph },
   { key: "send", label: "Send + Clock", node: SendClockGlyph },
+  { key: "linejump", label: "Line Jump", node: LineJumpGlyph },
+  { key: "fastpass", label: "Fast Pass", node: FastPassGlyph },
+  { key: "velvetrope", label: "Velvet Rope", node: VelvetRopeGlyph },
+  { key: "doorskip", label: "Door Skip", node: DoorSkipGlyph },
+  { key: "skiparrow", label: "Skip Arrow", node: SkipArrowGlyph },
+  { key: "vipband", label: "VIP Wristband", node: VipBandGlyph },
+  { key: "cutline", label: "Cut the Line", node: CutLineGlyph },
 ] as const;
 
 /**
