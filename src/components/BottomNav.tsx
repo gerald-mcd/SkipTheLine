@@ -12,10 +12,10 @@ export function BottomNav() {
   const { pathname } = useLocation();
   if (pathname === "/welcome") return null;
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md px-5">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md">
       <div
-        className="flex items-center justify-around bg-card px-2 pt-2 pb-2"
-        style={{ borderTop: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+        className="mx-3 mb-3 flex items-center justify-around rounded-2xl bg-card px-2 py-2"
+        style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
       >
         {tabs.map((t) => {
           const Icon = t.icon;
