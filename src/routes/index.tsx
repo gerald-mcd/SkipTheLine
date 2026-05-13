@@ -138,20 +138,6 @@ function Home() {
                 <Moon className="h-4 w-4" style={{ color: "var(--foreground)" }} />
               )}
             </button>
-            <Link
-              to="/profile"
-              aria-label="Your SkipPoints"
-              className="btn-pop inline-flex h-10 items-center gap-1.5 rounded-full bg-card px-3"
-              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
-            >
-              <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
-              <span className="font-display text-sm font-bold tabular-nums tracking-tight">
-                {profile.points.toLocaleString()}
-              </span>
-              <span className="font-grotesk text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                pts
-              </span>
-            </Link>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
