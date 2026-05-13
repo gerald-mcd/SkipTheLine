@@ -126,7 +126,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative mx-auto min-h-screen w-full max-w-md">
+      <div
+        className="relative mx-auto min-h-screen w-full max-w-md"
+        style={{ borderLeft: "1px solid var(--border)", borderRight: "1px solid var(--border)" }}
+      >
         <div className="pb-24">
           <Outlet />
         </div>
