@@ -56,7 +56,7 @@ function Home() {
   }, [filtered, sort]);
 
   return (
-    <div className="relative overflow-hidden pb-28">
+    <div className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Soft ambient — very light */}
       <div
         aria-hidden
@@ -72,7 +72,8 @@ function Home() {
         style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
       />
 
-      {/* Top bar: greeting + bell */}
+      {/* Scrollable top section */}
+      <div className="no-scrollbar h-full overflow-y-auto" style={{ paddingBottom: "55%" }}>
       <header className="relative px-5 pt-5">
         <div className="flex items-center justify-between">
           <div
@@ -221,12 +222,28 @@ function Home() {
         <div className="mt-3">
           <CategoryRow active={cat} onChange={setCat} />
         </div>
+      </header>
+      </div>
 
-        {/* Around you — consolidated filter (categories above, sort behind icon) */}
-        <div className="mt-6 flex items-end justify-between gap-3">
+      {/* Bottom card sheet — mirrors /discover */}
+      <div
+        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-card"
+        style={{
+          border: "1px solid var(--border)",
+          boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
+          maxHeight: "55%",
+        }}
+      >
+        <div className="flex justify-center pt-2.5">
+          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+        </div>
+        <div className="px-5 pt-1">
+          <ReportCTA onClick={() => setReportOpen(true)} />
+        </div>
+        <div className="mt-3 flex items-center justify-between px-5">
           <div>
-            <h2 className="font-display text-lg font-bold tracking-tight">Around you</h2>
-            <p className="font-grotesk mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            <h2 className="font-display text-base font-bold tracking-tight">Around you</h2>
+            <p className="font-grotesk mt-0.5 text-[10px]" style={{ color: "var(--muted-foreground)" }}>
               Sorted by <span className="font-bold" style={{ color: "var(--foreground)" }}>
                 {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
               </span>
@@ -234,9 +251,8 @@ function Home() {
           </div>
           <SortMenu value={sort} onChange={setSort} />
         </div>
-      </header>
 
-      <div className="mt-3 grid grid-cols-2 gap-3 px-5">
+        <div className="no-scrollbar mt-3 grid max-h-[300px] grid-cols-2 gap-3 overflow-y-auto px-4 pb-5">
         {popular.slice(0, 6).map((v, idx) => {
           const fav = isFav(v.id);
           const isWaitSort = sort === "wait";
@@ -299,6 +315,7 @@ function Home() {
             </Link>
           );
         })}
+        </div>
       </div>
 
       {reportOpen && (
@@ -306,13 +323,6 @@ function Home() {
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
-
-      {/* Floating Report CTA — mirrors Explore placement, sits above bottom nav */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto animate-fade-in-up">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
     </div>
   );
 }
