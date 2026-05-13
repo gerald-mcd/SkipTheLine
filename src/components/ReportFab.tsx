@@ -43,6 +43,71 @@ function WaveDot() {
   );
 }
 
+/* Tap-to-Time — finger tap meeting a clock face */
+function TapTime() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="11" r="6" />
+      <path d="M10 8v3l2 1.5" className="fab-clock-hand" style={{ transformOrigin: "10px 11px" }} />
+      <path d="M17 17l3 3M19 14l1.5 1.5M14 19l1.5 1.5" className="fab-tap-ripple" />
+    </svg>
+  );
+}
+
+/* Bolt + Clock — quick instant report */
+function BoltClock() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M13 7l-4 6h3l-1 4 4-6h-3l1-4z" fill="currentColor" stroke="none" className="fab-bolt-flash" />
+    </svg>
+  );
+}
+
+/* Pin + Ring — geo presence with timing ring */
+function PinRing() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s-6-5.5-6-11a6 6 0 1 1 12 0c0 5.5-6 11-6 11z" />
+      <circle cx="12" cy="10" r="2" fill="currentColor" stroke="none" className="fab-pulse-dot" />
+      <circle cx="12" cy="10" r="5" className="fab-ring-expand" style={{ transformOrigin: "12px 10px" }} />
+    </svg>
+  );
+}
+
+/* Live Beacon — concentric broadcast rings */
+function Beacon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="5" className="fab-ring-1" style={{ transformOrigin: "12px 12px" }} />
+      <circle cx="12" cy="12" r="8.5" className="fab-ring-2" style={{ transformOrigin: "12px 12px" }} />
+    </svg>
+  );
+}
+
+/* Contribution Loop — give back arrow loop */
+function Loop() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12a5 5 0 0 1 8.5-3.5L16 12" />
+      <path d="M20 12a5 5 0 0 1-8.5 3.5L8 12" />
+      <path d="M16 9v3h-3M8 15v-3h3" />
+    </svg>
+  );
+}
+
+/* Send-Up Clock — push your time upward */
+function SendUp() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="13" r="7" />
+      <path d="M12 13V9" />
+      <path d="M12 4l3 3M12 4l-3 3M12 4v5" className="fab-send-up" style={{ transformOrigin: "12px 13px" }} />
+    </svg>
+  );
+}
+
 const GLYPHS = [
   { key: "hourglass", label: "Hourglass", node: <HourglassPulse /> },
   { key: "queue", label: "Queue + Clock", node: <QueueClock /> },
