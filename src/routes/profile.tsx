@@ -132,7 +132,7 @@ function Profile() {
           <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Target className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Active quests
           </h2>
-          <span className="text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>
+          <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
             Resets in 6h
           </span>
         </div>
@@ -149,7 +149,7 @@ function Profile() {
           <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Gift className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Redeem rewards
           </h2>
-          <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
+          <button className="flex items-center text-xs font-semibold" style={{ color: "var(--primary)" }}>
             Shop all <ChevronRight className="h-3 w-3" />
           </button>
         </div>
@@ -166,7 +166,7 @@ function Profile() {
           <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Badges
           </h2>
-          <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
+          <button className="flex items-center text-xs font-semibold" style={{ color: "var(--primary)" }}>
             View all <ChevronRight className="h-3 w-3" />
           </button>
         </div>
@@ -181,7 +181,7 @@ function Profile() {
               }}
             >
               <span className="text-2xl">{b.emoji}</span>
-              <span className="mt-1 text-[11px] font-medium">{b.name}</span>
+              <span className="mt-1 text-[11px] font-semibold">{b.name}</span>
               {!b.earned && (
                 <span className="text-[9px]" style={{ color: "var(--muted-foreground)" }}>
                   Locked
@@ -199,7 +199,7 @@ function Profile() {
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
           <h2 className="font-display text-base font-bold tracking-tight">
-            Friends <span className="ml-1 text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>{allFriends.length}</span>
+            Friends <span className="ml-1 text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>{allFriends.length}</span>
           </h2>
           <button
             onClick={() => setFindOpen(true)}
@@ -241,7 +241,7 @@ function Profile() {
                 {f.initial}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">{f.name}</p>
+                <p className="text-sm font-semibold">{f.name}</p>
                 <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>{f.handle}</p>
               </div>
               <button className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
@@ -276,7 +276,7 @@ function RequestRow({ person, onAccept }: { person: Person; onAccept: () => void
         {person.initial}
       </div>
       <div className="flex-1">
-        <p className="text-sm font-medium">{person.name}</p>
+        <p className="text-sm font-semibold">{person.name}</p>
         <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
           {person.mutuals} mutual{person.mutuals === 1 ? "" : "s"} · {person.city}
         </p>
@@ -389,7 +389,7 @@ function FindFriendsSheet({
                       {p.initial}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-medium">{p.name} <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>{p.handle}</span></p>
+                      <p className="truncate text-sm font-semibold">{p.name} <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>{p.handle}</span></p>
                       <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
                         {p.city} · {p.mutuals} mutual · {p.reportsCount} reports
                       </p>
@@ -430,7 +430,7 @@ function Row({ icon, label, value, top }: { icon: React.ReactNode; label: string
     >
       {icon}
       <span className="flex-1 text-xs" style={{ color: "var(--muted-foreground)" }}>{label}</span>
-      <span className="text-sm font-medium">{value}</span>
+      <span className="text-sm font-semibold">{value}</span>
     </div>
   );
 }
@@ -443,7 +443,7 @@ function SettingItem({ icon, label, top, destructive }: { icon: React.ReactNode;
       style={{ borderTop: top ? "1px solid var(--border)" : "none" }}
     >
       {icon}
-      <span className="flex-1 text-sm font-medium" style={{ color: destructive ? "var(--destructive, #c33)" : "var(--foreground)" }}>
+      <span className="flex-1 text-sm font-semibold" style={{ color: destructive ? "var(--destructive, #c33)" : "var(--foreground)" }}>
         {label}
       </span>
       <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
@@ -458,7 +458,7 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
         {icon}
         <span className="text-lg font-semibold tabular-nums">{value}</span>
       </div>
-      <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+      <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
         {label}
       </p>
     </div>
