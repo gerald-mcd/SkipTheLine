@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight } from "lucide-react";
-import { venues, Category, categories, profile } from "@/lib/mock-data";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Zap, Clock } from "lucide-react";
+import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
+import { QueueClockGlyph } from "@/components/ReportFab";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
@@ -37,10 +38,21 @@ export const Route = createFileRoute("/")({
 function Home() {
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
-  const [reportOpen, setReportOpen] = useState(false);
+  const [reportVenue, setReportVenue] = useState<Venue | null | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // Reactive arrival nudge — simulate geofence detecting user has arrived at a venue.
+  const [arrival, setArrival] = useState<Venue | null>(null);
+  const [arrivalDismissed, setArrivalDismissed] = useState(false);
   const { isFav, toggle } = useFavorites();
   const { theme, toggle: toggleTheme } = useTheme();
+
+  useEffect(() => {
+    if (arrivalDismissed) return;
+    const t = window.setTimeout(() => {
+      setArrival(venues.find((v) => v.id === "v1") ?? null);
+    }, 4000);
+    return () => window.clearTimeout(t);
+  }, [arrivalDismissed]);
 
   const filtered = useMemo(
     () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
@@ -236,10 +248,65 @@ function Home() {
         </div>
       </header>
 
+      {/* Contribute rail — venues nearby that need fresh wait times */}
+      <section className="mt-6 px-5">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="font-display text-lg font-bold tracking-tight">Help your block</h2>
+            <p className="font-grotesk mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+              {staleVenues.length} spots near you need an update
+            </p>
+          </div>
+          <span
+            className="font-grotesk inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold"
+            style={{ background: "var(--accent)", color: "var(--primary)" }}
+          >
+            <Zap className="h-3 w-3" /> +15 pts each
+          </span>
+        </div>
+        <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-5 pb-1">
+          {staleVenues.map(({ venue, lastReportMin }) => (
+            <button
+              key={venue.id}
+              type="button"
+              onClick={() => setReportVenue(venue)}
+              className="card-lift snap-start shrink-0 overflow-hidden rounded-2xl bg-card text-left"
+              style={{
+                width: "168px",
+                border: "1px solid var(--border)",
+                boxShadow: "var(--shadow-sm)",
+              }}
+            >
+              <div className="relative h-20 w-full">
+                <img src={venue.image} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                <span
+                  className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/65 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur"
+                >
+                  <Clock className="h-2.5 w-2.5" /> {lastReportMin}m stale
+                </span>
+              </div>
+              <div className="p-2.5">
+                <p className="truncate text-xs font-bold">{venue.name}</p>
+                <div className="mt-1.5 flex items-center justify-between">
+                  <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{venue.distance}</span>
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                  >
+                    <QueueClockGlyph className="h-3 w-3" /> Report
+                  </span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <div className="mt-3 grid grid-cols-2 gap-3 px-5">
         {popular.slice(0, 6).map((v, idx) => {
           const fav = isFav(v.id);
           const isWaitSort = sort === "wait";
+          const stale = staleVenues.some((s) => s.venue.id === v.id);
           return (
             <Link
               key={v.id}
@@ -295,17 +362,110 @@ function Home() {
                     variant="solid"
                   />
                 </div>
+                {stale && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setReportVenue(v);
+                    }}
+                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-[10px] font-bold transition-transform active:scale-95"
+                    style={{
+                      background: "color-mix(in oklab, var(--primary) 10%, var(--card))",
+                      color: "var(--primary)",
+                      border: "1px dashed var(--primary)",
+                    }}
+                  >
+                    <QueueClockGlyph className="h-3 w-3" />
+                    Be the first · +15 pts
+                  </button>
+                )}
               </div>
             </Link>
           );
         })}
       </div>
 
-      {reportOpen && (
-        <ReportSheet onClose={() => setReportOpen(false)} />
+      {reportVenue !== undefined && (
+        <ReportSheet
+          venue={reportVenue}
+          onClose={() => setReportVenue(undefined)}
+        />
+      )}
+
+      {/* Reactive arrival nudge — geofence-style prompt */}
+      {arrival && !arrivalDismissed && (
+        <ArrivalNudge
+          venue={arrival}
+          onReport={() => {
+            setReportVenue(arrival);
+            setArrival(null);
+            setArrivalDismissed(true);
+          }}
+          onDismiss={() => {
+            setArrival(null);
+            setArrivalDismissed(true);
+          }}
+        />
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
+    </div>
+  );
+}
+
+function ArrivalNudge({
+  venue,
+  onReport,
+  onDismiss,
+}: {
+  venue: Venue;
+  onReport: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      className="pointer-events-none fixed inset-x-0 z-40 mx-auto flex max-w-md justify-center px-4"
+      style={{ bottom: "calc(72px + env(safe-area-inset-bottom) + 16px)" }}
+    >
+      <div
+        className="pointer-events-auto animate-slide-up flex w-full items-center gap-3 rounded-2xl bg-card p-3 pl-3.5"
+        style={{
+          border: "1px solid var(--primary)",
+          boxShadow: "var(--shadow-lg), var(--shadow-glow)",
+        }}
+      >
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+        >
+          <MapPin className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
+            You're at {venue.name}
+          </p>
+          <p className="text-[12px] font-semibold leading-tight">How long is the wait?</p>
+        </div>
+        <button
+          type="button"
+          onClick={onReport}
+          className="rounded-xl px-3 py-2 text-xs font-bold"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+        >
+          Report
+        </button>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+          style={{ background: "var(--secondary)" }}
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
