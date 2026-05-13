@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Map, Trophy, Compass } from "lucide-react";
-import { QueueClockGlyph } from "./ReportFab";
+import { PeopleSkipGlyph } from "./ReportFab";
 
 type Tab = {
   to: string;
@@ -13,7 +13,7 @@ type Tab = {
 const tabs: Tab[] = [
   { to: "/", label: "Home", icon: Home },
   { to: "/explore", label: "Explore", icon: Compass },
-  { to: "/report", label: "Report", glyph: QueueClockGlyph },
+  { to: "/report", label: "Report", glyph: PeopleSkipGlyph },
   { to: "/discover", label: "Map", icon: Map },
   { to: "/profile", label: "You", icon: Trophy },
 ];
