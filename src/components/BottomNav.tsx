@@ -14,8 +14,12 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto max-w-md">
       <div
-        className="mx-3 mb-3 flex items-center justify-around rounded-2xl bg-card px-2 py-2"
-        style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+        className="flex items-center justify-around bg-card px-2 pt-2"
+        style={{
+          borderTop: "1px solid var(--border)",
+          boxShadow: "var(--shadow-lg)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 0.5rem)",
+        }}
       >
         {tabs.map((t) => {
           const Icon = t.icon;
