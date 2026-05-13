@@ -305,13 +305,6 @@ function Home() {
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
-
-      {/* Floating Report CTA */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto animate-fade-in-up">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
     </div>
   );
 }
