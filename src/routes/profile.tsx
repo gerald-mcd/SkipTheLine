@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
+import { profile, peoplePool, incomingRequests, staleVenues, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
 import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
+import { QueueClockGlyph } from "@/components/ReportFab";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -139,6 +140,48 @@ function Profile() {
         <div className="space-y-2">
           {quests.map((q) => (
             <QuestCard key={q.id} quest={q} />
+          ))}
+        </div>
+      </section>
+
+      {/* Contributor hub — venues nearby that need updates */}
+      <section className="mt-7">
+        <div className="mb-2.5 flex items-center justify-between">
+          <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
+            <QueueClockGlyph className="h-4 w-4" /> Help your block
+          </h2>
+          <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
+            {staleVenues.length} need updates
+          </span>
+        </div>
+        <div className="overflow-hidden rounded-2xl bg-card" style={{ border: "1px solid var(--border)" }}>
+          {staleVenues.map(({ venue, lastReportMin }, i) => (
+            <Link
+              key={venue.id}
+              to="/venue/$id"
+              params={{ id: venue.id }}
+              className="flex items-center gap-3 px-4 py-3"
+              style={{ borderTop: i > 0 ? "1px solid var(--border)" : "none" }}
+            >
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl"
+                style={{ background: "var(--accent)" }}
+              >
+                <img src={venue.image} alt="" className="h-full w-full object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">{venue.name}</p>
+                <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                  <Clock className="mr-0.5 inline h-3 w-3" /> Stale {lastReportMin}m · {venue.distance}
+                </p>
+              </div>
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold"
+                style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+              >
+                <Zap className="h-3 w-3" /> +15
+              </span>
+            </Link>
           ))}
         </div>
       </section>

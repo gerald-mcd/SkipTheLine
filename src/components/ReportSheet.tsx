@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Search, Sparkles, X, Minus, Plus, MapPin, ChevronLeft, Zap } from "lucide-react";
+import { Search, Sparkles, X, MapPin, ChevronLeft, Zap } from "lucide-react";
 import { venues, type Venue } from "@/lib/mock-data";
 
 export type ReportPayload = {
@@ -12,34 +12,9 @@ export type ReportPayload = {
   points: number;
 };
 
-const ENTRY_TYPES = [
-  { id: "walkin", label: "Walk-in", emoji: "🚶" },
-  { id: "reservation", label: "Reservation", emoji: "📅" },
-  { id: "vip", label: "VIP / Guestlist", emoji: "👑" },
-  { id: "pickup", label: "Pickup", emoji: "🥡" },
-  { id: "bar", label: "Bar seating", emoji: "🍸" },
-  { id: "online", label: "Online order", emoji: "💻" },
-];
-
-const DRIVERS = [
-  { id: "none", label: "Just busy" },
-  { id: "event", label: "Live event" },
-  { id: "happyhour", label: "Happy hour" },
-  { id: "sports", label: "Sports game" },
-  { id: "weekend", label: "Weekend rush" },
-  { id: "holiday", label: "Holiday" },
-  { id: "promo", label: "Promo / deal" },
-  { id: "other", label: "Other" },
-];
-
 const NOTE_MAX = 140;
 
-function calcPoints(entryType: string, driver: string) {
-  let p = 10;
-  if (driver !== "none") p += 15;
-  if (entryType === "vip") p += 5;
-  return p;
-}
+const POINTS = 15;
 
 export function ReportSheet({
   venue,
@@ -53,12 +28,10 @@ export function ReportSheet({
   const [picked, setPicked] = useState<Venue | null>(venue ?? null);
   const [query, setQuery] = useState("");
   const [minutes, setMinutes] = useState(venue?.waitMinutes ?? 15);
-  const [entryType, setEntryType] = useState("walkin");
-  const [driver, setDriver] = useState("none");
   const [note, setNote] = useState("");
 
-  const points = calcPoints(entryType, driver);
-  const presets = [0, 5, 15, 30, 45, 60, 90];
+  const points = POINTS;
+  const presets = [0, 5, 15, 30, 45, 60];
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -79,8 +52,8 @@ export function ReportSheet({
     const payload: ReportPayload = {
       venueId: picked.id,
       minutes: m,
-      entryType,
-      driver,
+      entryType: "walkin",
+      driver: "none",
       note: note.trim().slice(0, NOTE_MAX) || undefined,
       points,
     };
@@ -192,35 +165,15 @@ export function ReportSheet({
             {/* Wait minutes */}
             <div className="rounded-2xl p-4" style={{ background: "var(--surface, #f7f7f8)", border: "1px solid var(--border)" }}>
               <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                Wait time
+                How long is the wait?
               </p>
-              <div className="mt-2 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setMinutes((m) => Math.max(0, m - 5))}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-card"
-                  style={{ border: "1px solid var(--border)" }}
-                  aria-label="Decrease"
-                >
-                  <Minus className="h-4 w-4" />
-                </button>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="font-display text-5xl font-bold tabular-nums tracking-tight" style={{ color: "var(--primary)" }}>
-                    {minutes}
-                  </span>
-                  <span className="text-sm font-medium" style={{ color: "var(--muted-foreground)" }}>min</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMinutes((m) => Math.min(240, m + 5))}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-card"
-                  style={{ border: "1px solid var(--border)" }}
-                  aria-label="Increase"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
+              <div className="mt-3 flex items-baseline justify-center gap-1.5">
+                <span className="font-display text-6xl font-bold tabular-nums tracking-tight" style={{ color: "var(--primary)" }}>
+                  {minutes}
+                </span>
+                <span className="text-base font-medium" style={{ color: "var(--muted-foreground)" }}>min</span>
               </div>
-              <div className="mt-3 flex flex-wrap gap-1.5">
+              <div className="mt-4 grid grid-cols-3 gap-2">
                 {presets.map((p) => {
                   const on = p === minutes;
                   return (
@@ -228,7 +181,7 @@ export function ReportSheet({
                       key={p}
                       type="button"
                       onClick={() => setMinutes(p)}
-                      className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors"
+                      className="rounded-xl py-2 text-xs font-semibold transition-colors"
                       style={{
                         background: on ? "var(--primary)" : "var(--card)",
                         color: on ? "var(--primary-foreground)" : "var(--foreground)",
@@ -236,62 +189,6 @@ export function ReportSheet({
                       }}
                     >
                       {p === 0 ? "No wait" : `${p}m`}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Entry type */}
-            <div className="mt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                Entry type
-              </p>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {ENTRY_TYPES.map((t) => {
-                  const on = entryType === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setEntryType(t.id)}
-                      className="rounded-xl p-2.5 text-center transition-colors"
-                      style={{
-                        background: on ? "var(--accent)" : "var(--card)",
-                        border: "1px solid",
-                        borderColor: on ? "var(--primary)" : "var(--border)",
-                      }}
-                    >
-                      <div className="text-lg leading-none">{t.emoji}</div>
-                      <div className="mt-1 text-[11px] font-semibold leading-tight">{t.label}</div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Driver */}
-            <div className="mt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                What's driving the visit?
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {DRIVERS.map((d) => {
-                  const on = driver === d.id;
-                  return (
-                    <button
-                      key={d.id}
-                      type="button"
-                      onClick={() => setDriver(d.id)}
-                      className="rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"
-                      style={{
-                        background: on ? "var(--primary)" : "var(--card)",
-                        color: on ? "var(--primary-foreground)" : "var(--foreground)",
-                        border: "1px solid",
-                        borderColor: on ? "transparent" : "var(--border)",
-                      }}
-                    >
-                      {d.label}
                     </button>
                   );
                 })}

@@ -513,3 +513,20 @@
   .fab-pulse-dot, .fab-hourglass, .fab-clock-hand,
   .fab-gauge-needle, .fab-wave-1, .fab-wave-2 { animation: none; }
 }
+
+@keyframes fab-queue-march {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(2px); opacity: 0.85; }
+}
+.fab-queue-dot { animation: fab-queue-march 1.4s ease-in-out infinite; }
+.fab-queue-d1 { animation-delay: 0s; }
+.fab-queue-d2 { animation-delay: 0.15s; }
+.fab-queue-d3 { animation-delay: 0.3s; }
+@keyframes fab-queue-arrow {
+  0%, 100% { opacity: 0.4; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(1.5px); }
+}
+.fab-queue-arrow { animation: fab-queue-arrow 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .fab-queue-dot, .fab-queue-arrow { animation: none; }
+}

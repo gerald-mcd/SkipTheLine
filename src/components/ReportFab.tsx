@@ -19,6 +19,30 @@ export function TapTimeGlyph({ className = "h-4 w-4" }: { className?: string }) 
   );
 }
 
+/* Queue + Clock — three queued bars meeting a small clock badge. */
+export function QueueClockGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* queue dots/lines moving forward */}
+      <circle cx="4" cy="14" r="1.4" fill="currentColor" stroke="none" className="fab-queue-dot fab-queue-d1" />
+      <circle cx="8" cy="14" r="1.4" fill="currentColor" stroke="none" className="fab-queue-dot fab-queue-d2" />
+      <circle cx="12" cy="14" r="1.4" fill="currentColor" stroke="none" className="fab-queue-dot fab-queue-d3" />
+      <path d="M14 14h2.5" className="fab-queue-arrow" />
+      {/* clock badge */}
+      <circle cx="18" cy="9" r="5" />
+      <path d="M18 6.5V9l1.7 1.1" className="fab-clock-hand" style={{ transformOrigin: "18px 9px" }} />
+    </svg>
+  );
+}
+
 /**
  * Subtle floating contributor entry-point.
  * Sits above the bottom nav, bottom-right. Visible but unobtrusive.
