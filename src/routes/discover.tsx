@@ -186,7 +186,7 @@ function Discover() {
 
   const openVenue = useCallback((id: string) => {
     setSelectedId(id);
-    setSnap("full");
+    setSnap("peek");
   }, []);
 
   const closeVenue = useCallback(() => {
@@ -253,7 +253,7 @@ function Discover() {
           onPointerMove={onHandleMove}
           onPointerUp={onHandleUp}
           onPointerCancel={onHandleUp}
-          className="flex shrink-0 cursor-grab justify-center pt-2.5 pb-1 active:cursor-grabbing"
+          className="flex shrink-0 cursor-grab justify-center pt-3 pb-3 active:cursor-grabbing"
           style={{ touchAction: "none" }}
           aria-label="Drag to resize"
         >
