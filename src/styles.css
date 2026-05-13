@@ -430,3 +430,55 @@
 /* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---- Report FAB glyph readiness animations ---- */
+@keyframes fab-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.7); }
+}
+.fab-pulse-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fab-pulse-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes fab-hourglass-flip {
+  0%, 70%, 100% { transform: rotate(0deg); }
+  80% { transform: rotate(180deg); }
+  90% { transform: rotate(180deg); }
+}
+.fab-hourglass {
+  transform-origin: 50% 50%;
+  animation: fab-hourglass-flip 4s ease-in-out infinite;
+}
+
+@keyframes fab-clock-tick {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+}
+.fab-clock-hand {
+  animation: fab-clock-tick 4s steps(4, end) infinite;
+}
+
+@keyframes fab-gauge-sweep {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(35deg); }
+}
+.fab-gauge-needle {
+  animation: fab-gauge-sweep 2.4s ease-in-out infinite;
+}
+
+@keyframes fab-wave-emit {
+  0% { opacity: 0; }
+  40% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.fab-wave-1 { animation: fab-wave-emit 1.8s ease-out infinite; }
+.fab-wave-2 { animation: fab-wave-emit 1.8s ease-out infinite; animation-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-pulse-dot, .fab-hourglass, .fab-clock-hand,
+  .fab-gauge-needle, .fab-wave-1, .fab-wave-2 { animation: none; }
+}
