@@ -281,6 +281,28 @@ function Discover() {
       </div>
 
       {/* Draggable bottom sheet */}
+      {/* Quick map / expand toggle — floats just above the sheet */}
+      <button
+        type="button"
+        onClick={() => setSnap(snap === "collapsed" ? "peek" : "collapsed")}
+        aria-label={snap === "collapsed" ? "Show list" : "Show map"}
+        className="absolute right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-card transition-all active:scale-95"
+        style={{
+          bottom: `${(sheetH || containerH * PEEK) + 12}px`,
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-md)",
+          transition: dragging
+            ? "none"
+            : "bottom 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms ease",
+        }}
+      >
+        {snap === "collapsed" ? (
+          <ChevronUp className="h-5 w-5" style={{ color: "var(--primary)" }} />
+        ) : (
+          <MapIcon className="h-5 w-5" style={{ color: "var(--primary)" }} />
+        )}
+      </button>
+
       <div
         className="absolute inset-x-0 bottom-0 z-30 flex flex-col overflow-hidden rounded-t-3xl bg-card"
         style={{
