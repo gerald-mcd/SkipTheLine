@@ -245,7 +245,6 @@ function Discover() {
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
           height: sheetH ? `${sheetH}px` : `${PEEK * 100}%`,
           transition: dragging ? "none" : "height 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-          touchAction: "none",
         }}
       >
         {/* Drag handle — captures the drag gesture */}
