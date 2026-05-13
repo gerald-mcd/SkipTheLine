@@ -55,7 +55,7 @@ function Home() {
   }, [filtered, sort]);
 
   return (
-    <div className="relative overflow-hidden pb-20">
+    <div className="relative overflow-hidden pb-0">
       {/* Soft ambient — very light */}
       <div
         aria-hidden
