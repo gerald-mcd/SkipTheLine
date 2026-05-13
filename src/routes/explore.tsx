@@ -9,7 +9,7 @@ import {
 import { ArrowDownRight, ThumbsUp, ThumbsDown, Users, Clock, Sparkles } from "lucide-react";
 import { VenueImage } from "@/components/VenueImage";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
-import { ReportCTA } from "@/components/ReportCTA";
+import { ReportFab } from "@/components/ReportFab";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -90,11 +90,7 @@ function Explore() {
       </div>
 
       <div className="h-24" />
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
+      <ReportFab onClick={() => setReportOpen(true)} />
       {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
     </div>
   );
