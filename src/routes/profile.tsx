@@ -272,8 +272,8 @@ function RequestRow({ person, onAccept }: { person: Person; onAccept: () => void
   if (state === "declined") return null;
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center rounded-full text-xl" style={{ background: "var(--accent)" }}>
-        {person.avatar ?? person.initial}
+      <div className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)" }}>
+        {person.initial}
       </div>
       <div className="flex-1">
         <p className="text-sm font-medium">{person.name}</p>
@@ -385,8 +385,8 @@ function FindFriendsSheet({
                 const isAccepted = accepted.has(p.id);
                 return (
                   <div key={p.id} className="flex items-center gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-xl" style={{ background: "var(--accent)" }}>
-                      {p.avatar ?? p.initial}
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" style={{ background: "var(--accent)" }}>
+                      {p.initial}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-medium">{p.name} <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>{p.handle}</span></p>
