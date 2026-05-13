@@ -484,7 +484,209 @@ function Discover() {
           </div>
         </div>
       )}
-      {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
+      {reportOpen && (
+        <ReportSheet
+          venue={selectedVenue ?? undefined}
+          onClose={() => setReportOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function VenuePanel({
+  venue: v,
+  onBack,
+  onReport,
+}: {
+  venue: (typeof venues)[number];
+  onBack: () => void;
+  onReport: () => void;
+}) {
+  // Wait-trend sparkline (mock, mirrors /venue/$id)
+  const trend = [22, 28, 31, 35, 30, 38, 45, 42, v.waitMinutes];
+  const max = Math.max(...trend);
+  const min = Math.min(...trend);
+  const norm = trend.map((t) => ((t - min) / Math.max(1, max - min)) * 36 + 4);
+  const color = severityColor(v.severity);
+  const liveSeverity: Severity = v.severity;
+  const recent = liveFeed.slice(0, 3);
+
+  return (
+    <div className="no-scrollbar flex-1 overflow-y-auto" style={{ overscrollBehavior: "contain" }}>
+      {/* Hero */}
+      <div className="relative h-56 w-full overflow-hidden">
+        <img
+          src={v.image}
+          alt={v.name}
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%)" }}
+        />
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="Back to list"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-95"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              aria-label="Save"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-95"
+            >
+              <Heart className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Share"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-95"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Close"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 backdrop-blur transition-transform active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+          <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.2em] opacity-90">
+            {v.categoryLabel} · {v.vibe}
+          </p>
+          <h1 className="font-display text-2xl font-bold leading-tight tracking-tight">{v.name}</h1>
+          <p className="mt-0.5 flex items-center gap-1 text-[11px] opacity-90">
+            <MapPin className="h-3 w-3" /> {v.address}
+          </p>
+        </div>
+      </div>
+
+      {/* Live wait + sparkline */}
+      <div className="flex items-end justify-between px-5 pt-4">
+        <div>
+          <p className="font-grotesk text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: "var(--muted-foreground)" }}>
+            Live wait
+          </p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-5xl font-bold leading-none tabular-nums tracking-tight" style={{ color }}>
+              {v.waitMinutes}
+            </span>
+            <span className="text-base font-medium" style={{ color }}>min</span>
+          </div>
+          <div className="mt-1 flex items-center gap-2">
+            <span
+              className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+              style={{ background: `${color}1f`, color }}
+            >
+              {severityLabel(liveSeverity)} line
+            </span>
+            <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+              <Clock className="h-3 w-3" /> {v.lastReportMinutes}m ago
+            </span>
+          </div>
+        </div>
+        <svg width="100" height="48" viewBox="0 0 100 48">
+          <defs>
+            <linearGradient id={`spark-${v.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity="0.5" />
+              <stop offset="100%" stopColor={color} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <polyline
+            fill="none"
+            stroke={color}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            points={norm.map((y, i) => `${(i / (norm.length - 1)) * 100},${48 - y}`).join(" ")}
+          />
+          <polygon
+            fill={`url(#spark-${v.id})`}
+            points={`0,48 ${norm.map((y, i) => `${(i / (norm.length - 1)) * 100},${48 - y}`).join(" ")} 100,48`}
+          />
+        </svg>
+      </div>
+
+      {v.event && (
+        <div className="mx-5 mt-4 flex items-center gap-2 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+          <Calendar className="h-4 w-4" style={{ color: "var(--primary)" }} />
+          <div className="flex-1">
+            <p className="text-[10px] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+              Driving the crowd
+            </p>
+            <p className="text-sm font-semibold">{v.event}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 grid grid-cols-3 gap-2 px-5">
+        <MiniStat icon={<Timer className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />} value={`${v.typicalWaitMinutes}m`} label="Avg wait" />
+        <MiniStat icon={<MessageSquare className="h-3.5 w-3.5" style={{ color }} />} value={`${v.reportsCount}`} label="Reports" />
+        <MiniStat icon={<Clock className="h-3.5 w-3.5" />} value={v.hours} label="Open" />
+      </div>
+
+      <section className="mt-5 px-5">
+        <h2 className="text-sm font-semibold">Recent reports</h2>
+        <div className="mt-2 space-y-2">
+          {recent.map((r) => {
+            const friend = profile.friends.find((f) => f.name === r.user);
+            return (
+              <div key={r.id} className="flex items-center gap-3 rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+                {friend ? (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold" style={{ background: "var(--accent)", color: "var(--primary)" }}>
+                    {r.user[0]}
+                  </div>
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: "var(--secondary)", color: "var(--muted-foreground)" }}>
+                    <UserCircle2 className="h-5 w-5" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{friend ? r.user : "Someone nearby"}</p>
+                  <p className="text-[11px]" style={{ color: "var(--muted-foreground)" }}>walk-in · {r.ago}</p>
+                </div>
+                <span className="text-base font-semibold tabular-nums" style={{ color }}>{r.minutes}m</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="px-5 pb-6 pt-5">
+        <button
+          type="button"
+          onClick={onReport}
+          className="font-display flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
+          style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
+        >
+          Report current wait
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MiniStat({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
+  return (
+    <div className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+      <div className="flex items-center gap-1.5">
+        {icon}
+        <span className="text-sm font-bold">{value}</span>
+      </div>
+      <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+        {label}
+      </p>
     </div>
   );
 }
