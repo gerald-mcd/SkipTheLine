@@ -12,9 +12,11 @@ import { Venue } from "@/lib/mock-data";
 export function CityMap({
   venues,
   focusedId,
+  onPinClick,
 }: {
   venues: Venue[];
   focusedId?: string | null;
+  onPinClick?: (id: string) => void;
 }) {
   const focused = focusedId ? venues.find((v) => v.id === focusedId) : null;
   // Translate the inner map so the focused pin lands at 50/50.
@@ -89,21 +91,15 @@ export function CityMap({
       {/* Venue pins — dark teardrop markers */}
       {venues.map((v) => {
         const isFocused = v.id === focusedId;
-        return (
-          <Link
-            key={v.id}
-            to="/venue/$id"
-            params={{ id: v.id }}
-            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
-            style={{
-              left: `${v.x}%`,
-              top: `${v.y}%`,
-              transition: "transform 300ms ease",
-              transform: `translate(-50%, -100%) scale(${isFocused ? 1.35 : 1})`,
-              zIndex: isFocused ? 20 : 10,
-            }}
-            aria-label={v.name}
-          >
+        const pinStyle = {
+          left: `${v.x}%`,
+          top: `${v.y}%`,
+          transition: "transform 300ms ease",
+          transform: `translate(-50%, -100%) scale(${isFocused ? 1.35 : 1})`,
+          zIndex: isFocused ? 20 : 10,
+        } as const;
+        const inner = (
+          <>
             {isFocused && (
               <span
                 aria-hidden
@@ -128,6 +124,29 @@ export function CityMap({
               />
               <circle cx="14" cy="14" r="4.5" fill="white" />
             </svg>
+          </>
+        );
+        return onPinClick ? (
+          <button
+            key={v.id}
+            type="button"
+            onClick={() => onPinClick(v.id)}
+            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
+            style={pinStyle}
+            aria-label={v.name}
+          >
+            {inner}
+          </button>
+        ) : (
+          <Link
+            key={v.id}
+            to="/venue/$id"
+            params={{ id: v.id }}
+            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
+            style={pinStyle}
+            aria-label={v.name}
+          >
+            {inner}
           </Link>
         );
       })}
