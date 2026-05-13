@@ -69,7 +69,7 @@ function Discover() {
 
   // Sheet snap state — draggable with three snap points: collapsed, peek, full.
   // Collapsed shows just the handle so the map is fully visible.
-  const COLLAPSED_PX = 88; // sliver showing handle + summary
+  const COLLAPSED_PX = 72; // sliver showing handle + summary cleanly (no clipped cards)
   const PEEK = 0.55;
   const FULL = 1.0;
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -332,7 +332,7 @@ function Discover() {
           />
         ) : (
           <>
-            <div className="flex items-center justify-between px-5">
+            <div className="flex shrink-0 items-center justify-between px-5">
               <h2 className="font-display text-base font-bold tracking-tight">
                 {list.length} {list.length === 1 ? "place" : "places"} nearby
               </h2>
@@ -343,7 +343,13 @@ function Discover() {
                 </span>
               </p>
             </div>
-            <div className="no-scrollbar mt-3 flex-1 space-y-2.5 overflow-y-auto px-4 pb-5">
+            <div
+              className="no-scrollbar mt-3 flex-1 space-y-2.5 overflow-y-auto px-4 pb-5 transition-opacity duration-200"
+              style={{
+                opacity: snap === "collapsed" ? 0 : 1,
+                pointerEvents: snap === "collapsed" ? "none" : "auto",
+              }}
+            >
               {list.map((v) => (
                 <button
                   key={v.id}
