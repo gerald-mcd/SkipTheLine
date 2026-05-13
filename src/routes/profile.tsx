@@ -31,10 +31,10 @@ function Profile() {
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-12 w-12 items-center justify-center rounded-full text-2xl"
+            className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold"
             style={{ background: "var(--accent)" }}
           >
-            {profile.avatar}
+            {profile.name?.charAt(0)}
           </div>
           <div>
             <p className="text-base font-semibold">{profile.name}</p>
