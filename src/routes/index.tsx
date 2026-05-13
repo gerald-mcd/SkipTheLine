@@ -234,10 +234,7 @@ function Home() {
           maxHeight: "55%",
         }}
       >
-        <div className="flex justify-center pt-2.5">
-          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
-        </div>
-        <div className="px-5 pt-1">
+        <div className="px-5 pt-4">
           <ReportCTA onClick={() => setReportOpen(true)} />
         </div>
         <div className="mt-3 flex items-center justify-between px-5">
