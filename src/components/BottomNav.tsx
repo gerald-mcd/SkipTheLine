@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Map, Trophy, Compass } from "lucide-react";
 import { TapTimeGlyph } from "./ReportFab";
@@ -6,7 +7,7 @@ type Tab = {
   to: string;
   label: string;
   icon?: typeof Map;
-  glyph?: (props: { className?: string }) => JSX.Element;
+  glyph?: (props: { className?: string }) => ReactElement;
 };
 
 const tabs: Tab[] = [
