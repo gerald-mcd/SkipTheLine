@@ -30,6 +30,8 @@ import {
   UserCircle2,
   Heart,
   Share2,
+  Map as MapIcon,
+  ChevronUp,
 } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
@@ -75,7 +77,15 @@ function Discover() {
   const [snap, setSnap] = useState<"collapsed" | "peek" | "full">("peek");
   const [sheetH, setSheetH] = useState(0); // px
   const [dragging, setDragging] = useState(false);
-  const dragRef = useRef<{ startY: number; startH: number; lastY: number; lastT: number; vy: number } | null>(null);
+  const dragRef = useRef<{
+    startY: number;
+    startH: number;
+    startSnap: "collapsed" | "peek" | "full";
+    lastY: number;
+    lastT: number;
+    vy: number;
+    moved: boolean;
+  } | null>(null);
 
   // Track container height
   useEffect(() => {
@@ -109,9 +119,11 @@ function Discover() {
     dragRef.current = {
       startY: e.clientY,
       startH,
+      startSnap: snap,
       lastY: e.clientY,
       lastT: performance.now(),
       vy: 0,
+      moved: false,
     };
     setDragging(true);
   };
@@ -119,10 +131,13 @@ function Discover() {
     const d = dragRef.current;
     if (!d) return;
     const dy = d.startY - e.clientY; // up = +
+    if (Math.abs(dy) > 4) d.moved = true;
     const next = Math.max(COLLAPSED_PX, Math.min(containerH * FULL, d.startH + dy));
     const now = performance.now();
     const dt = Math.max(1, now - d.lastT);
-    d.vy = (d.lastY - e.clientY) / dt; // px/ms, up positive
+    // Smoothed velocity (px/ms, up positive)
+    const instV = (d.lastY - e.clientY) / dt;
+    d.vy = d.vy * 0.6 + instV * 0.4;
     d.lastY = e.clientY;
     d.lastT = now;
     setSheetH(next);
@@ -132,18 +147,33 @@ function Discover() {
     setDragging(false);
     dragRef.current = null;
     if (!d || containerH === 0) return;
+    // Tap (no real drag) → cycle to next sensible snap
+    if (!d.moved) {
+      setSnap(d.startSnap === "full" ? "peek" : d.startSnap === "peek" ? "collapsed" : "peek");
+      return;
+    }
     const collapsedH = COLLAPSED_PX;
     const peekH = containerH * PEEK;
     const fullH = containerH * FULL;
     const midLow = (collapsedH + peekH) / 2;
     const midHigh = (peekH + fullH) / 2;
-    // Velocity-aware snap with three positions
+    const order: ("collapsed" | "peek" | "full")[] = ["collapsed", "peek", "full"];
+    const startIdx = order.indexOf(d.startSnap);
+    const FLICK = 0.5; // px/ms
     let next: "collapsed" | "peek" | "full";
-    if (d.vy > 0.6) next = "full";
-    else if (d.vy < -0.6) next = sheetH < peekH ? "collapsed" : "peek";
-    else if (sheetH >= midHigh) next = "full";
-    else if (sheetH >= midLow) next = "peek";
-    else next = "collapsed";
+    if (d.vy > FLICK) {
+      // Fast upward flick → advance one step up
+      next = order[Math.min(order.length - 1, startIdx + 1)];
+    } else if (d.vy < -FLICK) {
+      // Fast downward flick → advance one step down
+      next = order[Math.max(0, startIdx - 1)];
+    } else if (sheetH >= midHigh) {
+      next = "full";
+    } else if (sheetH >= midLow) {
+      next = "peek";
+    } else {
+      next = "collapsed";
+    }
     setSnap(next);
   };
 
@@ -251,6 +281,28 @@ function Discover() {
       </div>
 
       {/* Draggable bottom sheet */}
+      {/* Quick map / expand toggle — floats just above the sheet */}
+      <button
+        type="button"
+        onClick={() => setSnap(snap === "collapsed" ? "peek" : "collapsed")}
+        aria-label={snap === "collapsed" ? "Show list" : "Show map"}
+        className="absolute right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-card transition-all active:scale-95"
+        style={{
+          bottom: `${(sheetH || containerH * PEEK) + 12}px`,
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-md)",
+          transition: dragging
+            ? "none"
+            : "bottom 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms ease",
+        }}
+      >
+        {snap === "collapsed" ? (
+          <ChevronUp className="h-5 w-5" style={{ color: "var(--primary)" }} />
+        ) : (
+          <MapIcon className="h-5 w-5" style={{ color: "var(--primary)" }} />
+        )}
+      </button>
+
       <div
         className="absolute inset-x-0 bottom-0 z-30 flex flex-col overflow-hidden rounded-t-3xl bg-card"
         style={{
