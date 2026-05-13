@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
-import { ReportCTA } from "@/components/ReportCTA";
+import { ReportFab } from "@/components/ReportFab";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
@@ -321,12 +321,7 @@ function Home() {
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
 
-      {/* Floating Report CTA — mirrors Explore placement, sits above bottom nav */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5">
-        <div className="pointer-events-auto animate-fade-in-up">
-          <ReportCTA onClick={() => setReportOpen(true)} />
-        </div>
-      </div>
+      <ReportFab onClick={() => setReportOpen(true)} />
     </div>
   );
 }
