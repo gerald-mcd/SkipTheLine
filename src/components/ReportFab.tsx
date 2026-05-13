@@ -225,6 +225,23 @@ export function CutLineGlyph({ className = "h-4 w-4" }: { className?: string }) 
   );
 }
 
+/* 19. People Skip — two heads moving forward with a double-chevron skip. */
+export function PeopleSkipGlyph({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg {...svgProps} className={className}>
+      {/* Back person */}
+      <circle cx="4" cy="8" r="2" />
+      <path d="M1.5 17c0-2.5 1.5-4 3.5-4" />
+      {/* Front person (slightly ahead) */}
+      <circle cx="9" cy="7" r="2.2" />
+      <path d="M5.5 17c0-3 1.8-5 4-5s3.5 1.5 3.5 3.5V17" />
+      {/* Double-chevron skip forward */}
+      <path d="M14 8l4 4-4 4" />
+      <path d="M19 8l4 4-4 4" />
+    </svg>
+  );
+}
+
 /* Catalog for preview/picker. */
 export const GLYPH_CATALOG = [
   { key: "queue", label: "Queue + Clock", node: QueueClockGlyph },
@@ -245,6 +262,7 @@ export const GLYPH_CATALOG = [
   { key: "skiparrow", label: "Skip Arrow", node: SkipArrowGlyph },
   { key: "vipband", label: "VIP Wristband", node: VipBandGlyph },
   { key: "cutline", label: "Cut the Line", node: CutLineGlyph },
+  { key: "peopleskip", label: "People Skip", node: PeopleSkipGlyph },
 ] as const;
 
 /**
