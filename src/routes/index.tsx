@@ -55,7 +55,7 @@ function Home() {
   }, [filtered, sort]);
 
   return (
-    <div className="relative overflow-hidden pb-0">
+    <div className="relative min-h-screen overflow-hidden pb-0">
       {/* Soft ambient — extends through the full page */}
       <div
         aria-hidden
