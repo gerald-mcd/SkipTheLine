@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as GlyphsRouteImport } from './routes/glyphs'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ const ReportRoute = ReportRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlyphsRoute = GlyphsRouteImport.update({
+  id: '/glyphs',
+  path: '/glyphs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
+  '/glyphs': typeof GlyphsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/welcome': typeof WelcomeRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
+  '/glyphs': typeof GlyphsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/welcome': typeof WelcomeRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/explore': typeof ExploreRoute
+  '/glyphs': typeof GlyphsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/welcome': typeof WelcomeRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/explore'
+    | '/glyphs'
     | '/profile'
     | '/report'
     | '/welcome'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/explore'
+    | '/glyphs'
     | '/profile'
     | '/report'
     | '/welcome'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/explore'
+    | '/glyphs'
     | '/profile'
     | '/report'
     | '/welcome'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiscoverRoute: typeof DiscoverRoute
   ExploreRoute: typeof ExploreRoute
+  GlyphsRoute: typeof GlyphsRoute
   ProfileRoute: typeof ProfileRoute
   ReportRoute: typeof ReportRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glyphs': {
+      id: '/glyphs'
+      path: '/glyphs'
+      fullPath: '/glyphs'
+      preLoaderRoute: typeof GlyphsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiscoverRoute: DiscoverRoute,
   ExploreRoute: ExploreRoute,
+  GlyphsRoute: GlyphsRoute,
   ProfileRoute: ProfileRoute,
   ReportRoute: ReportRoute,
   WelcomeRoute: WelcomeRoute,
@@ -187,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
