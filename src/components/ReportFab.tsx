@@ -1,5 +1,54 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+
+/* ---------- Custom glyphs (Copilot-style, branded) ---------- */
+
+function HourglassPulse() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 3h10M7 21h10M8 3v3.5c0 1.5 1 2.5 2 3.3l2 1.2 2-1.2c1-.8 2-1.8 2-3.3V3M8 21v-3.5c0-1.5 1-2.5 2-3.3l2-1.2 2 1.2c1 .8 2 1.8 2 3.3V21" />
+      <circle cx="18.5" cy="5.5" r="1.8" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function QueueClock() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7" cy="7" r="2.4" />
+      <path d="M3 18c.5-2.4 2.2-3.6 4-3.6s3.5 1.2 4 3.6" />
+      <circle cx="15" cy="14.5" r="4.5" />
+      <path d="M15 12.5v2l1.3 1.3" />
+    </svg>
+  );
+}
+
+function RadialGauge() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 16a8 8 0 0 1 16 0" />
+      <path d="M12 16l4-4" />
+      <circle cx="12" cy="16" r="1.4" fill="currentColor" stroke="none" />
+      <path d="M12 3v2M21 12h-2M5 12H3" />
+    </svg>
+  );
+}
+
+function WaveDot() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6" cy="12" r="2" fill="currentColor" stroke="none" />
+      <path d="M11 8.5a5 5 0 0 1 0 7" />
+      <path d="M15 5.5a9 9 0 0 1 0 13" />
+    </svg>
+  );
+}
+
+const GLYPHS = [
+  { key: "hourglass", label: "Hourglass", node: <HourglassPulse /> },
+  { key: "queue", label: "Queue + Clock", node: <QueueClock /> },
+  { key: "gauge", label: "Gauge", node: <RadialGauge /> },
+  { key: "wave", label: "Wave", node: <WaveDot /> },
+] as const;
 
 /**
  * Subtle floating contributor entry-point.
@@ -9,7 +58,6 @@ import { Plus } from "lucide-react";
 export function ReportFab() {
   const { pathname } = useLocation();
 
-  // Hide where it would be redundant or in the way.
   const hide =
     pathname === "/welcome" ||
     pathname === "/report" ||
@@ -18,27 +66,34 @@ export function ReportFab() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 z-30 mx-auto flex max-w-md justify-end px-4"
+      className="pointer-events-none fixed inset-x-0 z-30 mx-auto flex max-w-md flex-col items-end gap-2 px-4"
       style={{ bottom: "calc(72px + env(safe-area-inset-bottom) + 12px)" }}
     >
-      <Link
-        to="/report"
-        aria-label="Report a wait time"
-        className="pointer-events-auto group flex items-center gap-2 rounded-2xl bg-card pl-2.5 pr-3.5 py-2.5 text-xs font-semibold transition-transform active:scale-95"
-        style={{
-          color: "var(--foreground)",
-          border: "1px solid var(--border)",
-          boxShadow: "var(--shadow-lg)",
-        }}
-      >
-        <span
-          className="flex h-7 w-7 items-center justify-center rounded-xl"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+      {GLYPHS.map((g) => (
+        <Link
+          key={g.key}
+          to="/report"
+          aria-label={`Report a wait time (${g.label})`}
+          className="pointer-events-auto group flex items-center gap-2 rounded-2xl bg-card pl-2.5 pr-3.5 py-2.5 text-xs font-semibold transition-transform active:scale-95"
+          style={{
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-lg)",
+          }}
         >
-          <Plus className="h-4 w-4" strokeWidth={2.75} />
-        </span>
-        <span className="font-grotesk tracking-tight">Report wait</span>
-      </Link>
+          <span
+            className="flex h-7 w-7 items-center justify-center rounded-xl"
+            style={{
+              background: "linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 70%, white))",
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {g.node}
+          </span>
+          <span className="font-grotesk tracking-tight">Report wait</span>
+          <span className="text-[10px] opacity-50 ml-1">{g.label}</span>
+        </Link>
+      ))}
     </div>
   );
 }
