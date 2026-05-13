@@ -33,6 +33,33 @@ export function BottomNav() {
           const active =
             pathname === t.to ||
             (t.to === "/discover" && pathname.startsWith("/venue"));
+          // Raised primary pill for the Report tab — visually anchors the
+          // contributor action without breaking the row's equal-flex flow.
+          if (t.to === "/report" && Glyph) {
+            return (
+              <Link
+                key={t.to}
+                to={t.to as any}
+                aria-label={t.label}
+                className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors"
+                style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
+              >
+                <span
+                  className="-mt-5 flex h-12 w-12 items-center justify-center rounded-2xl"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 70%, white))",
+                    color: "var(--primary-foreground)",
+                    boxShadow: "var(--shadow-glow), var(--shadow-md)",
+                    border: "3px solid var(--card)",
+                  }}
+                >
+                  <Glyph className="h-6 w-6" />
+                </span>
+                <span className="text-[10px] font-semibold">{t.label}</span>
+              </Link>
+            );
+          }
           return (
             <Link
               key={t.to}
