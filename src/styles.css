@@ -478,6 +478,37 @@
 .fab-wave-1 { animation: fab-wave-emit 1.8s ease-out infinite; }
 .fab-wave-2 { animation: fab-wave-emit 1.8s ease-out infinite; animation-delay: 0.4s; }
 
+@keyframes fab-tap-ripple {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.fab-tap-ripple { animation: fab-tap-ripple 1.4s ease-in-out infinite; }
+
+@keyframes fab-bolt-flash {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; filter: drop-shadow(0 0 2px currentColor); }
+}
+.fab-bolt-flash { animation: fab-bolt-flash 1.2s ease-in-out infinite; }
+
+@keyframes fab-ring-expand {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.fab-ring-expand { animation: fab-ring-expand 1.8s ease-out infinite; }
+.fab-ring-1 { animation: fab-ring-expand 2s ease-out infinite; }
+.fab-ring-2 { animation: fab-ring-expand 2s ease-out infinite; animation-delay: 0.5s; }
+
+@keyframes fab-send-up {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-2px); opacity: 0.6; }
+}
+.fab-send-up { animation: fab-send-up 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-tap-ripple, .fab-bolt-flash, .fab-ring-expand,
+  .fab-ring-1, .fab-ring-2, .fab-send-up { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fab-pulse-dot, .fab-hourglass, .fab-clock-hand,
   .fab-gauge-needle, .fab-wave-1, .fab-wave-2 { animation: none; }
