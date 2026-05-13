@@ -123,6 +123,16 @@ export function severityColor(s: Severity) {
 // O(1) lookup map — built once, used by feed cards instead of venues.find() per render.
 export const venuesById: Map<string, Venue> = new Map(venues.map((v) => [v.id, v]));
 
+/** Synthetic "needs an update" set — venues with stale data (>30m old) we want
+ * contributors to refresh. Keyed off real venues so cards render normally. */
+export const staleVenueIds = ["v4", "v8", "v9", "v6"] as const;
+export const staleVenues: { venue: Venue; lastReportMin: number }[] = [
+  { venue: venuesById.get("v4")!, lastReportMin: 47 },
+  { venue: venuesById.get("v8")!, lastReportMin: 62 },
+  { venue: venuesById.get("v9")!, lastReportMin: 38 },
+  { venue: venuesById.get("v6")!, lastReportMin: 33 },
+];
+
 export function severityLabel(s: Severity) {
   return s === "short" ? "Short" : s === "moderate" ? "Moderate" : "Long";
 }
