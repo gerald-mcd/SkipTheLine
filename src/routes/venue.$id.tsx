@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
@@ -29,6 +29,42 @@ function VenueDetail() {
 
   const [myReports, setMyReports] = useState<MyReport[]>([]);
   const [reportOpen, setReportOpen] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
+
+  // Photo gallery — hero image plus a couple of complementary shots.
+  const photos = useMemo(
+    () => [
+      v.image,
+      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80&auto=format&fit=crop",
+    ],
+    [v.image],
+  );
+
+  // Synthetic reviews — deterministic per venue id.
+  const reviews = useMemo(() => {
+    const pool = [
+      { author: "Jasmine K.", rating: 5, text: "Vibes are unreal. Worth the wait every time.", ago: "2d" },
+      { author: "Rico M.", rating: 4, text: "Great spot. Hit the bar — line moves twice as fast.", ago: "5d" },
+      { author: "Priya S.", rating: 5, text: "Friendly staff and the patio is a gem.", ago: "1w" },
+    ];
+    return pool;
+  }, [v.id]);
+  const avgRating = useMemo(
+    () => (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
+    [reviews],
+  );
+
+  const openDirections = () => {
+    const dest = encodeURIComponent(`${v.name}, ${v.address}`);
+    const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
+    const isApple = /iPhone|iPad|iPod|Macintosh/i.test(ua);
+    const url = isApple
+      ? `https://maps.apple.com/?daddr=${dest}`
+      : `https://www.google.com/maps/dir/?api=1&destination=${dest}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   // Build a simple wait-trend sparkline (mock)
   const trend = [22, 28, 31, 35, 30, 38, 45, 42, v.waitMinutes];
@@ -56,15 +92,51 @@ function VenueDetail() {
     <div>
       {/* Hero image */}
       <div className="relative h-80 w-full overflow-hidden">
-        <img
-          src={v.image}
-          alt={v.name}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {photos.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt={`${v.name} photo ${i + 1}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
+            style={{ opacity: i === photoIdx ? 1 : 0 }}
+          />
+        ))}
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%)" }} />
+        {/* Carousel controls */}
+        <button
+          type="button"
+          aria-label="Previous photo"
+          onClick={() => setPhotoIdx((i) => (i === 0 ? photos.length - 1 : i - 1))}
+          className="absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 backdrop-blur"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          aria-label="Next photo"
+          onClick={() => setPhotoIdx((i) => (i === photos.length - 1 ? 0 : i + 1))}
+          className="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-white/85 backdrop-blur"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        {/* Dots */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-1.5">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`Go to photo ${i + 1}`}
+              onClick={() => setPhotoIdx(i)}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: i === photoIdx ? 18 : 6,
+                background: i === photoIdx ? "white" : "rgba(255,255,255,0.55)",
+              }}
+            />
+          ))}
+        </div>
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
           <button
             onClick={() => navigate({ to: "/explore" })}
@@ -90,6 +162,34 @@ function VenueDetail() {
             <MapPin className="h-3 w-3" /> {v.address}
           </p>
         </div>
+      </div>
+
+      {/* Action row — directions deep-link to native maps */}
+      <div className="mx-4 mt-4 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={openDirections}
+          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-transform active:scale-95"
+          style={{
+            background: "var(--primary)",
+            color: "var(--primary-foreground)",
+            boxShadow: "var(--shadow-glow)",
+          }}
+        >
+          <Navigation className="h-4 w-4" /> Directions
+        </button>
+        <button
+          type="button"
+          onClick={() => setReportOpen(true)}
+          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
+          style={{
+            background: "var(--card)",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <Clock className="h-4 w-4" /> Report wait
+        </button>
       </div>
 
       <div className="px-4 pt-5" style={{ background: "var(--surface-elevated)", borderBottom: "1px solid var(--border)" }}>
@@ -156,6 +256,39 @@ function VenueDetail() {
         <Mini icon={<MessageSquare className="h-3.5 w-3.5" style={{ color: color as any }} />} value={`${reportsCount}`} label="Reports" />
         <Mini icon={<Clock className="h-3.5 w-3.5" />} value={v.hours} label="Open" />
       </div>
+
+      {/* Reviews */}
+      <section className="mt-6 px-4">
+        <div className="flex items-end justify-between">
+          <h2 className="text-sm font-semibold">Reviews</h2>
+          <p className="flex items-center gap-1 text-[12px] font-bold">
+            <Star className="h-3.5 w-3.5" fill="currentColor" style={{ color: "var(--primary)" }} />
+            {avgRating}
+            <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>· {reviews.length}</span>
+          </p>
+        </div>
+        <div className="mt-2 space-y-2">
+          {reviews.map((r) => (
+            <div key={r.author} className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold">{r.author}</p>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-3 w-3"
+                      fill={i < r.rating ? "currentColor" : "transparent"}
+                      style={{ color: i < r.rating ? "var(--primary)" : "var(--muted-foreground)" }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="mt-1 text-[12px]" style={{ color: "var(--foreground)" }}>"{r.text}"</p>
+              <p className="mt-1 text-[10px]" style={{ color: "var(--muted-foreground)" }}>{r.ago} ago</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Recent reports */}
       <section className="mt-6 px-4">
