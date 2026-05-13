@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
-import { Search, Sparkles, X, MapPin, ChevronLeft, Zap } from "lucide-react";
+import { Search, Sparkles, X, MapPin, ChevronLeft, Zap, Check } from "lucide-react";
 import { venues, type Venue } from "@/lib/mock-data";
 
 export type ReportPayload = {
@@ -29,6 +28,7 @@ export function ReportSheet({
   const [query, setQuery] = useState("");
   const [minutes, setMinutes] = useState(venue?.waitMinutes ?? 15);
   const [note, setNote] = useState("");
+  const [submittedPayload, setSubmittedPayload] = useState<ReportPayload | null>(null);
 
   const points = POINTS;
   const presets = [0, 5, 15, 30, 45, 60];
@@ -58,11 +58,7 @@ export function ReportSheet({
       points,
     };
     if (onSubmit) onSubmit(payload);
-    else
-      toast("Report submitted", {
-        description: `${m} min wait at ${picked.name} · +${points} pts`,
-      });
-    onClose();
+    setSubmittedPayload(payload);
   };
 
   return (
@@ -72,6 +68,59 @@ export function ReportSheet({
         className="animate-slide-up relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-card p-5"
         style={{ boxShadow: "var(--shadow-lg)" }}
       >
+        {submittedPayload && picked ? (
+          <div className="flex flex-col items-center py-4">
+            <div
+              className="flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
+            >
+              <Check className="h-7 w-7" strokeWidth={2.5} style={{ color: "var(--primary-foreground)" }} />
+            </div>
+            <h3 className="mt-4 font-display text-xl font-bold tracking-tight">Report submitted</h3>
+            <p className="mt-1 text-center text-xs" style={{ color: "var(--muted-foreground)" }}>
+              Live for everyone nearby right now.
+            </p>
+            <div
+              className="mt-4 w-full space-y-2 rounded-2xl bg-card p-4"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <div className="flex items-center justify-between text-xs">
+                <span style={{ color: "var(--muted-foreground)" }}>Venue</span>
+                <span className="font-semibold">{picked.name}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span style={{ color: "var(--muted-foreground)" }}>Wait</span>
+                <span className="font-semibold tabular-nums">
+                  {submittedPayload.minutes === 0 ? "No wait" : `${submittedPayload.minutes} min`}
+                </span>
+              </div>
+              {submittedPayload.note && (
+                <div className="flex items-start justify-between gap-3 text-xs">
+                  <span style={{ color: "var(--muted-foreground)" }}>Note</span>
+                  <span className="text-right font-medium">{submittedPayload.note}</span>
+                </div>
+              )}
+            </div>
+            <div
+              className="mt-3 flex items-center gap-2 rounded-full px-3.5 py-1.5"
+              style={{ background: "var(--accent)" }}
+            >
+              <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
+              <span className="text-sm font-semibold" style={{ color: "var(--primary)" }}>
+                +{submittedPayload.points} SkipPoints
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-5 w-full rounded-xl py-3 text-sm font-semibold"
+              style={{ background: "var(--surface)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -239,6 +288,8 @@ export function ReportSheet({
               <Zap className="h-4 w-4" strokeWidth={2.25} />
               Submit report · +{points} pts
             </button>
+          </>
+        )}
           </>
         )}
       </div>

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Zap, Clock } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin } from "lucide-react";
 import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -248,60 +248,6 @@ function Home() {
         </div>
       </header>
 
-      {/* Contribute rail — venues nearby that need fresh wait times */}
-      <section className="mt-6 px-5">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-lg font-bold tracking-tight">Help your block</h2>
-            <p className="font-grotesk mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-              {staleVenues.length} spots near you need an update
-            </p>
-          </div>
-          <span
-            className="font-grotesk inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold"
-            style={{ background: "var(--accent)", color: "var(--primary)" }}
-          >
-            <Zap className="h-3 w-3" /> +15 pts each
-          </span>
-        </div>
-        <div className="no-scrollbar -mx-5 mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-5 pb-1">
-          {staleVenues.map(({ venue, lastReportMin }) => (
-            <button
-              key={venue.id}
-              type="button"
-              onClick={() => setReportVenue(venue)}
-              className="card-lift snap-start shrink-0 overflow-hidden rounded-2xl bg-card text-left"
-              style={{
-                width: "168px",
-                border: "1px solid var(--border)",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              <div className="relative h-20 w-full">
-                <img src={venue.image} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-                <span
-                  className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/65 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur"
-                >
-                  <Clock className="h-2.5 w-2.5" /> {lastReportMin}m stale
-                </span>
-              </div>
-              <div className="p-2.5">
-                <p className="truncate text-xs font-bold">{venue.name}</p>
-                <div className="mt-1.5 flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>{venue.distance}</span>
-                  <span
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
-                    style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-                  >
-                    <QueueClockGlyph className="h-3 w-3" /> Report
-                  </span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
       <div className="mt-3 grid grid-cols-2 gap-3 px-5">
         {popular.slice(0, 6).map((v, idx) => {
           const fav = isFav(v.id);
@@ -396,7 +342,7 @@ function Home() {
 
       {/* Reactive arrival nudge — geofence-style prompt */}
       {arrival && !arrivalDismissed && (
-        <ArrivalNudge
+        <PushNotificationMock
           venue={arrival}
           onReport={() => {
             setReportVenue(arrival);
@@ -415,7 +361,7 @@ function Home() {
   );
 }
 
-function ArrivalNudge({
+function PushNotificationMock({
   venue,
   onReport,
   onDismiss,
@@ -424,48 +370,62 @@ function ArrivalNudge({
   onReport: () => void;
   onDismiss: () => void;
 }) {
+  // Mocks how a real OS push notification would look when the geofence
+  // fires outside the app (lock screen / banner). Tap = open report sheet.
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 z-40 mx-auto flex max-w-md justify-center px-4"
-      style={{ bottom: "calc(72px + env(safe-area-inset-bottom) + 16px)" }}
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-center px-3"
+      style={{ paddingTop: "calc(env(safe-area-inset-top) + 10px)" }}
     >
-      <div
-        className="pointer-events-auto animate-slide-up flex w-full items-center gap-3 rounded-2xl bg-card p-3 pl-3.5"
+      <button
+        type="button"
+        onClick={onReport}
+        className="pointer-events-auto animate-fade-in-up group relative flex w-full items-start gap-2.5 rounded-[1.4rem] p-3 text-left"
         style={{
-          border: "1px solid var(--primary)",
-          boxShadow: "var(--shadow-lg), var(--shadow-glow)",
+          background: "color-mix(in oklab, var(--card) 92%, transparent)",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          border: "1px solid color-mix(in oklab, var(--foreground) 8%, transparent)",
+          boxShadow: "0 18px 40px -12px oklch(0 0 0 / 0.35), 0 2px 6px oklch(0 0 0 / 0.15)",
         }}
       >
+        {/* App icon — mimics OS lock-screen notification icon */}
         <span
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.7rem]"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 70%, white))",
+            color: "var(--primary-foreground)",
+            boxShadow: "var(--shadow-sm)",
+          }}
         >
-          <MapPin className="h-4 w-4" />
+          <QueueClockGlyph className="h-5 w-5" />
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
-            You're at {venue.name}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: "var(--muted-foreground)" }}>
+              SkipTheLine · now
+            </p>
+            <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>swipe to dismiss</span>
+          </div>
+          <p className="mt-0.5 text-[13px] font-bold leading-tight">You arrived at {venue.name}</p>
+          <p className="text-[12px] leading-snug" style={{ color: "var(--muted-foreground)" }}>
+            Tap to drop a wait time · earn +15 pts
           </p>
-          <p className="text-[12px] font-semibold leading-tight">How long is the wait?</p>
         </div>
-        <button
-          type="button"
-          onClick={onReport}
-          className="rounded-xl px-3 py-2 text-xs font-bold"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-        >
-          Report
-        </button>
-        <button
-          type="button"
-          onClick={onDismiss}
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            onDismiss();
+          }}
+          role="button"
           aria-label="Dismiss"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+          className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
           style={{ background: "var(--secondary)" }}
         >
-          <X className="h-3.5 w-3.5" />
-        </button>
-      </div>
+          <X className="h-3 w-3" />
+        </span>
+      </button>
     </div>
   );
 }
