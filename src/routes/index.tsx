@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sparkles, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight } from "lucide-react";
 import { venues, Category, categories, profile } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
-import { ReportCTA } from "@/components/ReportCTA";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";

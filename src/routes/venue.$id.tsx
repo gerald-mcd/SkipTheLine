@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
 import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2 } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
-import { ReportCTA } from "@/components/ReportCTA";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
 
@@ -216,10 +215,6 @@ function VenueDetail() {
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="sticky bottom-24 mt-6 px-4">
-        <ReportCTA onClick={() => setReportOpen(true)} />
-      </div>
       <div className="h-4" />
 
       {reportOpen && (

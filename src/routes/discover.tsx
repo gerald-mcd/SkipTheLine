@@ -7,7 +7,6 @@ import { venues, Category, categories } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
 import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
-import { ReportCTA } from "@/components/ReportCTA";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -149,9 +148,6 @@ function Discover() {
       >
         <div className="flex justify-center pt-2.5">
           <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
-        </div>
-        <div className="px-5 pt-1">
-          <ReportCTA onClick={() => setReportOpen(true)} />
         </div>
         <div className="mt-3 flex items-center justify-between px-5">
           <h2 className="font-display text-base font-bold tracking-tight">
