@@ -1,11 +1,37 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
   import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
 );
-import { venues, Category, categories } from "@/lib/mock-data";
+import {
+  venues,
+  Category,
+  categories,
+  severityColor,
+  severityLabel,
+  liveFeed,
+  profile,
+  type Severity,
+} from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
-import { MapPin, Search, SlidersHorizontal, Users, X, Minus, Plus } from "lucide-react";
+import {
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  Users,
+  X,
+  Minus,
+  Plus,
+  ArrowLeft,
+  Clock,
+  Calendar,
+  Timer,
+  MessageSquare,
+  UserCircle2,
+  Heart,
+  Share2,
+} from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
 export const Route = createFileRoute("/discover")({
@@ -38,8 +64,76 @@ function Discover() {
   const [draftSort, setDraftSort] = useState<SortKey>("trending");
   const [draftRadius, setDraftRadius] = useState<number>(DEFAULT_RADIUS_MI);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const navigate = useNavigate();
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  // Sheet snap state — draggable with two snap points: peek and full.
+  const PEEK = 0.55;
+  const FULL = 1.0;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerH, setContainerH] = useState(0);
+  const [snap, setSnap] = useState<"peek" | "full">("peek");
+  const [sheetH, setSheetH] = useState(0); // px
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ startY: number; startH: number; lastY: number; lastT: number; vy: number } | null>(null);
+
+  // Track container height
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setContainerH(el.clientHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // When snap changes (and not dragging), animate sheet to that height.
+  useEffect(() => {
+    if (containerH === 0) return;
+    if (dragging) return;
+    const target = snap === "full" ? containerH * FULL : containerH * PEEK;
+    setSheetH(target);
+  }, [snap, containerH, dragging]);
+
+  const onHandleDown = (e: React.PointerEvent) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const startH = sheetH || (snap === "full" ? containerH : containerH * PEEK);
+    dragRef.current = {
+      startY: e.clientY,
+      startH,
+      lastY: e.clientY,
+      lastT: performance.now(),
+      vy: 0,
+    };
+    setDragging(true);
+  };
+  const onHandleMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dy = d.startY - e.clientY; // up = +
+    const next = Math.max(containerH * PEEK, Math.min(containerH * FULL, d.startH + dy));
+    const now = performance.now();
+    const dt = Math.max(1, now - d.lastT);
+    d.vy = (d.lastY - e.clientY) / dt; // px/ms, up positive
+    d.lastY = e.clientY;
+    d.lastT = now;
+    setSheetH(next);
+  };
+  const onHandleUp = () => {
+    const d = dragRef.current;
+    setDragging(false);
+    dragRef.current = null;
+    if (!d || containerH === 0) return;
+    const peekH = containerH * PEEK;
+    const fullH = containerH * FULL;
+    const mid = (peekH + fullH) / 2;
+    // Velocity-aware snap
+    let next: "peek" | "full";
+    if (d.vy > 0.5) next = "full";
+    else if (d.vy < -0.5) next = "peek";
+    else next = sheetH >= mid ? "full" : "peek";
+    setSnap(next);
+  };
 
   const list = useMemo(() => {
     const filtered = venues.filter((v) => {
@@ -91,23 +185,30 @@ function Discover() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [selectedId]);
 
-  const handleSelect = (id: string) => {
-    if (selectedId === id) {
-      navigate({ to: "/venue/$id", params: { id } });
-      return;
-    }
+  const openVenue = useCallback((id: string) => {
     setSelectedId(id);
-  };
+    setSnap("full");
+  }, []);
+
+  const closeVenue = useCallback(() => {
+    setSelectedId(null);
+    setSnap("peek");
+  }, []);
+
+  const selectedVenue = selectedId ? venues.find((v) => v.id === selectedId) ?? null : null;
 
   return (
-    <div className="relative h-[calc(100vh-80px)] overflow-hidden">
+    <div ref={containerRef} className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Map layer */}
       <Suspense fallback={<div className="absolute inset-0" style={{ background: "oklch(0.965 0.005 245)" }} />}>
-        <CityMap venues={list} focusedId={selectedId} />
+        <CityMap venues={list} focusedId={selectedId} onPinClick={openVenue} />
       </Suspense>
 
       {/* Floating search + filter */}
-      <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4">
+      <div
+        className="absolute inset-x-0 top-0 z-20 px-4 pt-4 transition-opacity duration-200"
+        style={{ opacity: snap === "full" ? 0 : 1, pointerEvents: snap === "full" ? "none" : "auto" }}
+      >
         <div className="flex items-center gap-2">
           <div
             className="flex flex-1 items-center gap-2 rounded-full bg-card px-4 py-3"
@@ -137,89 +238,102 @@ function Discover() {
         </div>
       </div>
 
-      {/* Bottom card sheet */}
+      {/* Draggable bottom sheet */}
       <div
-        className="absolute inset-x-0 bottom-0 z-20 rounded-t-3xl bg-card"
+        className="absolute inset-x-0 bottom-0 z-30 flex flex-col overflow-hidden rounded-t-3xl bg-card"
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
-          maxHeight: "55%",
+          height: sheetH ? `${sheetH}px` : `${PEEK * 100}%`,
+          transition: dragging ? "none" : "height 320ms cubic-bezier(0.22, 1, 0.36, 1)",
+          touchAction: "none",
         }}
       >
-        <div className="flex justify-center pt-2.5">
+        {/* Drag handle — captures the drag gesture */}
+        <div
+          onPointerDown={onHandleDown}
+          onPointerMove={onHandleMove}
+          onPointerUp={onHandleUp}
+          onPointerCancel={onHandleUp}
+          className="flex shrink-0 cursor-grab justify-center pt-2.5 pb-1 active:cursor-grabbing"
+          style={{ touchAction: "none" }}
+          aria-label="Drag to resize"
+        >
           <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
         </div>
-        <div className="mt-3 flex items-center justify-between px-5">
-          <h2 className="font-display text-base font-bold tracking-tight">
-            {list.length} {list.length === 1 ? "place" : "places"} nearby
-          </h2>
-          <p className="font-grotesk text-[10px]" style={{ color: "var(--muted-foreground)" }}>
-            {cat === "all" ? "All categories" : categories.find((c) => c.id === cat)?.label} ·{" "}
-            <span className="font-bold" style={{ color: "var(--foreground)" }}>
-              {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
-            </span>
-          </p>
-        </div>
-
-        <div className="no-scrollbar mt-3 max-h-[300px] space-y-2.5 overflow-y-auto px-4 pb-5">
-          {list.map((v) => {
-            const on = v.id === selectedId;
-            return (
-              <button
-                key={v.id}
-                type="button"
-                ref={(el) => {
-                  cardRefs.current[v.id] = el;
-                }}
-                onClick={() => handleSelect(v.id)}
-                className="card-lift animate-fade-in-up flex w-full items-center gap-3 rounded-2xl bg-card p-2.5 text-left transition-all active:scale-[0.98]"
-                style={{
-                  border: on
-                    ? "1.5px solid var(--primary)"
-                    : "1px solid var(--border)",
-                  boxShadow: on
-                    ? "0 8px 24px -10px color-mix(in oklab, var(--primary) 45%, transparent)"
-                    : "var(--shadow-sm)",
-                }}
-              >
-                <img
-                  src={v.image}
-                  alt={v.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-14 w-14 shrink-0 rounded-xl object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-display truncate text-sm font-bold tracking-tight">
-                    {v.name}
-                  </h3>
-                  <div className="font-grotesk mt-0.5 flex items-center gap-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-                    <span className="inline-flex items-center gap-1 truncate">
-                      <MapPin className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
-                      <span className="truncate">{v.distance}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
-                      <span className="font-bold tabular-nums" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span>
-                    </span>
+        {selectedVenue ? (
+          <VenuePanel
+            venue={selectedVenue}
+            onBack={closeVenue}
+            onReport={() => setReportOpen(true)}
+          />
+        ) : (
+          <>
+            <div className="flex items-center justify-between px-5">
+              <h2 className="font-display text-base font-bold tracking-tight">
+                {list.length} {list.length === 1 ? "place" : "places"} nearby
+              </h2>
+              <p className="font-grotesk text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+                {cat === "all" ? "All categories" : categories.find((c) => c.id === cat)?.label} ·{" "}
+                <span className="font-bold" style={{ color: "var(--foreground)" }}>
+                  {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
+                </span>
+              </p>
+            </div>
+            <div className="no-scrollbar mt-3 flex-1 space-y-2.5 overflow-y-auto px-4 pb-5">
+              {list.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  ref={(el) => {
+                    cardRefs.current[v.id] = el;
+                  }}
+                  onClick={() => openVenue(v.id)}
+                  className="card-lift animate-fade-in-up flex w-full items-center gap-3 rounded-2xl bg-card p-2.5 text-left transition-all active:scale-[0.98]"
+                  style={{
+                    border: "1px solid var(--border)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  <img
+                    src={v.image}
+                    alt={v.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display truncate text-sm font-bold tracking-tight">
+                      {v.name}
+                    </h3>
+                    <div className="font-grotesk mt-0.5 flex items-center gap-2 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                      <span className="inline-flex items-center gap-1 truncate">
+                        <MapPin className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+                        <span className="truncate">{v.distance}</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Users className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+                        <span className="font-bold tabular-nums" style={{ color: "var(--foreground)" }}>{v.liveReporters}</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <WaitBadge
-                  minutes={v.waitMinutes}
-                  severity={v.severity}
-                  size="sm"
-                  variant="solid"
-                  className="shrink-0"
-                />
-              </button>
-            );
-          })}
-          {list.length === 0 && (
-            <p className="py-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-              No places match this filter.
-            </p>
-          )}
-        </div>
+                  <WaitBadge
+                    minutes={v.waitMinutes}
+                    severity={v.severity}
+                    size="sm"
+                    variant="solid"
+                    className="shrink-0"
+                  />
+                </button>
+              ))}
+              {list.length === 0 && (
+                <p className="py-8 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  No places match this filter.
+                </p>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Filter bottom sheet */}
