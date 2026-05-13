@@ -56,13 +56,13 @@ function Home() {
 
   return (
     <div className="relative overflow-hidden pb-0">
-      {/* Soft ambient — very light */}
+      {/* Soft ambient — extends through the full page */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px]"
+        className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 6%, var(--background)) 0%, var(--background) 80%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 6%, var(--background)) 0%, color-mix(in oklab, var(--primary) 3%, var(--background)) 50%, var(--background) 100%)",
         }}
       />
       <div
