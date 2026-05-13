@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Search, Sparkles, X, Minus, Plus, MapPin, ChevronLeft, Zap } from "lucide-react";
+import { Search, Sparkles, X, MapPin, ChevronLeft, Zap } from "lucide-react";
 import { venues, type Venue } from "@/lib/mock-data";
 
 export type ReportPayload = {
@@ -12,34 +12,9 @@ export type ReportPayload = {
   points: number;
 };
 
-const ENTRY_TYPES = [
-  { id: "walkin", label: "Walk-in", emoji: "🚶" },
-  { id: "reservation", label: "Reservation", emoji: "📅" },
-  { id: "vip", label: "VIP / Guestlist", emoji: "👑" },
-  { id: "pickup", label: "Pickup", emoji: "🥡" },
-  { id: "bar", label: "Bar seating", emoji: "🍸" },
-  { id: "online", label: "Online order", emoji: "💻" },
-];
-
-const DRIVERS = [
-  { id: "none", label: "Just busy" },
-  { id: "event", label: "Live event" },
-  { id: "happyhour", label: "Happy hour" },
-  { id: "sports", label: "Sports game" },
-  { id: "weekend", label: "Weekend rush" },
-  { id: "holiday", label: "Holiday" },
-  { id: "promo", label: "Promo / deal" },
-  { id: "other", label: "Other" },
-];
-
 const NOTE_MAX = 140;
 
-function calcPoints(entryType: string, driver: string) {
-  let p = 10;
-  if (driver !== "none") p += 15;
-  if (entryType === "vip") p += 5;
-  return p;
-}
+const POINTS = 15;
 
 export function ReportSheet({
   venue,
@@ -53,12 +28,10 @@ export function ReportSheet({
   const [picked, setPicked] = useState<Venue | null>(venue ?? null);
   const [query, setQuery] = useState("");
   const [minutes, setMinutes] = useState(venue?.waitMinutes ?? 15);
-  const [entryType, setEntryType] = useState("walkin");
-  const [driver, setDriver] = useState("none");
   const [note, setNote] = useState("");
 
-  const points = calcPoints(entryType, driver);
-  const presets = [0, 5, 15, 30, 45, 60, 90];
+  const points = POINTS;
+  const presets = [0, 5, 15, 30, 45, 60];
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -79,8 +52,8 @@ export function ReportSheet({
     const payload: ReportPayload = {
       venueId: picked.id,
       minutes: m,
-      entryType,
-      driver,
+      entryType: "walkin",
+      driver: "none",
       note: note.trim().slice(0, NOTE_MAX) || undefined,
       points,
     };
