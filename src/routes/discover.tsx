@@ -65,12 +65,14 @@ function Discover() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Sheet snap state — draggable with two snap points: peek and full.
+  // Sheet snap state — draggable with three snap points: collapsed, peek, full.
+  // Collapsed shows just the handle so the map is fully visible.
+  const COLLAPSED_PX = 88; // sliver showing handle + summary
   const PEEK = 0.55;
   const FULL = 1.0;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerH, setContainerH] = useState(0);
-  const [snap, setSnap] = useState<"peek" | "full">("peek");
+  const [snap, setSnap] = useState<"collapsed" | "peek" | "full">("peek");
   const [sheetH, setSheetH] = useState(0); // px
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{ startY: number; startH: number; lastY: number; lastT: number; vy: number } | null>(null);
@@ -90,13 +92,20 @@ function Discover() {
   useEffect(() => {
     if (containerH === 0) return;
     if (dragging) return;
-    const target = snap === "full" ? containerH * FULL : containerH * PEEK;
+    const target =
+      snap === "full"
+        ? containerH * FULL
+        : snap === "peek"
+        ? containerH * PEEK
+        : COLLAPSED_PX;
     setSheetH(target);
   }, [snap, containerH, dragging]);
 
   const onHandleDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
-    const startH = sheetH || (snap === "full" ? containerH : containerH * PEEK);
+    const startH =
+      sheetH ||
+      (snap === "full" ? containerH : snap === "peek" ? containerH * PEEK : COLLAPSED_PX);
     dragRef.current = {
       startY: e.clientY,
       startH,
@@ -110,7 +119,7 @@ function Discover() {
     const d = dragRef.current;
     if (!d) return;
     const dy = d.startY - e.clientY; // up = +
-    const next = Math.max(containerH * PEEK, Math.min(containerH * FULL, d.startH + dy));
+    const next = Math.max(COLLAPSED_PX, Math.min(containerH * FULL, d.startH + dy));
     const now = performance.now();
     const dt = Math.max(1, now - d.lastT);
     d.vy = (d.lastY - e.clientY) / dt; // px/ms, up positive
@@ -123,14 +132,18 @@ function Discover() {
     setDragging(false);
     dragRef.current = null;
     if (!d || containerH === 0) return;
+    const collapsedH = COLLAPSED_PX;
     const peekH = containerH * PEEK;
     const fullH = containerH * FULL;
-    const mid = (peekH + fullH) / 2;
-    // Velocity-aware snap
-    let next: "peek" | "full";
-    if (d.vy > 0.5) next = "full";
-    else if (d.vy < -0.5) next = "peek";
-    else next = sheetH >= mid ? "full" : "peek";
+    const midLow = (collapsedH + peekH) / 2;
+    const midHigh = (peekH + fullH) / 2;
+    // Velocity-aware snap with three positions
+    let next: "collapsed" | "peek" | "full";
+    if (d.vy > 0.6) next = "full";
+    else if (d.vy < -0.6) next = sheetH < peekH ? "collapsed" : "peek";
+    else if (sheetH >= midHigh) next = "full";
+    else if (sheetH >= midLow) next = "peek";
+    else next = "collapsed";
     setSnap(next);
   };
 
