@@ -48,6 +48,12 @@ const GLYPHS = [
   { key: "queue", label: "Queue + Clock", node: <QueueClock /> },
   { key: "gauge", label: "Gauge", node: <RadialGauge /> },
   { key: "wave", label: "Wave", node: <WaveDot /> },
+  { key: "tap", label: "Tap-to-Time", node: <TapTime /> },
+  { key: "bolt", label: "Bolt Clock", node: <BoltClock /> },
+  { key: "pin", label: "Pin + Ring", node: <PinRing /> },
+  { key: "beacon", label: "Live Beacon", node: <Beacon /> },
+  { key: "loop", label: "Contribution Loop", node: <Loop /> },
+  { key: "uparrow", label: "Send-Up Clock", node: <SendUp /> },
 ] as const;
 
 /**
