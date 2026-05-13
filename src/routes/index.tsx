@@ -7,6 +7,7 @@ import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
+import { CityMap } from "@/components/CityMap";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
@@ -39,6 +40,7 @@ function Home() {
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportOpen, setReportOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [view, setView] = useState<"list" | "map">("list");
   const { isFav, toggle } = useFavorites();
   const { theme, toggle: toggleTheme } = useTheme();
 
@@ -230,10 +232,23 @@ function Home() {
               </span>
             </p>
           </div>
-          <SortMenu value={sort} onChange={setSort} />
+          <div className="flex items-center gap-2">
+            <ViewToggle value={view} onChange={setView} />
+            <SortMenu value={sort} onChange={setSort} />
+          </div>
         </div>
       </header>
 
+      {view === "map" ? (
+        <div className="mt-3 px-5">
+          <div
+            className="relative h-[420px] w-full overflow-hidden rounded-2xl"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+          >
+            <CityMap venues={popular} />
+          </div>
+        </div>
+      ) : (
       <div className="mt-3 grid grid-cols-2 gap-3 px-5">
         {popular.slice(0, 6).map((v, idx) => {
           const fav = isFav(v.id);
@@ -298,12 +313,50 @@ function Home() {
           );
         })}
       </div>
+      )}
 
       {reportOpen && (
         <ReportSheet onClose={() => setReportOpen(false)} />
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
+    </div>
+  );
+}
+
+function ViewToggle({
+  value,
+  onChange,
+}: {
+  value: "list" | "map";
+  onChange: (v: "list" | "map") => void;
+}) {
+  return (
+    <div
+      className="inline-flex items-center rounded-full bg-card p-0.5"
+      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+      role="tablist"
+      aria-label="View"
+    >
+      {(["list", "map"] as const).map((v) => {
+        const on = value === v;
+        return (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            onClick={() => onChange(v)}
+            className="font-grotesk rounded-full px-3 py-1.5 text-[11px] font-bold capitalize transition-colors"
+            style={{
+              background: on ? "var(--primary)" : "transparent",
+              color: on ? "var(--primary-foreground)" : "var(--foreground)",
+            }}
+          >
+            {v}
+          </button>
+        );
+      })}
     </div>
   );
 }
