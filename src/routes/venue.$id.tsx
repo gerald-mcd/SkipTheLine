@@ -215,10 +215,6 @@ function VenueDetail() {
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="sticky bottom-24 mt-6 px-4">
-        <ReportCTA onClick={() => setReportOpen(true)} />
-      </div>
       <div className="h-4" />
 
       {reportOpen && (
