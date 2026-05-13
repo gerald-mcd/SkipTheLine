@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
   import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
