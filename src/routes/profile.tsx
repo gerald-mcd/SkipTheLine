@@ -129,7 +129,7 @@ function Profile() {
       {/* Active Quests — community participation drivers */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+          <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Target className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Active quests
           </h2>
           <span className="text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>
@@ -146,7 +146,7 @@ function Profile() {
       {/* Rewards marketplace — incentive */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+          <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Gift className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Redeem rewards
           </h2>
           <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
@@ -163,7 +163,7 @@ function Profile() {
       {/* Badges */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+          <h2 className="font-display flex items-center gap-1.5 text-base font-bold tracking-tight">
             <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} /> Badges
           </h2>
           <button className="flex items-center text-xs font-medium" style={{ color: "var(--primary)" }}>
@@ -198,7 +198,7 @@ function Profile() {
       {/* Friends */}
       <section className="mt-7">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">
+          <h2 className="font-display text-base font-bold tracking-tight">
             Friends <span className="ml-1 text-[11px] font-medium" style={{ color: "var(--muted-foreground)" }}>{allFriends.length}</span>
           </h2>
           <button
@@ -595,7 +595,7 @@ function LeaderboardSection() {
   return (
     <section className="mt-7">
       <div className="mb-2.5 flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Rank · {scopeLabel}</h2>
+        <h2 className="font-display text-base font-bold tracking-tight">Rank · {scopeLabel}</h2>
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleFocusToggle}
