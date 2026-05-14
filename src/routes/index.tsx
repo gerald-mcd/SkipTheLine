@@ -160,39 +160,8 @@ function Home() {
           </div>
         </div>
 
-        {/* Voucher banner */}
-        <div
-          className="animate-fade-in-up relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
-          style={{
-            background:
-              "linear-gradient(135deg, oklch(0.32 0.04 40) 0%, oklch(0.22 0.03 40) 100%)",
-          }}
-        >
-          <div className="max-w-[60%]">
-            <p className="font-display text-[13px] font-medium opacity-90">Get special discount</p>
-            <p className="font-display mt-0.5 text-2xl font-bold leading-tight tracking-tight">
-              up to 45%
-            </p>
-            <button
-              type="button"
-              onClick={() => toast("Voucher claimed", { description: "Check your profile for details." })}
-              className="btn-pop btn-shine font-grotesk mt-4 inline-flex items-center rounded-full px-4 py-2 text-xs font-bold text-white"
-              style={{ background: "var(--primary)", boxShadow: "var(--shadow-sm)" }}
-            >
-              Claim voucher
-            </button>
-          </div>
-          {/* Decorative food disc */}
-          <div
-            aria-hidden
-            className="animate-drift absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80&auto=format&fit=crop)",
-              boxShadow: "inset 0 0 0 6px white",
-            }}
-          />
-        </div>
+        {/* Sponsored ad slot — placeholder styled like OpenTable / Yelp featured */}
+        <SponsoredAd />
 
         {/* Search */}
         <div
@@ -278,6 +247,24 @@ function Home() {
                   }}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                  {stale && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setReportVenue(v);
+                      }}
+                      className="absolute left-0 bottom-0 right-0 flex items-center justify-center gap-1 px-2 py-1 text-[10px] font-bold backdrop-blur transition-transform active:scale-[0.97]"
+                      style={{
+                        background: "color-mix(in oklab, var(--primary) 88%, transparent)",
+                        color: "var(--primary-foreground)",
+                      }}
+                    >
+                      <PeopleSkipGlyph className="h-3 w-3" />
+                      Be the first · +15 pts
+                    </button>
+                  )}
                 <button
                   type="button"
                   aria-label={fav ? "Remove from favorites" : "Add to favorites"}
@@ -308,25 +295,6 @@ function Home() {
                     variant="solid"
                   />
                 </div>
-                {stale && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setReportVenue(v);
-                    }}
-                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-[10px] font-bold transition-transform active:scale-95"
-                    style={{
-                      background: "color-mix(in oklab, var(--primary) 10%, var(--card))",
-                      color: "var(--primary)",
-                      border: "1px dashed var(--primary)",
-                    }}
-                  >
-                    <PeopleSkipGlyph className="h-3 w-3" />
-                    Be the first · +15 pts
-                  </button>
-                )}
               </div>
             </Link>
           );
