@@ -26,8 +26,14 @@ export function CityMap({
 
   return (
     <div className="absolute inset-0 overflow-hidden" data-map-root>
-      {/* Map base */}
-      <div className="absolute inset-0" style={{ background: "oklch(0.965 0.005 245)" }} />
+      {/* Map base — true-black in dark mode for theme consistency */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "color-mix(in oklab, var(--background) 92%, color-mix(in oklab, var(--primary) 6%, transparent))",
+        }}
+      />
       <div
         className="absolute inset-0"
         style={{
