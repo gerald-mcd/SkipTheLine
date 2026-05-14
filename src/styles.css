@@ -143,8 +143,10 @@
   --destructive-foreground: oklch(0.99 0 0);
   --warning: oklch(0.78 0.16 70);
   --success: oklch(0.68 0.13 160);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
+  /* Dark mode borders use a faint orange tint to create separation between
+   * sections without overwhelming the true-black canvas. */
+  --border: oklch(0.74 0.18 45 / 22%);
+  --input: oklch(0.74 0.18 45 / 24%);
   --ring: oklch(0.74 0.18 45);
   --chart-1: oklch(0.74 0.18 45);
   --chart-2: oklch(0.68 0.13 160);
