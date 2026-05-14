@@ -10,7 +10,6 @@ import {
 
 import appCss from "../styles.css?url";
 import { BottomNav } from "@/components/BottomNav";
-import { ReportFab } from "@/components/ReportFab";
 import { Toaster } from "sonner";
 
 function NotFoundComponent() {
@@ -134,7 +133,6 @@ function RootComponent() {
         <div className="pb-24">
           <Outlet />
         </div>
-        <ReportFab />
         <BottomNav />
         <Toaster position="top-center" richColors closeButton theme="light" />
       </div>

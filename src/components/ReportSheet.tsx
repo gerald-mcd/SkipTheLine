@@ -242,6 +242,30 @@ export function ReportSheet({
                   );
                 })}
               </div>
+              {/* Custom time entry */}
+              <div className="mt-3 flex items-center gap-2">
+                <span className="text-[11px] font-semibold" style={{ color: "var(--muted-foreground)" }}>
+                  Or enter exact:
+                </span>
+                <div
+                  className="flex flex-1 items-center gap-1.5 rounded-xl bg-card px-3 py-2"
+                  style={{ border: "1px solid var(--border)" }}
+                >
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    max={240}
+                    value={minutes}
+                    onChange={(e) => {
+                      const n = parseInt(e.target.value || "0", 10);
+                      setMinutes(Math.max(0, Math.min(240, isNaN(n) ? 0 : n)));
+                    }}
+                    className="w-full bg-transparent text-sm font-semibold tabular-nums outline-none"
+                  />
+                  <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>min</span>
+                </div>
+              </div>
             </div>
 
             {/* Note */}

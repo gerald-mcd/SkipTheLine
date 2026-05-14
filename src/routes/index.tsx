@@ -160,39 +160,8 @@ function Home() {
           </div>
         </div>
 
-        {/* Voucher banner */}
-        <div
-          className="animate-fade-in-up relative mt-5 overflow-hidden rounded-3xl p-5 text-white"
-          style={{
-            background:
-              "linear-gradient(135deg, oklch(0.32 0.04 40) 0%, oklch(0.22 0.03 40) 100%)",
-          }}
-        >
-          <div className="max-w-[60%]">
-            <p className="font-display text-[13px] font-medium opacity-90">Get special discount</p>
-            <p className="font-display mt-0.5 text-2xl font-bold leading-tight tracking-tight">
-              up to 45%
-            </p>
-            <button
-              type="button"
-              onClick={() => toast("Voucher claimed", { description: "Check your profile for details." })}
-              className="btn-pop btn-shine font-grotesk mt-4 inline-flex items-center rounded-full px-4 py-2 text-xs font-bold text-white"
-              style={{ background: "var(--primary)", boxShadow: "var(--shadow-sm)" }}
-            >
-              Claim voucher
-            </button>
-          </div>
-          {/* Decorative food disc */}
-          <div
-            aria-hidden
-            className="animate-drift absolute -right-6 -top-6 h-44 w-44 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600&q=80&auto=format&fit=crop)",
-              boxShadow: "inset 0 0 0 6px white",
-            }}
-          />
-        </div>
+        {/* Sponsored ad slot — placeholder styled like OpenTable / Yelp featured */}
+        <SponsoredAd />
 
         {/* Search */}
         <div
@@ -278,6 +247,24 @@ function Home() {
                   }}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                  {stale && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setReportVenue(v);
+                      }}
+                      className="absolute left-0 bottom-0 right-0 flex items-center justify-center gap-1 px-2 py-1 text-[10px] font-bold backdrop-blur transition-transform active:scale-[0.97]"
+                      style={{
+                        background: "color-mix(in oklab, var(--primary) 88%, transparent)",
+                        color: "var(--primary-foreground)",
+                      }}
+                    >
+                      <PeopleSkipGlyph className="h-3 w-3" />
+                      Be the first · +15 pts
+                    </button>
+                  )}
                 <button
                   type="button"
                   aria-label={fav ? "Remove from favorites" : "Add to favorites"}
@@ -308,25 +295,6 @@ function Home() {
                     variant="solid"
                   />
                 </div>
-                {stale && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setReportVenue(v);
-                    }}
-                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-[10px] font-bold transition-transform active:scale-95"
-                    style={{
-                      background: "color-mix(in oklab, var(--primary) 10%, var(--card))",
-                      color: "var(--primary)",
-                      border: "1px dashed var(--primary)",
-                    }}
-                  >
-                    <PeopleSkipGlyph className="h-3 w-3" />
-                    Be the first · +15 pts
-                  </button>
-                )}
               </div>
             </Link>
           );
@@ -597,6 +565,50 @@ function CategoryRow({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function SponsoredAd() {
+  // Placeholder for a paid placement (à la OpenTable / Yelp featured listing).
+  // Same card shape as a venue, with a clear "Sponsored" tag so it doesn't
+  // mislead. Intentionally no real CTA wiring — pure ad slot.
+  return (
+    <div
+      className="animate-fade-in-up mt-5 overflow-hidden rounded-3xl bg-card"
+      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+    >
+      <div className="relative h-32 w-full">
+        <img
+          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop"
+          alt="Sponsored — La Mar Brickell"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span
+          className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+        >
+          Sponsored
+        </span>
+      </div>
+      <div className="flex items-center gap-3 p-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-display truncate text-sm font-bold tracking-tight">La Mar Brickell</p>
+          <p className="font-grotesk text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            Peruvian · 0.4 mi · <span className="font-semibold" style={{ color: "var(--foreground)" }}>$$$</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => toast("Reservation flow coming soon")}
+          className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+        >
+          Reserve
+        </button>
+      </div>
     </div>
   );
 }

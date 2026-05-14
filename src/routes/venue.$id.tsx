@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight, Camera, X } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
+type UserReview = { id: string; author: string; rating: number; text: string; ago: string };
 
 export const Route = createFileRoute("/venue/$id")({
   head: ({ params }) => {
@@ -30,27 +31,52 @@ function VenueDetail() {
   const [myReports, setMyReports] = useState<MyReport[]>([]);
   const [reportOpen, setReportOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [userPhotos, setUserPhotos] = useState<string[]>([]);
+  const [userReviews, setUserReviews] = useState<UserReview[]>([]);
+  const [reviewOpen, setReviewOpen] = useState(false);
 
-  // Photo gallery — hero image plus a couple of complementary shots.
+  // Photo gallery — hero image, a few complementary shots, plus user uploads.
   const photos = useMemo(
     () => [
       v.image,
       "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200&q=80&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80&auto=format&fit=crop",
+      ...userPhotos,
     ],
-    [v.image],
+    [v.image, userPhotos],
   );
 
-  // Synthetic reviews — deterministic per venue id.
-  const reviews = useMemo(() => {
+  const addPhoto = () => {
+    // Mock upload — picks a stock food shot. In production this opens the
+    // device camera/photo picker and uploads to storage.
     const pool = [
-      { author: "Jasmine K.", rating: 5, text: "Vibes are unreal. Worth the wait every time.", ago: "2d" },
-      { author: "Rico M.", rating: 4, text: "Great spot. Hit the bar — line moves twice as fast.", ago: "5d" },
-      { author: "Priya S.", rating: 5, text: "Friendly staff and the patio is a gem.", ago: "1w" },
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80&auto=format&fit=crop",
     ];
-    return pool;
-  }, [v.id]);
+    const next = pool[userPhotos.length % pool.length];
+    setUserPhotos((prev) => [...prev, next]);
+    setPhotoIdx(photos.length); // jump to the newly added photo
+    toast("Photo added", { description: "Thanks for contributing!" });
+  };
+
+  // Synthetic reviews — represented as if pulled from Google Places.
+  const sourcedReviews = useMemo(
+    () => [
+      { id: "g1", author: "Jasmine K.", rating: 5, text: "Vibes are unreal. Worth the wait every time.", ago: "2d", source: "Google" as const },
+      { id: "g2", author: "Rico M.", rating: 4, text: "Great spot. Hit the bar — line moves twice as fast.", ago: "5d", source: "Google" as const },
+      { id: "g3", author: "Priya S.", rating: 5, text: "Friendly staff and the patio is a gem.", ago: "1w", source: "Google" as const },
+    ],
+    [v.id],
+  );
+  const reviews = useMemo(
+    () => [
+      ...userReviews.map((r) => ({ ...r, source: "You" as const })),
+      ...sourcedReviews,
+    ],
+    [userReviews, sourcedReviews],
+  );
   const avgRating = useMemo(
     () => (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
     [reviews],
@@ -260,18 +286,52 @@ function VenueDetail() {
       {/* Reviews */}
       <section className="mt-6 px-4">
         <div className="flex items-end justify-between">
-          <h2 className="text-sm font-semibold">Reviews</h2>
+          <div>
+            <h2 className="text-sm font-semibold">Reviews</h2>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+              Pulled from Google · plus the community
+            </p>
+          </div>
           <p className="flex items-center gap-1 text-[12px] font-bold">
             <Star className="h-3.5 w-3.5" fill="currentColor" style={{ color: "var(--primary)" }} />
             {avgRating}
             <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>· {reviews.length}</span>
           </p>
         </div>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setReviewOpen(true)}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[12px] font-bold"
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            <Star className="h-3.5 w-3.5" fill="currentColor" /> Write a review
+          </button>
+          <button
+            type="button"
+            onClick={addPhoto}
+            className="flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-bold"
+            style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+          >
+            <Camera className="h-3.5 w-3.5" /> Add photo
+          </button>
+        </div>
         <div className="mt-2 space-y-2">
           {reviews.map((r) => (
-            <div key={r.author} className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+            <div key={r.id} className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold">{r.author}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-semibold">{r.author}</p>
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+                    style={{
+                      background: r.source === "You" ? "var(--primary)" : "var(--accent)",
+                      color: r.source === "You" ? "var(--primary-foreground)" : "var(--primary)",
+                    }}
+                  >
+                    {r.source}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
@@ -367,6 +427,21 @@ function VenueDetail() {
           }}
         />
       )}
+
+      {reviewOpen && (
+        <WriteReviewSheet
+          venueName={v.name}
+          onClose={() => setReviewOpen(false)}
+          onSubmit={(rating, text) => {
+            setUserReviews((prev) => [
+              { id: `me-${Date.now()}`, author: "You", rating, text, ago: "just now" },
+              ...prev,
+            ]);
+            setReviewOpen(false);
+            toast("Review posted", { description: `Thanks for sharing!` });
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -376,6 +451,88 @@ function Mini({ icon, value, label }: { icon: React.ReactNode; value: string; la
     <div className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
       <div className="flex items-center gap-1.5">{icon}<span className="text-sm font-bold">{value}</span></div>
       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>{label}</p>
+    </div>
+  );
+}
+
+function WriteReviewSheet({
+  venueName,
+  onClose,
+  onSubmit,
+}: {
+  venueName: string;
+  onClose: () => void;
+  onSubmit: (rating: number, text: string) => void;
+}) {
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const MAX = 240;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <button aria-label="Close" onClick={onClose} className="animate-fade-in absolute inset-0 bg-black/40" />
+      <div
+        className="animate-slide-up relative w-full max-w-md rounded-t-3xl bg-card p-5"
+        style={{ boxShadow: "var(--shadow-lg)" }}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+              Review
+            </p>
+            <h3 className="font-display text-lg font-bold tracking-tight">{venueName}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-full"
+            style={{ background: "var(--secondary)" }}
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 py-2">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setRating(n)}
+              aria-label={`${n} star${n === 1 ? "" : "s"}`}
+              className="transition-transform active:scale-90"
+            >
+              <Star
+                className="h-8 w-8"
+                fill={n <= rating ? "currentColor" : "transparent"}
+                style={{ color: n <= rating ? "var(--primary)" : "var(--muted-foreground)" }}
+              />
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, MAX))}
+          placeholder="Share what made it special (or not)…"
+          rows={4}
+          className="mt-3 w-full resize-none rounded-xl bg-card p-3 text-sm outline-none placeholder:text-[var(--muted-foreground)]"
+          style={{ border: "1px solid var(--border)" }}
+        />
+        <p className="mt-1 text-right text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+          {text.length}/{MAX}
+        </p>
+
+        <button
+          type="button"
+          disabled={!text.trim()}
+          onClick={() => onSubmit(rating, text.trim())}
+          className="mt-3 w-full rounded-xl py-3.5 text-sm font-semibold disabled:opacity-50"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+        >
+          Post review
+        </button>
+      </div>
     </div>
   );
 }
