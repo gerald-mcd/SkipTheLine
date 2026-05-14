@@ -160,15 +160,15 @@ export function VenueDetailBody({
           type="button"
           onClick={openDirections}
           className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-transform active:scale-95"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
         >
           <Navigation className="h-4 w-4" /> Directions
         </button>
         <button
           type="button"
           onClick={() => setReportOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
-          style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+          className="flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-transform active:scale-95"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
         >
           <Clock className="h-4 w-4" /> Report wait
         </button>
