@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight, Camera, Plus, X } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight, Camera, X } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
