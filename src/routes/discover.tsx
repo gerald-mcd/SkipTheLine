@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
-  import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
+  import("@/components/LeafletMap").then((m) => ({ default: m.LeafletMap })),
 );
 import {
   venues,
