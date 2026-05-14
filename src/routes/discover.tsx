@@ -47,6 +47,8 @@ export const Route = createFileRoute("/discover")({
 });
 
 type SortKey = "trending" | "wait" | "distance";
+type SheetSnap = "low" | "mid" | "high";
+
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
   { id: "trending", label: "Trending", emoji: "🔥" },
   { id: "wait", label: "Shortest wait", emoji: "⏱️" },
@@ -54,6 +56,21 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
 ];
 
 const DEFAULT_RADIUS_MI = 5;
+const SHEET_SNAP_POINTS: Record<SheetSnap, number> = {
+  low: 0.3,
+  mid: 0.6,
+  high: 0.9,
+};
+const SHEET_SNAP_ORDER: SheetSnap[] = ["low", "mid", "high"];
+const SHEET_SNAP_LABEL: Record<SheetSnap, string> = {
+  low: "30%",
+  mid: "60%",
+  high: "90%",
+};
+
+function sheetHeightFor(snap: SheetSnap, containerHeight: number) {
+  return Math.round(containerHeight * SHEET_SNAP_POINTS[snap]);
+}
 
 function Discover() {
   const { open: openVenueSheet } = useVenueSheet();
