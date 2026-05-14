@@ -310,7 +310,7 @@ function Discover() {
             : "bottom 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms ease",
         }}
       >
-        {snap === "collapsed" ? (
+        {snap === "low" ? (
           <ChevronUp className="h-5 w-5" style={{ color: "var(--primary)" }} />
         ) : (
           <MapIcon className="h-5 w-5" style={{ color: "var(--primary)" }} />
@@ -322,7 +322,7 @@ function Discover() {
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
-          height: sheetH ? `${sheetH}px` : `${PEEK * 100}%`,
+          height: currentSheetHeight ? `${currentSheetHeight}px` : `${SHEET_SNAP_POINTS.low * 100}%`,
           transition: dragging ? "none" : "height 320ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
@@ -344,6 +344,7 @@ function Discover() {
               <button
                 key={point}
                 type="button"
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
                   event.stopPropagation();
                   setSnap(point);
@@ -382,10 +383,6 @@ function Discover() {
             </div>
             <div
               className="no-scrollbar mt-3 flex-1 space-y-2.5 overflow-y-auto px-4 pb-5 transition-opacity duration-200"
-              style={{
-                opacity: snap === "collapsed" ? 0 : 1,
-                pointerEvents: snap === "collapsed" ? "none" : "auto",
-              }}
             >
               {list.map((v) => (
                 <button
