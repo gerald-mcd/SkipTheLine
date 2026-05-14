@@ -192,7 +192,7 @@ function FeedCard({
               {item.minutes}m
             </span>
           </div>
-        </Link>
+        </button>
       )}
 
       {item.kind === "system" && (
