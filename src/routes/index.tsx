@@ -536,6 +536,172 @@ function SettingsItem({ icon, label, top, destructive }: { icon: React.ReactNode
   );
 }
 
+function FilterSheet({
+  draftCat,
+  draftSort,
+  draftRadius,
+  draftCount,
+  setDraftCat,
+  setDraftSort,
+  setDraftRadius,
+  onApply,
+  onReset,
+  onClose,
+}: {
+  draftCat: Category | "all";
+  draftSort: SortKey;
+  draftRadius: number;
+  draftCount: number;
+  setDraftCat: (c: Category | "all") => void;
+  setDraftSort: (s: SortKey) => void;
+  setDraftRadius: (r: number | ((r: number) => number)) => void;
+  onApply: () => void;
+  onReset: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
+      <button
+        type="button"
+        aria-label="Close filters"
+        onClick={onClose}
+        className="animate-fade-in absolute inset-0 bg-black/45"
+      />
+      <div
+        className="animate-slide-up absolute inset-x-0 bottom-0 mx-auto max-w-md rounded-t-3xl bg-card"
+        style={{
+          boxShadow: "0 -16px 40px -12px color-mix(in oklab, black 35%, transparent)",
+          maxHeight: "92%",
+        }}
+      >
+        <div className="flex justify-center pt-2.5">
+          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+        </div>
+        <div className="grid grid-cols-3 items-center px-5 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="justify-self-start inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--muted)]"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <h2 className="font-display text-center text-base font-bold tracking-tight">Filter</h2>
+          <button
+            type="button"
+            onClick={onReset}
+            className="font-grotesk justify-self-end text-xs font-semibold"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            Reset
+          </button>
+        </div>
+
+        <div className="space-y-6 px-5 pb-32 pt-5">
+          <section>
+            <h3 className="font-display text-sm font-bold tracking-tight">Categories</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {categories.map((c) => {
+                const on = c.id === draftCat;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setDraftCat(c.id)}
+                    className="rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                    style={{
+                      background: on ? "var(--primary)" : "var(--card)",
+                      color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                      border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                      boxShadow: on ? "var(--shadow-sm)" : "none",
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <div className="h-px" style={{ background: "var(--border)" }} />
+
+          <section>
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-sm font-bold tracking-tight">Distance to me</h3>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label="Decrease distance"
+                  onClick={() => setDraftRadius((r) => Math.max(1, r - 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                  style={{ border: "1.5px solid var(--border)" }}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span
+                  className="font-display min-w-[3.5rem] text-center text-sm font-bold tabular-nums"
+                  style={{ color: "var(--primary)" }}
+                >
+                  {draftRadius} mi
+                </span>
+                <button
+                  type="button"
+                  aria-label="Increase distance"
+                  onClick={() => setDraftRadius((r) => Math.min(25, r + 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                  style={{ border: "1.5px solid var(--border)" }}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <div className="h-px" style={{ background: "var(--border)" }} />
+
+          <section>
+            <h3 className="font-display text-sm font-bold tracking-tight">Sort by</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sortOptions.map((s) => {
+                const on = s.id === draftSort;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setDraftSort(s.id)}
+                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                    style={{
+                      background: on ? "var(--primary)" : "var(--card)",
+                      color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                      border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                      boxShadow: on ? "var(--shadow-sm)" : "none",
+                    }}
+                  >
+                    <span aria-hidden>{s.emoji}</span>
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <div
+          className="absolute inset-x-0 bottom-0 rounded-b-3xl bg-card px-5 pb-5 pt-3"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
+          <button
+            type="button"
+            onClick={onApply}
+            className="font-display flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
+          >
+            Show {draftCount} {draftCount === 1 ? "result" : "results"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SortMenu({
   value,
   onChange,
