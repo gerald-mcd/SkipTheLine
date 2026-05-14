@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { BottomNav } from "@/components/BottomNav";
 import { Toaster } from "sonner";
 import { VenueSheetProvider } from "@/components/VenueSheet";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 function NotFoundComponent() {
   return (
@@ -137,6 +138,7 @@ function RootComponent() {
           </div>
           <BottomNav />
           <Toaster position="top-center" richColors closeButton theme="light" />
+          <OnboardingTour />
         </div>
       </VenueSheetProvider>
     </QueryClientProvider>
