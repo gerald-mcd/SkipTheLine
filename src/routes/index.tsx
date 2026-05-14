@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles } from "lucide-react";
 import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -41,6 +41,12 @@ function Home() {
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportVenue, setReportVenue] = useState<Venue | null | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [radius, setRadius] = useState<number>(5);
+  // Draft state for the filter sheet — only commits on "Show results"
+  const [draftCat, setDraftCat] = useState<Category | "all">("all");
+  const [draftSort, setDraftSort] = useState<SortKey>("trending");
+  const [draftRadius, setDraftRadius] = useState<number>(5);
   // Reactive arrival nudge — simulate geofence detecting user has arrived at a venue.
   const [arrival, setArrival] = useState<Venue | null>(null);
   const [arrivalDismissed, setArrivalDismissed] = useState(false);
@@ -57,8 +63,13 @@ function Home() {
   }, [arrivalDismissed]);
 
   const filtered = useMemo(
-    () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
-    [cat],
+    () =>
+      venues.filter((v) => {
+        if (cat !== "all" && v.category !== cat) return false;
+        if (parseFloat(v.distance) > radius) return false;
+        return true;
+      }),
+    [cat, radius],
   );
   const popular = useMemo(() => {
     const list = [...filtered];
@@ -67,6 +78,34 @@ function Home() {
     if (sort === "rated") return list.sort((a, b) => venueRating(b.id) - venueRating(a.id));
     return list.sort((a, b) => b.liveReporters - a.liveReporters);
   }, [filtered, sort]);
+
+  const openFilter = () => {
+    setDraftCat(cat);
+    setDraftSort(sort);
+    setDraftRadius(radius);
+    setFilterOpen(true);
+  };
+  const applyFilter = () => {
+    setCat(draftCat);
+    setSort(draftSort);
+    setRadius(draftRadius);
+    setFilterOpen(false);
+  };
+  const resetFilter = () => {
+    setDraftCat("all");
+    setDraftSort("trending");
+    setDraftRadius(5);
+  };
+  const filtersActive = cat !== "all" || sort !== "trending" || radius !== 5;
+  const draftCount = useMemo(
+    () =>
+      venues.filter((v) => {
+        if (draftCat !== "all" && v.category !== draftCat) return false;
+        if (parseFloat(v.distance) > draftRadius) return false;
+        return true;
+      }).length,
+    [draftCat, draftRadius],
+  );
 
   return (
     <div className="relative overflow-hidden">
@@ -177,6 +216,7 @@ function Home() {
           />
           <button
             type="button"
+            onClick={openFilter}
             className="btn-pop-icon inline-flex h-9 w-9 items-center justify-center rounded-full text-white"
             style={{ background: "var(--primary)" }}
             aria-label="Filters"
@@ -185,6 +225,12 @@ function Home() {
               <line x1="4" y1="7" x2="14" y2="7" /><circle cx="17" cy="7" r="2.2" fill="currentColor" />
               <line x1="10" y1="17" x2="20" y2="17" /><circle cx="7" cy="17" r="2.2" fill="currentColor" />
             </svg>
+            {filtersActive && (
+              <span
+                className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-[var(--card)]"
+                style={{ background: "var(--wait-short)" }}
+              />
+            )}
           </button>
         </div>
 
@@ -211,10 +257,10 @@ function Home() {
               Sorted by <span className="font-bold" style={{ color: "var(--foreground)" }}>
                 {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
               </span>
+              {radius !== 5 && (
+                <> · within <span className="font-bold" style={{ color: "var(--foreground)" }}>{radius} mi</span></>
+              )}
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <SortMenu value={sort} onChange={setSort} />
           </div>
         </div>
       </header>
@@ -327,6 +373,20 @@ function Home() {
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
+      {filterOpen && (
+        <FilterSheet
+          draftCat={draftCat}
+          draftSort={draftSort}
+          draftRadius={draftRadius}
+          draftCount={draftCount}
+          setDraftCat={setDraftCat}
+          setDraftSort={setDraftSort}
+          setDraftRadius={setDraftRadius}
+          onApply={applyFilter}
+          onReset={resetFilter}
+          onClose={() => setFilterOpen(false)}
+        />
+      )}
     </div>
   );
 }
