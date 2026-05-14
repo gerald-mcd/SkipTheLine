@@ -247,7 +247,7 @@ function Discover() {
   return (
     <div ref={containerRef} className="relative h-[calc(100vh-80px)] overflow-hidden">
       {/* Map layer */}
-      <Suspense fallback={<div className="absolute inset-0" style={{ background: "oklch(0.965 0.005 245)" }} />}>
+      <Suspense fallback={<div className="absolute inset-0" style={{ background: "var(--background)" }} />}>
         <CityMap venues={list} focusedId={selectedId} onPinClick={openVenue} />
       </Suspense>
 

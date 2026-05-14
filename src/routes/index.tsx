@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles } from "lucide-react";
 import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -41,6 +41,12 @@ function Home() {
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportVenue, setReportVenue] = useState<Venue | null | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [radius, setRadius] = useState<number>(5);
+  // Draft state for the filter sheet — only commits on "Show results"
+  const [draftCat, setDraftCat] = useState<Category | "all">("all");
+  const [draftSort, setDraftSort] = useState<SortKey>("trending");
+  const [draftRadius, setDraftRadius] = useState<number>(5);
   // Reactive arrival nudge — simulate geofence detecting user has arrived at a venue.
   const [arrival, setArrival] = useState<Venue | null>(null);
   const [arrivalDismissed, setArrivalDismissed] = useState(false);
@@ -57,8 +63,13 @@ function Home() {
   }, [arrivalDismissed]);
 
   const filtered = useMemo(
-    () => (cat === "all" ? venues : venues.filter((v) => v.category === cat)),
-    [cat],
+    () =>
+      venues.filter((v) => {
+        if (cat !== "all" && v.category !== cat) return false;
+        if (parseFloat(v.distance) > radius) return false;
+        return true;
+      }),
+    [cat, radius],
   );
   const popular = useMemo(() => {
     const list = [...filtered];
@@ -67,6 +78,34 @@ function Home() {
     if (sort === "rated") return list.sort((a, b) => venueRating(b.id) - venueRating(a.id));
     return list.sort((a, b) => b.liveReporters - a.liveReporters);
   }, [filtered, sort]);
+
+  const openFilter = () => {
+    setDraftCat(cat);
+    setDraftSort(sort);
+    setDraftRadius(radius);
+    setFilterOpen(true);
+  };
+  const applyFilter = () => {
+    setCat(draftCat);
+    setSort(draftSort);
+    setRadius(draftRadius);
+    setFilterOpen(false);
+  };
+  const resetFilter = () => {
+    setDraftCat("all");
+    setDraftSort("trending");
+    setDraftRadius(5);
+  };
+  const filtersActive = cat !== "all" || sort !== "trending" || radius !== 5;
+  const draftCount = useMemo(
+    () =>
+      venues.filter((v) => {
+        if (draftCat !== "all" && v.category !== draftCat) return false;
+        if (parseFloat(v.distance) > draftRadius) return false;
+        return true;
+      }).length,
+    [draftCat, draftRadius],
+  );
 
   return (
     <div className="relative overflow-hidden">
@@ -177,6 +216,7 @@ function Home() {
           />
           <button
             type="button"
+            onClick={openFilter}
             className="btn-pop-icon inline-flex h-9 w-9 items-center justify-center rounded-full text-white"
             style={{ background: "var(--primary)" }}
             aria-label="Filters"
@@ -185,6 +225,12 @@ function Home() {
               <line x1="4" y1="7" x2="14" y2="7" /><circle cx="17" cy="7" r="2.2" fill="currentColor" />
               <line x1="10" y1="17" x2="20" y2="17" /><circle cx="7" cy="17" r="2.2" fill="currentColor" />
             </svg>
+            {filtersActive && (
+              <span
+                className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-[var(--card)]"
+                style={{ background: "var(--wait-short)" }}
+              />
+            )}
           </button>
         </div>
 
@@ -211,10 +257,10 @@ function Home() {
               Sorted by <span className="font-bold" style={{ color: "var(--foreground)" }}>
                 {sortOptions.find((s) => s.id === sort)?.label.toLowerCase()}
               </span>
+              {radius !== 5 && (
+                <> · within <span className="font-bold" style={{ color: "var(--foreground)" }}>{radius} mi</span></>
+              )}
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <SortMenu value={sort} onChange={setSort} />
           </div>
         </div>
       </header>
@@ -327,6 +373,20 @@ function Home() {
       )}
 
       {settingsOpen && <SettingsSheet onClose={() => setSettingsOpen(false)} />}
+      {filterOpen && (
+        <FilterSheet
+          draftCat={draftCat}
+          draftSort={draftSort}
+          draftRadius={draftRadius}
+          draftCount={draftCount}
+          setDraftCat={setDraftCat}
+          setDraftSort={setDraftSort}
+          setDraftRadius={setDraftRadius}
+          onApply={applyFilter}
+          onReset={resetFilter}
+          onClose={() => setFilterOpen(false)}
+        />
+      )}
     </div>
   );
 }
@@ -441,11 +501,32 @@ function SettingsSheet({ onClose }: { onClose: () => void }) {
             <SettingsItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
             <SettingsItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
             <SettingsItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
+            <ReplayTourItem />
             <SettingsItem icon={<LogOut className="h-4 w-4" style={{ color: "var(--destructive, #c33)" }} />} label="Log out" top destructive />
           </div>
         </section>
       </div>
     </div>
+  );
+}
+
+function ReplayTourItem() {
+  return (
+    <button
+      onClick={() => {
+        try {
+          window.localStorage.removeItem("stl:tour-seen");
+        } catch {}
+        toast("Reloading to replay the tour…");
+        window.setTimeout(() => window.location.reload(), 400);
+      }}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left"
+      style={{ borderTop: "1px solid var(--border)" }}
+    >
+      <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
+      <span className="flex-1 text-sm font-medium">Replay app tour</span>
+      <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+    </button>
   );
 }
 
@@ -473,6 +554,172 @@ function SettingsItem({ icon, label, top, destructive }: { icon: React.ReactNode
       <span className="flex-1 text-sm font-medium" style={{ color: destructive ? "var(--destructive, #c33)" : "var(--foreground)" }}>{label}</span>
       <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
     </button>
+  );
+}
+
+function FilterSheet({
+  draftCat,
+  draftSort,
+  draftRadius,
+  draftCount,
+  setDraftCat,
+  setDraftSort,
+  setDraftRadius,
+  onApply,
+  onReset,
+  onClose,
+}: {
+  draftCat: Category | "all";
+  draftSort: SortKey;
+  draftRadius: number;
+  draftCount: number;
+  setDraftCat: (c: Category | "all") => void;
+  setDraftSort: (s: SortKey) => void;
+  setDraftRadius: (r: number | ((r: number) => number)) => void;
+  onApply: () => void;
+  onReset: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
+      <button
+        type="button"
+        aria-label="Close filters"
+        onClick={onClose}
+        className="animate-fade-in absolute inset-0 bg-black/45"
+      />
+      <div
+        className="animate-slide-up absolute inset-x-0 bottom-0 mx-auto max-w-md rounded-t-3xl bg-card"
+        style={{
+          boxShadow: "0 -16px 40px -12px color-mix(in oklab, black 35%, transparent)",
+          maxHeight: "92%",
+        }}
+      >
+        <div className="flex justify-center pt-2.5">
+          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+        </div>
+        <div className="grid grid-cols-3 items-center px-5 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="justify-self-start inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[var(--muted)]"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <h2 className="font-display text-center text-base font-bold tracking-tight">Filter</h2>
+          <button
+            type="button"
+            onClick={onReset}
+            className="font-grotesk justify-self-end text-xs font-semibold"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            Reset
+          </button>
+        </div>
+
+        <div className="space-y-6 px-5 pb-32 pt-5">
+          <section>
+            <h3 className="font-display text-sm font-bold tracking-tight">Categories</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {categories.map((c) => {
+                const on = c.id === draftCat;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setDraftCat(c.id)}
+                    className="rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                    style={{
+                      background: on ? "var(--primary)" : "var(--card)",
+                      color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                      border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                      boxShadow: on ? "var(--shadow-sm)" : "none",
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <div className="h-px" style={{ background: "var(--border)" }} />
+
+          <section>
+            <div className="flex items-center justify-between">
+              <h3 className="font-display text-sm font-bold tracking-tight">Distance to me</h3>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label="Decrease distance"
+                  onClick={() => setDraftRadius((r) => Math.max(1, r - 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                  style={{ border: "1.5px solid var(--border)" }}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span
+                  className="font-display min-w-[3.5rem] text-center text-sm font-bold tabular-nums"
+                  style={{ color: "var(--primary)" }}
+                >
+                  {draftRadius} mi
+                </span>
+                <button
+                  type="button"
+                  aria-label="Increase distance"
+                  onClick={() => setDraftRadius((r) => Math.min(25, r + 1))}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors active:scale-95"
+                  style={{ border: "1.5px solid var(--border)" }}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <div className="h-px" style={{ background: "var(--border)" }} />
+
+          <section>
+            <h3 className="font-display text-sm font-bold tracking-tight">Sort by</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {sortOptions.map((s) => {
+                const on = s.id === draftSort;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setDraftSort(s.id)}
+                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all active:scale-95"
+                    style={{
+                      background: on ? "var(--primary)" : "var(--card)",
+                      color: on ? "var(--primary-foreground)" : "var(--foreground)",
+                      border: on ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+                      boxShadow: on ? "var(--shadow-sm)" : "none",
+                    }}
+                  >
+                    <span aria-hidden>{s.emoji}</span>
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <div
+          className="absolute inset-x-0 bottom-0 rounded-b-3xl bg-card px-5 pb-5 pt-3"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
+          <button
+            type="button"
+            onClick={onApply}
+            className="font-display flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-md)" }}
+          >
+            Show {draftCount} {draftCount === 1 ? "result" : "results"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

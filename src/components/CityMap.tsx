@@ -26,8 +26,14 @@ export function CityMap({
 
   return (
     <div className="absolute inset-0 overflow-hidden" data-map-root>
-      {/* Map base */}
-      <div className="absolute inset-0" style={{ background: "oklch(0.965 0.005 245)" }} />
+      {/* Map base — true-black in dark mode for theme consistency */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "color-mix(in oklab, var(--background) 92%, color-mix(in oklab, var(--primary) 6%, transparent))",
+        }}
+      />
       <div
         className="absolute inset-0"
         style={{
@@ -40,22 +46,23 @@ export function CityMap({
       <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 400 800">
         <path
           d="M -20 520 C 80 480, 180 560, 280 500 S 420 480, 440 510 L 440 600 L -20 620 Z"
-          fill="oklch(0.9 0.04 230)"
+          fill="color-mix(in oklab, var(--primary) 18%, var(--background))"
+          opacity="0.85"
         />
-        <rect x="40" y="120" width="80" height="60" rx="6" fill="oklch(0.92 0.05 150)" />
-        <rect x="260" y="260" width="100" height="70" rx="6" fill="oklch(0.92 0.05 150)" />
-        <rect x="80" y="660" width="120" height="80" rx="6" fill="oklch(0.92 0.05 150)" />
+        <rect x="40" y="120" width="80" height="60" rx="6" fill="color-mix(in oklab, var(--success) 35%, var(--background))" />
+        <rect x="260" y="260" width="100" height="70" rx="6" fill="color-mix(in oklab, var(--success) 35%, var(--background))" />
+        <rect x="80" y="660" width="120" height="80" rx="6" fill="color-mix(in oklab, var(--success) 35%, var(--background))" />
       </svg>
 
       {/* Streets */}
       <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 400 800">
-        <g stroke="oklch(1 0 0)" fill="none">
+        <g stroke="var(--foreground)" strokeOpacity="0.55" fill="none">
           {/* Major roads (white) */}
           <line x1="0" y1="80" x2="400" y2="76" strokeWidth="3" />
           <line x1="0" y1="400" x2="400" y2="404" strokeWidth="3" />
           <line x1="220" y1="0" x2="222" y2="800" strokeWidth="3" />
         </g>
-        <g stroke="oklch(1 0 0)" strokeOpacity="0.85" fill="none">
+        <g stroke="var(--foreground)" strokeOpacity="0.32" fill="none">
           <line x1="0" y1="160" x2="400" y2="158" strokeWidth="1.6" />
           <line x1="0" y1="240" x2="400" y2="244" strokeWidth="1.6" />
           <line x1="0" y1="320" x2="400" y2="318" strokeWidth="1.6" />
@@ -66,7 +73,7 @@ export function CityMap({
           <line x1="300" y1="0" x2="298" y2="800" strokeWidth="1.6" />
           <line x1="360" y1="0" x2="362" y2="800" strokeWidth="1.6" />
         </g>
-        <g stroke="oklch(0.9 0.06 60)" fill="none" opacity="0.9">
+        <g stroke="var(--primary)" fill="none" opacity="0.55">
           <path d="M -10 200 Q 200 180, 410 220" strokeWidth="3" />
           <path d="M -10 480 Q 200 450, 410 470" strokeWidth="3" />
         </g>
