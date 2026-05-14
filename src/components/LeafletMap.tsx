@@ -6,11 +6,11 @@ import { Plus, Minus, LocateFixed, Loader2 } from "lucide-react";
 import { Venue } from "@/lib/mock-data";
 import { useVenueSheet } from "@/components/VenueSheet";
 
-// Map venue x/y (0-100 %) to real lat/lng around Miami so the OSM tiles
-// have meaningful geography under each pin.
-const CENTER: [number, number] = [25.774, -80.19];
-const LAT_SPREAD = 0.06;
-const LNG_SPREAD = 0.07;
+// Map venue x/y (0-100 %) to real lat/lng around Brickell, Miami so the OSM
+// tiles have meaningful geography under each pin.
+const CENTER: [number, number] = [25.7634, -80.1917]; // Brickell
+const LAT_SPREAD = 0.018;
+const LNG_SPREAD = 0.022;
 function venueLatLng(v: Venue): [number, number] {
   const lat = CENTER[0] + (50 - v.y) / 100 * LAT_SPREAD;
   const lng = CENTER[1] + (v.x - 50) / 100 * LNG_SPREAD;
