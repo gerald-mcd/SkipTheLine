@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
   import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
@@ -14,6 +14,7 @@ import {
   type Severity,
 } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
+import { useVenueSheet } from "@/components/VenueSheet";
 import {
   MapPin,
   Search,
