@@ -7,7 +7,7 @@ import {
   profile,
   type FeedItem,
 } from "@/lib/mock-data";
-import { ArrowDownRight, Users, Clock, Sparkles } from "lucide-react";
+import { ArrowDownRight, Users, Clock, Sparkles, SmilePlus } from "lucide-react";
 import { VenueImage } from "@/components/VenueImage";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useVenueSheet } from "@/components/VenueSheet";
@@ -36,7 +36,8 @@ function Explore() {
   const [reportOpen, setReportOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   // Per-report reaction tally + which reaction the current user picked.
-  const [reactions, setReactions] = useState<Record<string, { mine?: ReactionKey; counts: Record<ReactionKey, number> }>>({});
+  // Emojis are open-ended — defaults plus any added via the "+" picker.
+  const [reactions, setReactions] = useState<Record<string, { mine?: string; counts: Record<string, number> }>>({});
 
   const items = useMemo(() => {
     if (filter === "all") return exploreFeed;
@@ -49,7 +50,7 @@ function Explore() {
     return exploreFeed.filter((i) => i.kind === map[filter]);
   }, [filter]);
 
-  const react = (id: string, key: ReactionKey, baseCounts: Record<ReactionKey, number>) =>
+  const react = (id: string, key: string, baseCounts: Record<string, number>) =>
     setReactions((prev) => {
       const cur = prev[id] ?? { mine: undefined, counts: { ...baseCounts } };
       const next = { ...cur, counts: { ...cur.counts } };
@@ -120,8 +121,8 @@ function FeedCard({
   onReact,
 }: {
   item: FeedItem;
-  reactionState?: { mine?: ReactionKey; counts: Record<ReactionKey, number> };
-  onReact: (key: ReactionKey, base: Record<ReactionKey, number>) => void;
+  reactionState?: { mine?: string; counts: Record<string, number> };
+  onReact: (key: string, base: Record<string, number>) => void;
 }) {
   const venue =
     item.kind !== "system" ? venuesById.get(item.venueId) : undefined;
@@ -265,20 +266,20 @@ function Header({ item }: { item: FeedItem }) {
   );
 }
 
-type ReactionKey = "up" | "heart" | "fire";
-const REACTIONS: { key: ReactionKey; emoji: string; label: string }[] = [
-  { key: "up", emoji: "👍", label: "Thumbs up" },
-  { key: "heart", emoji: "❤️", label: "Heart" },
-  { key: "fire", emoji: "🔥", label: "Fire" },
+const DEFAULT_REACTIONS: { emoji: string; label: string }[] = [
+  { emoji: "👍", label: "Thumbs up" },
+  { emoji: "❤️", label: "Heart" },
+  { emoji: "🔥", label: "Fire" },
 ];
+const EXTRA_EMOJIS = ["😂", "😮", "😢", "🎉", "👏", "💯", "🙌", "✨"];
 // Deterministic baseline counts per item id so reactions feel pre-populated.
-function baseCountsFor(id: string): Record<ReactionKey, number> {
+function baseCountsFor(id: string): Record<string, number> {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
   return {
-    up: 2 + (h % 7),
-    heart: 1 + ((h >> 3) % 5),
-    fire: (h >> 6) % 9,
+    "👍": 2 + (h % 7),
+    "❤️": 1 + ((h >> 3) % 5),
+    "🔥": (h >> 6) % 9,
   };
 }
 
@@ -288,29 +289,34 @@ function ReactionBar({
   onReact,
 }: {
   itemId: string;
-  reactionState?: { mine?: ReactionKey; counts: Record<ReactionKey, number> };
-  onReact: (key: ReactionKey, base: Record<ReactionKey, number>) => void;
+  reactionState?: { mine?: string; counts: Record<string, number> };
+  onReact: (key: string, base: Record<string, number>) => void;
 }) {
   const base = useMemo(() => baseCountsFor(itemId), [itemId]);
   const counts = reactionState?.counts ?? base;
   const mine = reactionState?.mine;
+  const [pickerOpen, setPickerOpen] = useState(false);
+  // Show defaults plus any extra emojis the user has added on this card.
+  const extras = Object.keys(counts).filter(
+    (e) => !DEFAULT_REACTIONS.some((d) => d.emoji === e),
+  );
   return (
     <div
-      className="flex items-center gap-1.5 px-3 py-2"
+      className="relative flex flex-wrap items-center gap-1.5 px-3 py-2"
       style={{ borderTop: "1px solid var(--border)" }}
     >
-      {REACTIONS.map((r) => {
-        const active = mine === r.key;
-        const count = counts[r.key] ?? 0;
+      {[...DEFAULT_REACTIONS, ...extras.map((e) => ({ emoji: e, label: e }))].map((r) => {
+        const active = mine === r.emoji;
+        const count = counts[r.emoji] ?? 0;
         return (
           <button
-            key={r.key}
+            key={r.emoji}
             type="button"
             aria-label={r.label}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onReact(r.key, base);
+              onReact(r.emoji, base);
             }}
             className="font-grotesk inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all btn-pop"
             style={{
@@ -328,6 +334,58 @@ function ReactionBar({
           </button>
         );
       })}
+      <button
+        type="button"
+        aria-label="Add reaction"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setPickerOpen((p) => !p);
+        }}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full btn-pop"
+        style={{
+          background: "var(--muted)",
+          color: "var(--muted-foreground)",
+          border: "1px solid transparent",
+        }}
+      >
+        <SmilePlus className="h-3.5 w-3.5" />
+      </button>
+      {pickerOpen && (
+        <>
+          <button
+            type="button"
+            aria-label="Close reaction picker"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setPickerOpen(false);
+            }}
+            className="fixed inset-0 z-30 cursor-default"
+          />
+          <div
+            className="absolute bottom-full right-3 z-40 mb-2 flex max-w-[16rem] flex-wrap gap-1 rounded-2xl bg-card p-2 animate-fade-in"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+          >
+            {EXTRA_EMOJIS.map((e) => (
+              <button
+                key={e}
+                type="button"
+                aria-label={`React with ${e}`}
+                onClick={(ev) => {
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                  onReact(e, base);
+                  setPickerOpen(false);
+                }}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full text-lg btn-pop hover:bg-[var(--muted)]"
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

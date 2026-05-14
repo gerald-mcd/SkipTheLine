@@ -41,6 +41,7 @@ export function BottomNav() {
                 key={t.to}
                 to={t.to as any}
                 aria-label={t.label}
+                aria-current={active ? "page" : undefined}
                 className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors"
                 style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
               >
@@ -64,6 +65,8 @@ export function BottomNav() {
             <Link
               key={t.to}
               to={t.to as any}
+              aria-label={t.label}
+              aria-current={active ? "page" : undefined}
               className="flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors"
               style={{ color: active ? "var(--primary)" : "var(--muted-foreground)" }}
             >

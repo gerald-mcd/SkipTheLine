@@ -286,6 +286,8 @@ function Home() {
                 <img
                   src={v.image}
                   alt={v.name}
+                  width={400}
+                  height={256}
                   loading={idx === 0 ? "eager" : "lazy"}
                   decoding="async"
                   fetchPriority={idx === 0 ? "high" : "auto"}
@@ -401,40 +403,8 @@ function PushNotificationMock({
   onDismiss: () => void;
 }) {
   // Mocks how a real OS push notification would look when the geofence
-  // fires outside the app (lock screen / banner). Tap = open report sheet.
-  // Horizontal swipe (left or right) past ~80px dismisses, mirroring iOS.
-  const [dragX, setDragX] = useState(0);
-  const [dismissing, setDismissing] = useState(false);
-  const startRef = useRef<{ x: number; y: number; locked: "x" | "y" | null } | null>(null);
-  const onDown = (e: React.PointerEvent) => {
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    startRef.current = { x: e.clientX, y: e.clientY, locked: null };
-  };
-  const onMove = (e: React.PointerEvent) => {
-    const s = startRef.current;
-    if (!s) return;
-    const dx = e.clientX - s.x;
-    const dy = e.clientY - s.y;
-    if (!s.locked) {
-      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-      s.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-    }
-    if (s.locked === "x") setDragX(dx);
-  };
-  const onUp = () => {
-    const s = startRef.current;
-    startRef.current = null;
-    if (s?.locked === "x" && Math.abs(dragX) > 80) {
-      // Animate off-screen, then dismiss.
-      setDismissing(true);
-      const dir = dragX < 0 ? -1 : 1;
-      setDragX(dir * 600);
-      window.setTimeout(onDismiss, 220);
-      return;
-    }
-    setDragX(0);
-  };
-  const dragging = startRef.current?.locked === "x";
+  // fires outside the app (lock screen / banner). Tap = open report sheet,
+  // tap the X to dismiss.
   return (
     <div
       className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-center px-3"
@@ -442,26 +412,14 @@ function PushNotificationMock({
     >
       <button
         type="button"
-        onClick={() => {
-          // Suppress the click that fires after a horizontal swipe.
-          if (Math.abs(dragX) > 8 || dismissing) return;
-          onReport();
-        }}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
-        className="pointer-events-auto animate-fade-in-up group relative flex w-full items-start gap-2.5 rounded-[1.4rem] p-3 text-left"
+        onClick={onReport}
+        className="pointer-events-auto animate-fade-in-up group relative flex w-full items-start gap-2.5 rounded-[1.4rem] p-3 pr-10 text-left"
         style={{
           background: "color-mix(in oklab, var(--card) 92%, transparent)",
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
           border: "1px solid color-mix(in oklab, var(--foreground) 8%, transparent)",
           boxShadow: "0 18px 40px -12px oklch(0 0 0 / 0.35), 0 2px 6px oklch(0 0 0 / 0.15)",
-          transform: `translateX(${dragX}px)`,
-          opacity: dismissing ? 0 : Math.max(0.3, 1 - Math.abs(dragX) / 240),
-          transition: dragging ? "none" : "transform 220ms ease, opacity 220ms ease",
-          touchAction: "pan-y",
         }}
       >
         {/* App icon — mimics OS lock-screen notification icon */}
@@ -481,7 +439,6 @@ function PushNotificationMock({
             <p className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: "var(--muted-foreground)" }}>
               SkipTheLine · now
             </p>
-            <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>swipe to dismiss</span>
           </div>
           <p className="mt-0.5 text-[13px] font-bold leading-tight">You arrived at {venue.name}</p>
           <p className="text-[12px] leading-snug" style={{ color: "var(--muted-foreground)" }}>
@@ -495,10 +452,10 @@ function PushNotificationMock({
           }}
           role="button"
           aria-label="Dismiss"
-          className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-          style={{ background: "var(--secondary)" }}
+          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full active:scale-90"
+          style={{ background: "var(--secondary)", color: "var(--foreground)" }}
         >
-          <X className="h-3 w-3" />
+          <X className="h-3.5 w-3.5" strokeWidth={2.5} />
         </span>
       </button>
     </div>
