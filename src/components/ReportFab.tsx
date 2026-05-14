@@ -301,7 +301,7 @@ export function ReportFab() {
             color: "var(--primary-foreground)",
           }}
         >
-          <TapTimeGlyph />
+          <PeopleSkipGlyph />
         </span>
         <span className="font-grotesk tracking-tight">Report wait</span>
       </Link>
