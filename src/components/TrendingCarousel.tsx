@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { severityColor, type Venue } from "@/lib/mock-data";
 import { VenueImage } from "@/components/VenueImage";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useVenueSheet } from "@/components/VenueSheet";
 
 export function TrendingCarousel({ items, loading }: { items: Venue[]; loading?: boolean }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const { isFav, toggle } = useFavorites();
+  const { open: openVenueSheet } = useVenueSheet();
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -53,11 +54,11 @@ export function TrendingCarousel({ items, loading }: { items: Venue[]; loading?:
         {items.map((v) => {
           const fav = isFav(v.id);
           return (
-            <Link
+            <button
+              type="button"
               key={v.id}
-              to="/venue/$id"
-              params={{ id: v.id }}
-              className="group relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-3xl"
+              onClick={() => openVenueSheet(v.id)}
+              className="group relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-3xl text-left"
               style={{ boxShadow: "var(--shadow-md)" }}
             >
               <div className="relative h-72 w-full bg-[var(--muted)]">
@@ -104,7 +105,7 @@ export function TrendingCarousel({ items, loading }: { items: Venue[]; loading?:
                   </p>
                 </div>
               </div>
-            </Link>
+            </button>
           );
         })}
       </div>
