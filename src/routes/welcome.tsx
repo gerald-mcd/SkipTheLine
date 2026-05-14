@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -32,6 +32,17 @@ const heroSlides: { id: string; categoryLabel: string; waitMinutes: number; imag
 
 function Welcome() {
   const [slide, setSlide] = useState(0);
+  const navigate = useNavigate();
+
+  const enterApp = () => {
+    try {
+      sessionStorage.setItem("stl:entered-app", "1");
+      // Replay the guided tour every time someone enters via /welcome
+      // so reviewers of the shared preview always see it.
+      localStorage.removeItem("stl:tour-seen");
+    } catch {}
+    navigate({ to: "/" });
+  };
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -123,8 +134,9 @@ function Welcome() {
             className="animate-fade-in-up mt-8 flex flex-col gap-2.5"
             style={{ animationDelay: "200ms" }}
           >
-            <Link
-              to="/"
+            <button
+              type="button"
+              onClick={enterApp}
               className="press-depth font-display flex h-12 w-full items-center justify-center rounded-2xl text-[15px] font-bold text-white"
               style={{
                 background: "var(--primary)",
@@ -132,7 +144,7 @@ function Welcome() {
               }}
             >
               Continue with email
-            </Link>
+            </button>
             <button
               type="button"
               className="press-depth flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[14px] font-semibold text-white backdrop-blur-md"
