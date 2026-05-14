@@ -42,6 +42,23 @@ function Profile() {
               <MapPin className="mr-0.5 inline h-3 w-3" />
               {profile.neighborhood}, {profile.city}
             </p>
+            {/* Earned badges — compact row under name */}
+            <div className="mt-1.5 flex items-center gap-1">
+              {profile.badges
+                .filter((b) => b.earned)
+                .slice(0, 6)
+                .map((b) => (
+                  <span
+                    key={b.id}
+                    title={b.name}
+                    aria-label={b.name}
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[11px]"
+                    style={{ background: "var(--accent)" }}
+                  >
+                    {b.emoji}
+                  </span>
+                ))}
+            </div>
           </div>
         </div>
         <button
@@ -191,9 +208,6 @@ function Profile() {
           ))}
         </div>
       </section>
-
-      {/* Leaderboard */}
-      <LeaderboardSection />
 
       {/* Friends */}
       <section className="mt-7">
