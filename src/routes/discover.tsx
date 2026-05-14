@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
   import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
@@ -14,6 +14,7 @@ import {
   type Severity,
 } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
+import { useVenueSheet } from "@/components/VenueSheet";
 import {
   MapPin,
   Search,
@@ -55,7 +56,7 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
 const DEFAULT_RADIUS_MI = 5;
 
 function Discover() {
-  const navigate = useNavigate();
+  const { open: openVenueSheet } = useVenueSheet();
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
   const [radius, setRadius] = useState<number>(DEFAULT_RADIUS_MI);
@@ -230,11 +231,10 @@ function Discover() {
 
   const openVenue = useCallback(
     (id: string) => {
-      // Single source of truth for venue details — navigate to the full page so
-      // photos, reviews, directions, etc. are identical wherever you open a card.
-      navigate({ to: "/venue/$id", params: { id } });
+      // Tapping a venue opens the medium-height venue sheet across the app.
+      openVenueSheet(id);
     },
-    [navigate],
+    [openVenueSheet],
   );
 
   const closeVenue = useCallback(() => {

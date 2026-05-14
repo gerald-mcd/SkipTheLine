@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { BottomNav } from "@/components/BottomNav";
 import { Toaster } from "sonner";
+import { VenueSheetProvider } from "@/components/VenueSheet";
 
 function NotFoundComponent() {
   return (
@@ -126,16 +127,18 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div
-        className="relative mx-auto min-h-screen w-full max-w-md"
-        style={{ borderLeft: "1px solid var(--border)", borderRight: "1px solid var(--border)" }}
-      >
-        <div className="pb-24">
-          <Outlet />
+      <VenueSheetProvider>
+        <div
+          className="relative mx-auto min-h-screen w-full max-w-md"
+          style={{ borderLeft: "1px solid var(--border)", borderRight: "1px solid var(--border)" }}
+        >
+          <div className="pb-24">
+            <Outlet />
+          </div>
+          <BottomNav />
+          <Toaster position="top-center" richColors closeButton theme="light" />
         </div>
-        <BottomNav />
-        <Toaster position="top-center" richColors closeButton theme="light" />
-      </div>
+      </VenueSheetProvider>
     </QueryClientProvider>
   );
 }

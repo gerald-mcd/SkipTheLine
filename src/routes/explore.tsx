@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
   exploreFeed,
@@ -9,6 +9,7 @@ import {
 import { ArrowDownRight, ThumbsUp, ThumbsDown, Users, Clock, Sparkles } from "lucide-react";
 import { VenueImage } from "@/components/VenueImage";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
+import { useVenueSheet } from "@/components/VenueSheet";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -105,6 +106,7 @@ function FeedCard({
 }) {
   const venue =
     item.kind !== "system" ? venuesById.get(item.venueId) : undefined;
+  const { open: openVenueSheet } = useVenueSheet();
 
   return (
     <article
@@ -114,7 +116,7 @@ function FeedCard({
       <Header item={item} />
 
       {item.kind === "venue" && venue && (
-        <Link to="/venue/$id" params={{ id: venue.id }} className="block">
+        <button type="button" onClick={() => openVenueSheet(venue.id)} className="block w-full text-left">
           <div className="relative h-56 w-full">
             <VenueImage src={venue.image} alt={venue.name} className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%)" }} />
@@ -132,11 +134,11 @@ function FeedCard({
               <h3 className="font-display text-2xl font-semibold leading-tight">{venue.name}</h3>
             </div>
           </div>
-        </Link>
+        </button>
       )}
 
       {item.kind === "drop" && venue && (
-        <Link to="/venue/$id" params={{ id: venue.id }} className="block px-4 pb-3 pt-1">
+        <button type="button" onClick={() => openVenueSheet(venue.id)} className="block w-full px-4 pb-3 pt-1 text-left">
           <div
             className="flex items-center gap-3 rounded-2xl p-3"
             style={{
@@ -157,11 +159,11 @@ function FeedCard({
               </p>
             </div>
           </div>
-        </Link>
+        </button>
       )}
 
       {item.kind === "report" && venue && (
-        <Link to="/venue/$id" params={{ id: venue.id }} className="block px-4 pb-3 pt-1">
+        <button type="button" onClick={() => openVenueSheet(venue.id)} className="block w-full px-4 pb-3 pt-1 text-left">
           <div className="flex items-start gap-3">
             <div
               className="font-grotesk flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
@@ -190,7 +192,7 @@ function FeedCard({
               {item.minutes}m
             </span>
           </div>
-        </Link>
+        </button>
       )}
 
       {item.kind === "system" && (
