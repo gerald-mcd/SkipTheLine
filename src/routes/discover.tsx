@@ -86,20 +86,16 @@ function Discover() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Sheet snap state — draggable with three snap points: collapsed, peek, full.
-  // Collapsed shows just the handle so the map is fully visible.
-  const COLLAPSED_PX = 72; // sliver showing handle + summary cleanly (no clipped cards)
-  const PEEK = 0.55;
-  const FULL = 1.0;
+  // Sheet snap state — draggable with three clear snap points: 30%, 60%, 90%.
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerH, setContainerH] = useState(0);
-  const [snap, setSnap] = useState<"collapsed" | "peek" | "full">("peek");
+  const [snap, setSnap] = useState<SheetSnap>("low");
   const [sheetH, setSheetH] = useState(0); // px
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{
     startY: number;
     startH: number;
-    startSnap: "collapsed" | "peek" | "full";
+    startSnap: SheetSnap;
     lastY: number;
     lastT: number;
     vy: number;
@@ -121,20 +117,14 @@ function Discover() {
   useEffect(() => {
     if (containerH === 0) return;
     if (dragging) return;
-    const target =
-      snap === "full"
-        ? containerH * FULL
-        : snap === "peek"
-        ? containerH * PEEK
-        : COLLAPSED_PX;
-    setSheetH(target);
+    setSheetH(sheetHeightFor(snap, containerH));
   }, [snap, containerH, dragging]);
 
   const onHandleDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     const startH =
       sheetH ||
-      (snap === "full" ? containerH : snap === "peek" ? containerH * PEEK : COLLAPSED_PX);
+      sheetHeightFor(snap, containerH);
     dragRef.current = {
       startY: e.clientY,
       startH,
@@ -168,30 +158,27 @@ function Discover() {
     if (!d || containerH === 0) return;
     // Tap (no real drag) → cycle to next sensible snap
     if (!d.moved) {
-      setSnap(d.startSnap === "full" ? "peek" : d.startSnap === "peek" ? "collapsed" : "peek");
+      setSnap(d.startSnap === "high" ? "mid" : d.startSnap === "mid" ? "low" : "mid");
       return;
     }
-    const collapsedH = COLLAPSED_PX;
-    const peekH = containerH * PEEK;
-    const fullH = containerH * FULL;
-    const midLow = (collapsedH + peekH) / 2;
-    const midHigh = (peekH + fullH) / 2;
-    const order: ("collapsed" | "peek" | "full")[] = ["collapsed", "peek", "full"];
-    const startIdx = order.indexOf(d.startSnap);
+    const snapHeights = SHEET_SNAP_ORDER.map((point) => sheetHeightFor(point, containerH));
+    const midLow = (snapHeights[0] + snapHeights[1]) / 2;
+    const midHigh = (snapHeights[1] + snapHeights[2]) / 2;
+    const startIdx = SHEET_SNAP_ORDER.indexOf(d.startSnap);
     const FLICK = 0.5; // px/ms
-    let next: "collapsed" | "peek" | "full";
+    let next: SheetSnap;
     if (d.vy > FLICK) {
       // Fast upward flick → advance one step up
-      next = order[Math.min(order.length - 1, startIdx + 1)];
+      next = SHEET_SNAP_ORDER[Math.min(SHEET_SNAP_ORDER.length - 1, startIdx + 1)];
     } else if (d.vy < -FLICK) {
       // Fast downward flick → advance one step down
-      next = order[Math.max(0, startIdx - 1)];
+      next = SHEET_SNAP_ORDER[Math.max(0, startIdx - 1)];
     } else if (sheetH >= midHigh) {
-      next = "full";
+      next = "high";
     } else if (sheetH >= midLow) {
-      next = "peek";
+      next = "mid";
     } else {
-      next = "collapsed";
+      next = "low";
     }
     setSnap(next);
   };
