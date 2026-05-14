@@ -501,11 +501,32 @@ function SettingsSheet({ onClose }: { onClose: () => void }) {
             <SettingsItem icon={<Bell className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Notifications" />
             <SettingsItem icon={<Shield className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Privacy" top />
             <SettingsItem icon={<Settings className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />} label="Preferences" top />
+            <ReplayTourItem />
             <SettingsItem icon={<LogOut className="h-4 w-4" style={{ color: "var(--destructive, #c33)" }} />} label="Log out" top destructive />
           </div>
         </section>
       </div>
     </div>
+  );
+}
+
+function ReplayTourItem() {
+  return (
+    <button
+      onClick={() => {
+        try {
+          window.localStorage.removeItem("stl:tour-seen");
+        } catch {}
+        toast("Reloading to replay the tour…");
+        window.setTimeout(() => window.location.reload(), 400);
+      }}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left"
+      style={{ borderTop: "1px solid var(--border)" }}
+    >
+      <Sparkles className="h-4 w-4" style={{ color: "var(--primary)" }} />
+      <span className="flex-1 text-sm font-medium">Replay app tour</span>
+      <ChevronRight className="h-4 w-4" style={{ color: "var(--muted-foreground)" }} />
+    </button>
   );
 }
 
