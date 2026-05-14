@@ -18,6 +18,7 @@ export function CityMap({
   focusedId?: string | null;
   onPinClick?: (id: string) => void;
 }) {
+  const { open: openVenueSheet } = useVenueSheet();
   const focused = focusedId ? venues.find((v) => v.id === focusedId) : null;
   // Translate the inner map so the focused pin lands at 50/50.
   const tx = focused ? 50 - focused.x : 0;
@@ -126,28 +127,17 @@ export function CityMap({
             </svg>
           </>
         );
-        return onPinClick ? (
+        return (
           <button
             key={v.id}
             type="button"
-            onClick={() => onPinClick(v.id)}
+            onClick={() => (onPinClick ? onPinClick(v.id) : openVenueSheet(v.id))}
             className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
             style={pinStyle}
             aria-label={v.name}
           >
             {inner}
           </button>
-        ) : (
-          <Link
-            key={v.id}
-            to="/venue/$id"
-            params={{ id: v.id }}
-            className="absolute z-10 -translate-x-1/2 -translate-y-full animate-float-up"
-            style={pinStyle}
-            aria-label={v.name}
-          >
-            {inner}
-          </Link>
         );
       })}
       </div>
