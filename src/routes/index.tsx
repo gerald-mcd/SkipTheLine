@@ -568,3 +568,47 @@ function CategoryRow({
     </div>
   );
 }
+
+function SponsoredAd() {
+  // Placeholder for a paid placement (à la OpenTable / Yelp featured listing).
+  // Same card shape as a venue, with a clear "Sponsored" tag so it doesn't
+  // mislead. Intentionally no real CTA wiring — pure ad slot.
+  return (
+    <div
+      className="animate-fade-in-up mt-5 overflow-hidden rounded-3xl bg-card"
+      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+    >
+      <div className="relative h-32 w-full">
+        <img
+          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop"
+          alt="Sponsored — La Mar Brickell"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <span
+          className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+        >
+          Sponsored
+        </span>
+      </div>
+      <div className="flex items-center gap-3 p-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-display truncate text-sm font-bold tracking-tight">La Mar Brickell</p>
+          <p className="font-grotesk text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+            Peruvian · 0.4 mi · <span className="font-semibold" style={{ color: "var(--foreground)" }}>$$$</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => toast("Reservation flow coming soon")}
+          className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+        >
+          Reserve
+        </button>
+      </div>
+    </div>
+  );
+}
