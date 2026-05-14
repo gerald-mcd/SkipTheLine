@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 const CityMap = lazy(() =>
   import("@/components/CityMap").then((m) => ({ default: m.CityMap })),
@@ -55,6 +55,7 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
 const DEFAULT_RADIUS_MI = 5;
 
 function Discover() {
+  const navigate = useNavigate();
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
   const [radius, setRadius] = useState<number>(DEFAULT_RADIUS_MI);
@@ -227,10 +228,14 @@ function Discover() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [selectedId]);
 
-  const openVenue = useCallback((id: string) => {
-    setSelectedId(id);
-    setSnap("peek");
-  }, []);
+  const openVenue = useCallback(
+    (id: string) => {
+      // Single source of truth for venue details — navigate to the full page so
+      // photos, reviews, directions, etc. are identical wherever you open a card.
+      navigate({ to: "/venue/$id", params: { id } });
+    },
+    [navigate],
+  );
 
   const closeVenue = useCallback(() => {
     setSelectedId(null);
