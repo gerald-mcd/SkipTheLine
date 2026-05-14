@@ -7,7 +7,7 @@ import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
-import { QueueClockGlyph } from "@/components/ReportFab";
+import { PeopleSkipGlyph } from "@/components/ReportFab";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
