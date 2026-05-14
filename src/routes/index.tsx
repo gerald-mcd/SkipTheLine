@@ -310,7 +310,7 @@ function Home() {
                       }}
                     >
                       <PeopleSkipGlyph className="h-3 w-3" />
-                      Be the first to report · +15 pts
+                      <span className="whitespace-nowrap">First report · +15 pts</span>
                     </button>
                   )}
                 <button
@@ -851,10 +851,22 @@ function SponsoredAd() {
   ];
   const [idx, setIdx] = useState(0);
   const startX = useRef<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  // Auto-advance like the welcome carousel; pauses briefly after a manual swipe.
+  useEffect(() => {
+    if (paused) return;
+    const t = window.setInterval(() => {
+      setIdx((i) => (i + 1) % sponsors.length);
+    }, 4200);
+    return () => window.clearInterval(t);
+  }, [paused, sponsors.length]);
   const onDown = (e: React.PointerEvent) => {
     startX.current = e.clientX;
+    setPaused(true);
   };
   const onUp = (e: React.PointerEvent) => {
+    // Resume auto-advance a moment after the user finishes interacting.
+    window.setTimeout(() => setPaused(false), 6000);
     if (startX.current == null) return;
     const dx = e.clientX - startX.current;
     startX.current = null;
