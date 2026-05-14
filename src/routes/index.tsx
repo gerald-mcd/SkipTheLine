@@ -298,7 +298,7 @@ function Home() {
                   />
                 </div>
               </div>
-            </Link>
+            </button>
           );
         })}
       </div>
