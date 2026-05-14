@@ -286,18 +286,52 @@ function VenueDetail() {
       {/* Reviews */}
       <section className="mt-6 px-4">
         <div className="flex items-end justify-between">
-          <h2 className="text-sm font-semibold">Reviews</h2>
+          <div>
+            <h2 className="text-sm font-semibold">Reviews</h2>
+            <p className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+              Pulled from Google · plus the community
+            </p>
+          </div>
           <p className="flex items-center gap-1 text-[12px] font-bold">
             <Star className="h-3.5 w-3.5" fill="currentColor" style={{ color: "var(--primary)" }} />
             {avgRating}
             <span className="font-normal" style={{ color: "var(--muted-foreground)" }}>· {reviews.length}</span>
           </p>
         </div>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setReviewOpen(true)}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[12px] font-bold"
+            style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+          >
+            <Star className="h-3.5 w-3.5" fill="currentColor" /> Write a review
+          </button>
+          <button
+            type="button"
+            onClick={addPhoto}
+            className="flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-bold"
+            style={{ background: "var(--card)", color: "var(--foreground)", border: "1px solid var(--border)" }}
+          >
+            <Camera className="h-3.5 w-3.5" /> Add photo
+          </button>
+        </div>
         <div className="mt-2 space-y-2">
           {reviews.map((r) => (
-            <div key={r.author} className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
+            <div key={r.id} className="rounded-xl bg-card p-3" style={{ border: "1px solid var(--border)" }}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold">{r.author}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-semibold">{r.author}</p>
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+                    style={{
+                      background: r.source === "You" ? "var(--primary)" : "var(--accent)",
+                      color: r.source === "You" ? "var(--primary-foreground)" : "var(--primary)",
+                    }}
+                  >
+                    {r.source}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
@@ -390,6 +424,21 @@ function VenueDetail() {
             setMyReports((prev) => [r, ...prev]);
             setReportOpen(false);
             toast("Report submitted", { description: `${minutes} min wait · +${points} pts` });
+          }}
+        />
+      )}
+
+      {reviewOpen && (
+        <WriteReviewSheet
+          venueName={v.name}
+          onClose={() => setReviewOpen(false)}
+          onSubmit={(rating, text) => {
+            setUserReviews((prev) => [
+              { id: `me-${Date.now()}`, author: "You", rating, text, ago: "just now" },
+              ...prev,
+            ]);
+            setReviewOpen(false);
+            toast("Review posted", { description: `Thanks for sharing!` });
           }}
         />
       )}
