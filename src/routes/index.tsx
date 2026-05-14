@@ -819,44 +819,130 @@ function CategoryRow({
 }
 
 function SponsoredAd() {
-  // Placeholder for a paid placement (à la OpenTable / Yelp featured listing).
-  // Same card shape as a venue, with a clear "Sponsored" tag so it doesn't
-  // mislead. Intentionally no real CTA wiring — pure ad slot.
+  // Swipeable stack of sponsored placements — mixes categories so "sponsored"
+  // doesn't read as restaurant-only. No reservation CTA (not our niche);
+  // tapping a card opens the venue sheet.
+  const { open: openVenueSheet } = useVenueSheet();
+  const sponsors: { id: string; name: string; subtitle: string; tag: string; image: string; venueId?: string }[] = [
+    {
+      id: "s1",
+      name: "La Mar by Gastón Acurio",
+      subtitle: "Peruvian · 0.5 mi · $$$",
+      tag: "Featured restaurant",
+      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+      venueId: "v5",
+    },
+    {
+      id: "s2",
+      name: "Brickell Key Sunset Loop",
+      subtitle: "Landmark · 0.7 mi · Free",
+      tag: "Featured experience",
+      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1200&q=80&auto=format&fit=crop",
+      venueId: "v8",
+    },
+    {
+      id: "s3",
+      name: "Sugar Rooftop",
+      subtitle: "Lounge · 0.4 mi · 28th floor",
+      tag: "Featured nightlife",
+      image: "https://images.unsplash.com/photo-1545128485-c400e7702796?w=1200&q=80&auto=format&fit=crop",
+      venueId: "v2",
+    },
+  ];
+  const [idx, setIdx] = useState(0);
+  const startX = useRef<number | null>(null);
+  const onDown = (e: React.PointerEvent) => {
+    startX.current = e.clientX;
+  };
+  const onUp = (e: React.PointerEvent) => {
+    if (startX.current == null) return;
+    const dx = e.clientX - startX.current;
+    startX.current = null;
+    if (Math.abs(dx) < 40) return;
+    setIdx((i) => {
+      const next = dx < 0 ? i + 1 : i - 1;
+      return Math.max(0, Math.min(sponsors.length - 1, next));
+    });
+  };
   return (
-    <div
-      className="animate-fade-in-up mt-5 overflow-hidden rounded-3xl bg-card"
-      style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
-    >
-      <div className="relative h-32 w-full">
-        <img
-          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop"
-          alt="Sponsored — La Mar Brickell"
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <span
-          className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-          style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+    <div className="mt-5">
+      <div
+        className="relative overflow-hidden"
+        onPointerDown={onDown}
+        onPointerUp={onUp}
+        onPointerCancel={() => (startX.current = null)}
+        style={{ touchAction: "pan-y" }}
+      >
+        <div
+          className="flex transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${idx * 100}%)` }}
         >
-          Sponsored
-        </span>
-      </div>
-      <div className="flex items-center gap-3 p-3">
-        <div className="min-w-0 flex-1">
-          <p className="font-display truncate text-sm font-bold tracking-tight">La Mar Brickell</p>
-          <p className="font-grotesk text-[11px]" style={{ color: "var(--muted-foreground)" }}>
-            Peruvian · 0.4 mi · <span className="font-semibold" style={{ color: "var(--foreground)" }}>$$$</span>
-          </p>
+          {sponsors.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => s.venueId && openVenueSheet(s.venueId)}
+              className="card-lift block w-full shrink-0 overflow-hidden rounded-3xl bg-card text-left"
+              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
+            >
+              <div className="relative h-32 w-full">
+                <img
+                  src={s.image}
+                  alt={`Sponsored — ${s.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                  draggable={false}
+                />
+                <span
+                  className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+                  style={{ background: "rgba(255,255,255,0.92)", color: "var(--foreground)" }}
+                >
+                  Sponsored
+                </span>
+                <span
+                  className="font-grotesk absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white"
+                  style={{ background: "color-mix(in oklab, black 55%, transparent)" }}
+                >
+                  {s.tag}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-display truncate text-sm font-bold tracking-tight">{s.name}</p>
+                  <p className="font-grotesk text-[11px]" style={{ color: "var(--muted-foreground)" }}>
+                    {s.subtitle}
+                  </p>
+                </div>
+                <span
+                  className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
+                  style={{
+                    background: "color-mix(in oklab, var(--primary) 12%, transparent)",
+                    color: "var(--primary)",
+                  }}
+                >
+                  View
+                </span>
+              </div>
+            </button>
+          ))}
         </div>
-        <button
-          type="button"
-          onClick={() => toast("Reservation flow coming soon")}
-          className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-        >
-          Reserve
-        </button>
+      </div>
+      {/* Pager dots */}
+      <div className="mt-2 flex items-center justify-center gap-1.5">
+        {sponsors.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => setIdx(i)}
+            aria-label={`Go to sponsor ${i + 1}`}
+            className="h-1.5 rounded-full transition-all"
+            style={{
+              width: i === idx ? 18 : 6,
+              background: i === idx ? "var(--primary)" : "var(--border)",
+            }}
+          />
+        ))}
       </div>
     </div>
   );

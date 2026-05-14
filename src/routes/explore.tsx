@@ -4,9 +4,10 @@ import {
   exploreFeed,
   venuesById,
   severityColor,
+  profile,
   type FeedItem,
 } from "@/lib/mock-data";
-import { ArrowDownRight, ThumbsUp, ThumbsDown, Users, Clock, Sparkles } from "lucide-react";
+import { ArrowDownRight, Users, Clock, Sparkles } from "lucide-react";
 import { VenueImage } from "@/components/VenueImage";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useVenueSheet } from "@/components/VenueSheet";
@@ -34,7 +35,8 @@ const FILTERS: { id: Filter; label: string }[] = [
 function Explore() {
   const [reportOpen, setReportOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
-  const [votes, setVotes] = useState<Record<string, "up" | "down" | undefined>>({});
+  // Per-report reaction tally + which reaction the current user picked.
+  const [reactions, setReactions] = useState<Record<string, { mine?: ReactionKey; counts: Record<ReactionKey, number> }>>({});
 
   const items = useMemo(() => {
     if (filter === "all") return exploreFeed;
@@ -47,8 +49,20 @@ function Explore() {
     return exploreFeed.filter((i) => i.kind === map[filter]);
   }, [filter]);
 
-  const vote = (id: string, dir: "up" | "down") =>
-    setVotes((v) => ({ ...v, [id]: v[id] === dir ? undefined : dir }));
+  const react = (id: string, key: ReactionKey, baseCounts: Record<ReactionKey, number>) =>
+    setReactions((prev) => {
+      const cur = prev[id] ?? { mine: undefined, counts: { ...baseCounts } };
+      const next = { ...cur, counts: { ...cur.counts } };
+      // Remove previous selection
+      if (cur.mine) next.counts[cur.mine] = Math.max(0, next.counts[cur.mine] - 1);
+      if (cur.mine === key) {
+        next.mine = undefined;
+      } else {
+        next.mine = key;
+        next.counts[key] = (next.counts[key] ?? 0) + 1;
+      }
+      return { ...prev, [id]: next };
+    });
 
   return (
     <div className="px-5 pt-6">
@@ -85,7 +99,12 @@ function Explore() {
 
       <div className="mt-5 space-y-3">
         {items.map((item) => (
-          <FeedCard key={item.id} item={item} vote={votes[item.id]} onVote={(d) => vote(item.id, d)} />
+          <FeedCard
+            key={item.id}
+            item={item}
+            reactionState={reactions[item.id]}
+            onReact={(key, base) => react(item.id, key, base)}
+          />
         ))}
       </div>
 
@@ -97,16 +116,20 @@ function Explore() {
 
 function FeedCard({
   item,
-  vote,
-  onVote,
+  reactionState,
+  onReact,
 }: {
   item: FeedItem;
-  vote?: "up" | "down";
-  onVote: (dir: "up" | "down") => void;
+  reactionState?: { mine?: ReactionKey; counts: Record<ReactionKey, number> };
+  onReact: (key: ReactionKey, base: Record<ReactionKey, number>) => void;
 }) {
   const venue =
     item.kind !== "system" ? venuesById.get(item.venueId) : undefined;
   const { open: openVenueSheet } = useVenueSheet();
+  const isFriend =
+    item.kind === "report" && profile.friends.some((f) => f.name === item.user);
+  const displayName =
+    item.kind === "report" ? (isFriend ? item.user : "Someone nearby") : "";
 
   return (
     <article
@@ -169,11 +192,11 @@ function FeedCard({
               className="font-grotesk flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
               style={{ background: "var(--muted)", color: "var(--foreground)" }}
             >
-              {item.initial}
+              {isFriend ? item.initial : "?"}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[13px]">
-                <span className="font-semibold">{item.user}</span>
+                <span className="font-semibold">{displayName}</span>
                 <span style={{ color: "var(--muted-foreground)" }}> reported </span>
                 <span className="font-semibold tabular-nums">{item.minutes}m</span>
                 <span style={{ color: "var(--muted-foreground)" }}> at </span>
@@ -213,7 +236,9 @@ function FeedCard({
         </div>
       )}
 
-      <VoteBar item={item} vote={vote} onVote={onVote} />
+      {item.kind === "report" && (
+        <ReactionBar itemId={item.id} reactionState={reactionState} onReact={onReact} />
+      )}
     </article>
   );
 }
@@ -240,57 +265,69 @@ function Header({ item }: { item: FeedItem }) {
   );
 }
 
-function VoteBar({
-  item,
-  vote,
-  onVote,
-}: {
-  item: FeedItem;
-  vote?: "up" | "down";
-  onVote: (dir: "up" | "down") => void;
-}) {
-  const labels =
-    item.kind === "report" || item.kind === "drop"
-      ? { up: "Still accurate", down: "Not accurate" }
-      : { up: "Helpful", down: "Not for me" };
+type ReactionKey = "up" | "heart" | "fire";
+const REACTIONS: { key: ReactionKey; emoji: string; label: string }[] = [
+  { key: "up", emoji: "👍", label: "Thumbs up" },
+  { key: "heart", emoji: "❤️", label: "Heart" },
+  { key: "fire", emoji: "🔥", label: "Fire" },
+];
+// Deterministic baseline counts per item id so reactions feel pre-populated.
+function baseCountsFor(id: string): Record<ReactionKey, number> {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return {
+    up: 2 + (h % 7),
+    heart: 1 + ((h >> 3) % 5),
+    fire: (h >> 6) % 9,
+  };
+}
 
+function ReactionBar({
+  itemId,
+  reactionState,
+  onReact,
+}: {
+  itemId: string;
+  reactionState?: { mine?: ReactionKey; counts: Record<ReactionKey, number> };
+  onReact: (key: ReactionKey, base: Record<ReactionKey, number>) => void;
+}) {
+  const base = useMemo(() => baseCountsFor(itemId), [itemId]);
+  const counts = reactionState?.counts ?? base;
+  const mine = reactionState?.mine;
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2"
+      className="flex items-center gap-1.5 px-3 py-2"
       style={{ borderTop: "1px solid var(--border)" }}
     >
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onVote("up");
-        }}
-        className="font-grotesk inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-[11px] font-semibold transition-colors btn-pop"
-        style={{
-          background: vote === "up" ? "color-mix(in oklab, var(--wait-short) 18%, transparent)" : "transparent",
-          color: vote === "up" ? "var(--wait-short)" : "var(--muted-foreground)",
-        }}
-      >
-        <ThumbsUp className="h-3.5 w-3.5" fill={vote === "up" ? "currentColor" : "none"} />
-        {labels.up}
-      </button>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onVote("down");
-        }}
-        className="font-grotesk inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-[11px] font-semibold transition-colors btn-pop"
-        style={{
-          background: vote === "down" ? "color-mix(in oklab, var(--wait-long) 18%, transparent)" : "transparent",
-          color: vote === "down" ? "var(--wait-long)" : "var(--muted-foreground)",
-        }}
-      >
-        <ThumbsDown className="h-3.5 w-3.5" fill={vote === "down" ? "currentColor" : "none"} />
-        {labels.down}
-      </button>
+      {REACTIONS.map((r) => {
+        const active = mine === r.key;
+        const count = counts[r.key] ?? 0;
+        return (
+          <button
+            key={r.key}
+            type="button"
+            aria-label={r.label}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onReact(r.key, base);
+            }}
+            className="font-grotesk inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all btn-pop"
+            style={{
+              background: active
+                ? "color-mix(in oklab, var(--primary) 14%, transparent)"
+                : "var(--muted)",
+              color: active ? "var(--primary)" : "var(--muted-foreground)",
+              border: active
+                ? "1px solid color-mix(in oklab, var(--primary) 40%, transparent)"
+                : "1px solid transparent",
+            }}
+          >
+            <span aria-hidden className="text-[13px] leading-none">{r.emoji}</span>
+            <span className="tabular-nums">{count}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

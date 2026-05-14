@@ -47,7 +47,6 @@ export const Route = createFileRoute("/discover")({
 });
 
 type SortKey = "trending" | "wait" | "distance";
-type SheetSnap = "low" | "mid" | "high";
 
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
   { id: "trending", label: "Trending", emoji: "🔥" },
@@ -56,21 +55,10 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
 ];
 
 const DEFAULT_RADIUS_MI = 5;
-const SHEET_SNAP_POINTS: Record<SheetSnap, number> = {
-  low: 0.3,
-  mid: 0.6,
-  high: 0.9,
-};
-const SHEET_SNAP_ORDER: SheetSnap[] = ["low", "mid", "high"];
-const SHEET_SNAP_LABEL: Record<SheetSnap, string> = {
-  low: "30%",
-  mid: "60%",
-  high: "90%",
-};
-
-function sheetHeightFor(snap: SheetSnap, containerHeight: number) {
-  return Math.round(containerHeight * SHEET_SNAP_POINTS[snap]);
-}
+// Sheet defaults to 40%; freely draggable between MIN and MAX, no discrete snaps.
+const SHEET_DEFAULT = 0.4;
+const SHEET_MIN = 0.18;
+const SHEET_MAX = 0.92;
 
 function Discover() {
   const { open: openVenueSheet } = useVenueSheet();
@@ -86,16 +74,14 @@ function Discover() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Sheet snap state — draggable with three clear snap points: 30%, 60%, 90%.
+  // Sheet state — defaults to 40% of viewport; user can drag freely.
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerH, setContainerH] = useState(0);
-  const [snap, setSnap] = useState<SheetSnap>("low");
   const [sheetH, setSheetH] = useState(0); // px
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{
     startY: number;
     startH: number;
-    startSnap: SheetSnap;
     lastY: number;
     lastT: number;
     vy: number;
@@ -106,29 +92,23 @@ function Discover() {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const update = () => setContainerH(el.clientHeight);
+    const update = () => {
+      const h = el.clientHeight;
+      setContainerH(h);
+      setSheetH((cur) => (cur === 0 ? Math.round(h * SHEET_DEFAULT) : cur));
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // When snap changes (and not dragging), animate sheet to that height.
-  useEffect(() => {
-    if (containerH === 0) return;
-    if (dragging) return;
-    setSheetH(sheetHeightFor(snap, containerH));
-  }, [snap, containerH, dragging]);
-
   const onHandleDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
-    const startH =
-      sheetH ||
-      sheetHeightFor(snap, containerH);
+    const startH = sheetH || Math.round(containerH * SHEET_DEFAULT);
     dragRef.current = {
       startY: e.clientY,
       startH,
-      startSnap: snap,
       lastY: e.clientY,
       lastT: performance.now(),
       vy: 0,
@@ -141,13 +121,14 @@ function Discover() {
     if (!d) return;
     const dy = d.startY - e.clientY; // up = +
     if (Math.abs(dy) > 4) d.moved = true;
+    const minH = Math.round(containerH * SHEET_MIN);
+    const maxH = Math.round(containerH * SHEET_MAX);
     const next = Math.max(
-      sheetHeightFor("low", containerH),
-      Math.min(sheetHeightFor("high", containerH), d.startH + dy),
+      minH,
+      Math.min(maxH, d.startH + dy),
     );
     const now = performance.now();
     const dt = Math.max(1, now - d.lastT);
-    // Smoothed velocity (px/ms, up positive)
     const instV = (d.lastY - e.clientY) / dt;
     d.vy = d.vy * 0.6 + instV * 0.4;
     d.lastY = e.clientY;
@@ -155,35 +136,9 @@ function Discover() {
     setSheetH(next);
   };
   const onHandleUp = () => {
-    const d = dragRef.current;
     setDragging(false);
     dragRef.current = null;
-    if (!d || containerH === 0) return;
-    // Tap (no real drag) → cycle to next sensible snap
-    if (!d.moved) {
-      setSnap(d.startSnap === "high" ? "mid" : d.startSnap === "mid" ? "low" : "mid");
-      return;
-    }
-    const snapHeights = SHEET_SNAP_ORDER.map((point) => sheetHeightFor(point, containerH));
-    const midLow = (snapHeights[0] + snapHeights[1]) / 2;
-    const midHigh = (snapHeights[1] + snapHeights[2]) / 2;
-    const startIdx = SHEET_SNAP_ORDER.indexOf(d.startSnap);
-    const FLICK = 0.5; // px/ms
-    let next: SheetSnap;
-    if (d.vy > FLICK) {
-      // Fast upward flick → advance one step up
-      next = SHEET_SNAP_ORDER[Math.min(SHEET_SNAP_ORDER.length - 1, startIdx + 1)];
-    } else if (d.vy < -FLICK) {
-      // Fast downward flick → advance one step down
-      next = SHEET_SNAP_ORDER[Math.max(0, startIdx - 1)];
-    } else if (sheetH >= midHigh) {
-      next = "high";
-    } else if (sheetH >= midLow) {
-      next = "mid";
-    } else {
-      next = "low";
-    }
-    setSnap(next);
+    // Sheet stays exactly where the user released it — no auto-snap.
   };
 
   const list = useMemo(() => {
@@ -238,20 +193,27 @@ function Discover() {
 
   const openVenue = useCallback(
     (id: string) => {
-      // Tapping a venue opens the medium-height venue sheet across the app.
-      openVenueSheet(id);
+      // Select the venue → map flies to its pin and the sheet shows the
+      // venue panel inline. Keeps map + list in sync.
+      setSelectedId(id);
+      setSheetH((cur) => {
+        if (containerH === 0) return cur;
+        const target = Math.round(containerH * 0.6);
+        return cur < target ? target : cur;
+      });
     },
-    [openVenueSheet],
+    [containerH],
   );
 
   const closeVenue = useCallback(() => {
     setSelectedId(null);
-    setSnap("mid");
-  }, []);
+    setSheetH(containerH ? Math.round(containerH * SHEET_DEFAULT) : 0);
+  }, [containerH]);
 
   const selectedVenue = selectedId ? venues.find((v) => v.id === selectedId) ?? null : null;
-  const currentSheetHeight = sheetH || (containerH ? sheetHeightFor(snap, containerH) : 0);
-  const snapLabel = SHEET_SNAP_LABEL[snap];
+  const currentSheetHeight = sheetH || (containerH ? Math.round(containerH * SHEET_DEFAULT) : 0);
+  const sheetLowH = containerH ? Math.round(containerH * SHEET_MIN) : 0;
+  const sheetCollapsed = currentSheetHeight <= sheetLowH + 8;
 
   return (
     <div ref={containerRef} className="relative h-[calc(100dvh-80px)] overflow-hidden">
@@ -263,7 +225,10 @@ function Discover() {
       {/* Floating search + filter */}
       <div
         className="absolute inset-x-0 top-0 z-20 px-4 pt-4 transition-opacity duration-200"
-        style={{ opacity: snap === "high" ? 0 : 1, pointerEvents: snap === "high" ? "none" : "auto" }}
+        style={{
+          opacity: currentSheetHeight > containerH * 0.8 ? 0 : 1,
+          pointerEvents: currentSheetHeight > containerH * 0.8 ? "none" : "auto",
+        }}
       >
         <div className="flex items-center gap-2">
           <div
@@ -298,8 +263,14 @@ function Discover() {
       {/* Quick map / expand toggle — floats just above the sheet */}
       <button
         type="button"
-        onClick={() => setSnap(snap === "low" ? "mid" : "low")}
-        aria-label={snap === "low" ? "Raise list" : "Lower list"}
+        onClick={() =>
+          setSheetH(
+            sheetCollapsed
+              ? Math.round(containerH * SHEET_DEFAULT)
+              : Math.round(containerH * SHEET_MIN),
+          )
+        }
+        aria-label={sheetCollapsed ? "Raise list" : "Lower list"}
         className="absolute right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-card transition-all active:scale-95"
         style={{
           bottom: `${currentSheetHeight + 12}px`,
@@ -310,7 +281,7 @@ function Discover() {
             : "bottom 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms ease",
         }}
       >
-        {snap === "low" ? (
+        {sheetCollapsed ? (
           <ChevronUp className="h-5 w-5" style={{ color: "var(--primary)" }} />
         ) : (
           <MapIcon className="h-5 w-5" style={{ color: "var(--primary)" }} />
@@ -322,7 +293,7 @@ function Discover() {
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
-          height: currentSheetHeight ? `${currentSheetHeight}px` : `${SHEET_SNAP_POINTS.low * 100}%`,
+          height: currentSheetHeight ? `${currentSheetHeight}px` : `${SHEET_DEFAULT * 100}%`,
           transition: dragging ? "none" : "height 320ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
@@ -332,35 +303,13 @@ function Discover() {
           onPointerMove={onHandleMove}
           onPointerUp={onHandleUp}
           onPointerCancel={onHandleUp}
-          className="shrink-0 cursor-grab px-5 pt-3 pb-3 active:cursor-grabbing"
+          className="shrink-0 cursor-grab px-5 pb-3 pt-3 active:cursor-grabbing"
           style={{ touchAction: "none" }}
           aria-label="Drag to resize"
         >
           <div className="flex justify-center">
             <span className="h-1.5 w-12 rounded-full" style={{ background: "var(--primary)" }} />
           </div>
-          <div className="mt-3 flex items-center justify-between gap-2">
-            {SHEET_SNAP_ORDER.map((point) => (
-              <button
-                key={point}
-                type="button"
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setSnap(point);
-                }}
-                className="font-grotesk flex h-6 flex-1 items-center justify-center rounded-full text-[10px] font-bold transition-colors"
-                style={{
-                  background: point === snap ? "var(--primary)" : "var(--muted)",
-                  color: point === snap ? "var(--primary-foreground)" : "var(--muted-foreground)",
-                }}
-                aria-label={`Snap sheet to ${SHEET_SNAP_LABEL[point]}`}
-              >
-                {SHEET_SNAP_LABEL[point]}
-              </button>
-            ))}
-          </div>
-          <p className="sr-only">Current sheet height {snapLabel}</p>
         </div>
         {selectedVenue ? (
           <VenuePanel
