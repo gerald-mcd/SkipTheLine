@@ -141,7 +141,10 @@ function Discover() {
     if (!d) return;
     const dy = d.startY - e.clientY; // up = +
     if (Math.abs(dy) > 4) d.moved = true;
-    const next = Math.max(COLLAPSED_PX, Math.min(containerH * FULL, d.startH + dy));
+    const next = Math.max(
+      sheetHeightFor("low", containerH),
+      Math.min(sheetHeightFor("high", containerH), d.startH + dy),
+    );
     const now = performance.now();
     const dt = Math.max(1, now - d.lastT);
     // Smoothed velocity (px/ms, up positive)
@@ -243,7 +246,7 @@ function Discover() {
 
   const closeVenue = useCallback(() => {
     setSelectedId(null);
-    setSnap("peek");
+    setSnap("mid");
   }, []);
 
   const selectedVenue = selectedId ? venues.find((v) => v.id === selectedId) ?? null : null;
@@ -258,7 +261,7 @@ function Discover() {
       {/* Floating search + filter */}
       <div
         className="absolute inset-x-0 top-0 z-20 px-4 pt-4 transition-opacity duration-200"
-        style={{ opacity: snap === "full" ? 0 : 1, pointerEvents: snap === "full" ? "none" : "auto" }}
+        style={{ opacity: snap === "high" ? 0 : 1, pointerEvents: snap === "high" ? "none" : "auto" }}
       >
         <div className="flex items-center gap-2">
           <div
