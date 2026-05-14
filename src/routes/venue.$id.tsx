@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { venues, severityColor, severityLabel, liveFeed, profile, type Severity } from "@/lib/mock-data";
-import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Clock, MapPin, Calendar, Timer, MessageSquare, UserCircle2, Navigation, Star, ChevronLeft, ChevronRight, Camera, Plus, X } from "lucide-react";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 
 type MyReport = { id: string; minutes: number; note?: string; ago: string };
+type UserReview = { id: string; author: string; rating: number; text: string; ago: string };
 
 export const Route = createFileRoute("/venue/$id")({
   head: ({ params }) => {
@@ -30,27 +31,52 @@ function VenueDetail() {
   const [myReports, setMyReports] = useState<MyReport[]>([]);
   const [reportOpen, setReportOpen] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [userPhotos, setUserPhotos] = useState<string[]>([]);
+  const [userReviews, setUserReviews] = useState<UserReview[]>([]);
+  const [reviewOpen, setReviewOpen] = useState(false);
 
-  // Photo gallery — hero image plus a couple of complementary shots.
+  // Photo gallery — hero image, a few complementary shots, plus user uploads.
   const photos = useMemo(
     () => [
       v.image,
       "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200&q=80&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80&auto=format&fit=crop",
+      ...userPhotos,
     ],
-    [v.image],
+    [v.image, userPhotos],
   );
 
-  // Synthetic reviews — deterministic per venue id.
-  const reviews = useMemo(() => {
+  const addPhoto = () => {
+    // Mock upload — picks a stock food shot. In production this opens the
+    // device camera/photo picker and uploads to storage.
     const pool = [
-      { author: "Jasmine K.", rating: 5, text: "Vibes are unreal. Worth the wait every time.", ago: "2d" },
-      { author: "Rico M.", rating: 4, text: "Great spot. Hit the bar — line moves twice as fast.", ago: "5d" },
-      { author: "Priya S.", rating: 5, text: "Friendly staff and the patio is a gem.", ago: "1w" },
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1200&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80&auto=format&fit=crop",
     ];
-    return pool;
-  }, [v.id]);
+    const next = pool[userPhotos.length % pool.length];
+    setUserPhotos((prev) => [...prev, next]);
+    setPhotoIdx(photos.length); // jump to the newly added photo
+    toast("Photo added", { description: "Thanks for contributing!" });
+  };
+
+  // Synthetic reviews — represented as if pulled from Google Places.
+  const sourcedReviews = useMemo(
+    () => [
+      { id: "g1", author: "Jasmine K.", rating: 5, text: "Vibes are unreal. Worth the wait every time.", ago: "2d", source: "Google" as const },
+      { id: "g2", author: "Rico M.", rating: 4, text: "Great spot. Hit the bar — line moves twice as fast.", ago: "5d", source: "Google" as const },
+      { id: "g3", author: "Priya S.", rating: 5, text: "Friendly staff and the patio is a gem.", ago: "1w", source: "Google" as const },
+    ],
+    [v.id],
+  );
+  const reviews = useMemo(
+    () => [
+      ...userReviews.map((r) => ({ ...r, source: "You" as const })),
+      ...sourcedReviews,
+    ],
+    [userReviews, sourcedReviews],
+  );
   const avgRating = useMemo(
     () => (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
     [reviews],
