@@ -454,3 +454,85 @@ function Mini({ icon, value, label }: { icon: React.ReactNode; value: string; la
     </div>
   );
 }
+
+function WriteReviewSheet({
+  venueName,
+  onClose,
+  onSubmit,
+}: {
+  venueName: string;
+  onClose: () => void;
+  onSubmit: (rating: number, text: string) => void;
+}) {
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const MAX = 240;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <button aria-label="Close" onClick={onClose} className="animate-fade-in absolute inset-0 bg-black/40" />
+      <div
+        className="animate-slide-up relative w-full max-w-md rounded-t-3xl bg-card p-5"
+        style={{ boxShadow: "var(--shadow-lg)" }}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+              Review
+            </p>
+            <h3 className="font-display text-lg font-bold tracking-tight">{venueName}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 items-center justify-center rounded-full"
+            style={{ background: "var(--secondary)" }}
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 py-2">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setRating(n)}
+              aria-label={`${n} star${n === 1 ? "" : "s"}`}
+              className="transition-transform active:scale-90"
+            >
+              <Star
+                className="h-8 w-8"
+                fill={n <= rating ? "currentColor" : "transparent"}
+                style={{ color: n <= rating ? "var(--primary)" : "var(--muted-foreground)" }}
+              />
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, MAX))}
+          placeholder="Share what made it special (or not)…"
+          rows={4}
+          className="mt-3 w-full resize-none rounded-xl bg-card p-3 text-sm outline-none placeholder:text-[var(--muted-foreground)]"
+          style={{ border: "1px solid var(--border)" }}
+        />
+        <p className="mt-1 text-right text-[10px]" style={{ color: "var(--muted-foreground)" }}>
+          {text.length}/{MAX}
+        </p>
+
+        <button
+          type="button"
+          disabled={!text.trim()}
+          onClick={() => onSubmit(rating, text.trim())}
+          className="mt-3 w-full rounded-xl py-3.5 text-sm font-semibold disabled:opacity-50"
+          style={{ background: "var(--primary)", color: "var(--primary-foreground)", boxShadow: "var(--shadow-glow)" }}
+        >
+          Post review
+        </button>
+      </div>
+    </div>
+  );
+}
