@@ -7,14 +7,10 @@ import {
   venues,
   Category,
   categories,
-  severityColor,
-  severityLabel,
-  liveFeed,
-  profile,
-  type Severity,
 } from "@/lib/mock-data";
 import { WaitBadge } from "@/components/WaitBadge";
 import { useVenueSheet } from "@/components/VenueSheet";
+import { VenueDetailBody } from "@/components/VenueDetailBody";
 import {
   MapPin,
   Search,
@@ -24,11 +20,6 @@ import {
   Minus,
   Plus,
   ArrowLeft,
-  Clock,
-  Calendar,
-  Timer,
-  MessageSquare,
-  UserCircle2,
   Heart,
   Share2,
   Map as MapIcon,
