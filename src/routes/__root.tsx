@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -125,6 +126,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { pathname } = useLocation();
+  const isWelcome = pathname === "/welcome";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -133,7 +136,7 @@ function RootComponent() {
           className="relative mx-auto min-h-screen w-full max-w-md"
           style={{ borderLeft: "1px solid var(--border)", borderRight: "1px solid var(--border)" }}
         >
-          <div className="pb-24">
+          <div className={isWelcome ? "" : "pb-24"}>
             <Outlet />
           </div>
           <BottomNav />
