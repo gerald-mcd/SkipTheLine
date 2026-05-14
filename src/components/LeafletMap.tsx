@@ -192,7 +192,7 @@ export function LeafletMap({
   };
 
   return (
-    <div className="absolute inset-0" data-map-root>
+    <div className="absolute inset-0 z-0" data-map-root>
       <div
         ref={containerRef}
         className="absolute inset-0"

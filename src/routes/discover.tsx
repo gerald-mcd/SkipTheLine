@@ -47,6 +47,8 @@ export const Route = createFileRoute("/discover")({
 });
 
 type SortKey = "trending" | "wait" | "distance";
+type SheetSnap = "low" | "mid" | "high";
+
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
   { id: "trending", label: "Trending", emoji: "🔥" },
   { id: "wait", label: "Shortest wait", emoji: "⏱️" },
@@ -54,6 +56,21 @@ const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
 ];
 
 const DEFAULT_RADIUS_MI = 5;
+const SHEET_SNAP_POINTS: Record<SheetSnap, number> = {
+  low: 0.3,
+  mid: 0.6,
+  high: 0.9,
+};
+const SHEET_SNAP_ORDER: SheetSnap[] = ["low", "mid", "high"];
+const SHEET_SNAP_LABEL: Record<SheetSnap, string> = {
+  low: "30%",
+  mid: "60%",
+  high: "90%",
+};
+
+function sheetHeightFor(snap: SheetSnap, containerHeight: number) {
+  return Math.round(containerHeight * SHEET_SNAP_POINTS[snap]);
+}
 
 function Discover() {
   const { open: openVenueSheet } = useVenueSheet();
@@ -69,20 +86,16 @@ function Discover() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Sheet snap state — draggable with three snap points: collapsed, peek, full.
-  // Collapsed shows just the handle so the map is fully visible.
-  const COLLAPSED_PX = 72; // sliver showing handle + summary cleanly (no clipped cards)
-  const PEEK = 0.55;
-  const FULL = 1.0;
+  // Sheet snap state — draggable with three clear snap points: 30%, 60%, 90%.
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerH, setContainerH] = useState(0);
-  const [snap, setSnap] = useState<"collapsed" | "peek" | "full">("peek");
+  const [snap, setSnap] = useState<SheetSnap>("low");
   const [sheetH, setSheetH] = useState(0); // px
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{
     startY: number;
     startH: number;
-    startSnap: "collapsed" | "peek" | "full";
+    startSnap: SheetSnap;
     lastY: number;
     lastT: number;
     vy: number;
@@ -104,20 +117,14 @@ function Discover() {
   useEffect(() => {
     if (containerH === 0) return;
     if (dragging) return;
-    const target =
-      snap === "full"
-        ? containerH * FULL
-        : snap === "peek"
-        ? containerH * PEEK
-        : COLLAPSED_PX;
-    setSheetH(target);
+    setSheetH(sheetHeightFor(snap, containerH));
   }, [snap, containerH, dragging]);
 
   const onHandleDown = (e: React.PointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     const startH =
       sheetH ||
-      (snap === "full" ? containerH : snap === "peek" ? containerH * PEEK : COLLAPSED_PX);
+      sheetHeightFor(snap, containerH);
     dragRef.current = {
       startY: e.clientY,
       startH,
@@ -134,7 +141,10 @@ function Discover() {
     if (!d) return;
     const dy = d.startY - e.clientY; // up = +
     if (Math.abs(dy) > 4) d.moved = true;
-    const next = Math.max(COLLAPSED_PX, Math.min(containerH * FULL, d.startH + dy));
+    const next = Math.max(
+      sheetHeightFor("low", containerH),
+      Math.min(sheetHeightFor("high", containerH), d.startH + dy),
+    );
     const now = performance.now();
     const dt = Math.max(1, now - d.lastT);
     // Smoothed velocity (px/ms, up positive)
@@ -151,30 +161,27 @@ function Discover() {
     if (!d || containerH === 0) return;
     // Tap (no real drag) → cycle to next sensible snap
     if (!d.moved) {
-      setSnap(d.startSnap === "full" ? "peek" : d.startSnap === "peek" ? "collapsed" : "peek");
+      setSnap(d.startSnap === "high" ? "mid" : d.startSnap === "mid" ? "low" : "mid");
       return;
     }
-    const collapsedH = COLLAPSED_PX;
-    const peekH = containerH * PEEK;
-    const fullH = containerH * FULL;
-    const midLow = (collapsedH + peekH) / 2;
-    const midHigh = (peekH + fullH) / 2;
-    const order: ("collapsed" | "peek" | "full")[] = ["collapsed", "peek", "full"];
-    const startIdx = order.indexOf(d.startSnap);
+    const snapHeights = SHEET_SNAP_ORDER.map((point) => sheetHeightFor(point, containerH));
+    const midLow = (snapHeights[0] + snapHeights[1]) / 2;
+    const midHigh = (snapHeights[1] + snapHeights[2]) / 2;
+    const startIdx = SHEET_SNAP_ORDER.indexOf(d.startSnap);
     const FLICK = 0.5; // px/ms
-    let next: "collapsed" | "peek" | "full";
+    let next: SheetSnap;
     if (d.vy > FLICK) {
       // Fast upward flick → advance one step up
-      next = order[Math.min(order.length - 1, startIdx + 1)];
+      next = SHEET_SNAP_ORDER[Math.min(SHEET_SNAP_ORDER.length - 1, startIdx + 1)];
     } else if (d.vy < -FLICK) {
       // Fast downward flick → advance one step down
-      next = order[Math.max(0, startIdx - 1)];
+      next = SHEET_SNAP_ORDER[Math.max(0, startIdx - 1)];
     } else if (sheetH >= midHigh) {
-      next = "full";
+      next = "high";
     } else if (sheetH >= midLow) {
-      next = "peek";
+      next = "mid";
     } else {
-      next = "collapsed";
+      next = "low";
     }
     setSnap(next);
   };
@@ -239,10 +246,12 @@ function Discover() {
 
   const closeVenue = useCallback(() => {
     setSelectedId(null);
-    setSnap("peek");
+    setSnap("mid");
   }, []);
 
   const selectedVenue = selectedId ? venues.find((v) => v.id === selectedId) ?? null : null;
+  const currentSheetHeight = sheetH || (containerH ? sheetHeightFor(snap, containerH) : 0);
+  const snapLabel = SHEET_SNAP_LABEL[snap];
 
   return (
     <div ref={containerRef} className="relative h-[calc(100dvh-80px)] overflow-hidden">
@@ -254,7 +263,7 @@ function Discover() {
       {/* Floating search + filter */}
       <div
         className="absolute inset-x-0 top-0 z-20 px-4 pt-4 transition-opacity duration-200"
-        style={{ opacity: snap === "full" ? 0 : 1, pointerEvents: snap === "full" ? "none" : "auto" }}
+        style={{ opacity: snap === "high" ? 0 : 1, pointerEvents: snap === "high" ? "none" : "auto" }}
       >
         <div className="flex items-center gap-2">
           <div
@@ -289,11 +298,11 @@ function Discover() {
       {/* Quick map / expand toggle — floats just above the sheet */}
       <button
         type="button"
-        onClick={() => setSnap(snap === "collapsed" ? "peek" : "collapsed")}
-        aria-label={snap === "collapsed" ? "Show list" : "Show map"}
+        onClick={() => setSnap(snap === "low" ? "mid" : "low")}
+        aria-label={snap === "low" ? "Raise list" : "Lower list"}
         className="absolute right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-card transition-all active:scale-95"
         style={{
-          bottom: `${(sheetH || containerH * PEEK) + 12}px`,
+          bottom: `${currentSheetHeight + 12}px`,
           border: "1px solid var(--border)",
           boxShadow: "var(--shadow-md)",
           transition: dragging
@@ -301,7 +310,7 @@ function Discover() {
             : "bottom 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 150ms ease",
         }}
       >
-        {snap === "collapsed" ? (
+        {snap === "low" ? (
           <ChevronUp className="h-5 w-5" style={{ color: "var(--primary)" }} />
         ) : (
           <MapIcon className="h-5 w-5" style={{ color: "var(--primary)" }} />
@@ -313,7 +322,7 @@ function Discover() {
         style={{
           border: "1px solid var(--border)",
           boxShadow: "0 -8px 32px -12px color-mix(in oklab, var(--primary) 25%, transparent)",
-          height: sheetH ? `${sheetH}px` : `${PEEK * 100}%`,
+          height: currentSheetHeight ? `${currentSheetHeight}px` : `${SHEET_SNAP_POINTS.low * 100}%`,
           transition: dragging ? "none" : "height 320ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
@@ -323,11 +332,35 @@ function Discover() {
           onPointerMove={onHandleMove}
           onPointerUp={onHandleUp}
           onPointerCancel={onHandleUp}
-          className="flex shrink-0 cursor-grab justify-center pt-3 pb-3 active:cursor-grabbing"
+          className="shrink-0 cursor-grab px-5 pt-3 pb-3 active:cursor-grabbing"
           style={{ touchAction: "none" }}
           aria-label="Drag to resize"
         >
-          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+          <div className="flex justify-center">
+            <span className="h-1.5 w-12 rounded-full" style={{ background: "var(--primary)" }} />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-2">
+            {SHEET_SNAP_ORDER.map((point) => (
+              <button
+                key={point}
+                type="button"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSnap(point);
+                }}
+                className="font-grotesk flex h-6 flex-1 items-center justify-center rounded-full text-[10px] font-bold transition-colors"
+                style={{
+                  background: point === snap ? "var(--primary)" : "var(--muted)",
+                  color: point === snap ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                }}
+                aria-label={`Snap sheet to ${SHEET_SNAP_LABEL[point]}`}
+              >
+                {SHEET_SNAP_LABEL[point]}
+              </button>
+            ))}
+          </div>
+          <p className="sr-only">Current sheet height {snapLabel}</p>
         </div>
         {selectedVenue ? (
           <VenuePanel
@@ -350,10 +383,6 @@ function Discover() {
             </div>
             <div
               className="no-scrollbar mt-3 flex-1 space-y-2.5 overflow-y-auto px-4 pb-5 transition-opacity duration-200"
-              style={{
-                opacity: snap === "collapsed" ? 0 : 1,
-                pointerEvents: snap === "collapsed" ? "none" : "auto",
-              }}
             >
               {list.map((v) => (
                 <button

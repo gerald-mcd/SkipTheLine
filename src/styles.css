@@ -179,6 +179,11 @@
     border-color: var(--color-border);
   }
 
+  [data-map-root] .leaflet-pane,
+  [data-map-root] .leaflet-control-container {
+    z-index: 0;
+  }
+
   body {
     background: var(--color-background);
     color: var(--color-foreground);
