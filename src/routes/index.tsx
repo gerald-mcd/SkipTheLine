@@ -8,6 +8,7 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { useTheme } from "@/hooks/use-theme";
 import { WaitBadge } from "@/components/WaitBadge";
 import { PeopleSkipGlyph } from "@/components/ReportFab";
+import { useVenueSheet } from "@/components/VenueSheet";
 
 type SortKey = "trending" | "wait" | "distance" | "rated";
 const sortOptions: { id: SortKey; label: string; emoji: string }[] = [
@@ -45,6 +46,7 @@ function Home() {
   const [arrivalDismissed, setArrivalDismissed] = useState(false);
   const { isFav, toggle } = useFavorites();
   const { theme, toggle: toggleTheme } = useTheme();
+  const { open: openVenueSheet } = useVenueSheet();
 
   useEffect(() => {
     if (arrivalDismissed) return;
@@ -223,11 +225,11 @@ function Home() {
           const isWaitSort = sort === "wait";
           const stale = staleVenues.some((s) => s.venue.id === v.id);
           return (
-            <Link
+            <button
+              type="button"
               key={v.id}
-              to="/venue/$id"
-              params={{ id: v.id }}
-              className="card-lift animate-fade-in-up group block overflow-hidden rounded-2xl bg-card"
+              onClick={() => openVenueSheet(v.id)}
+              className="card-lift animate-fade-in-up group block overflow-hidden rounded-2xl bg-card text-left"
               style={{
                 border: "1px solid var(--border)",
                 boxShadow: "var(--shadow-sm)",
