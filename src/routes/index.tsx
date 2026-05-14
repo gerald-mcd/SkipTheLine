@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles } from "lucide-react";
@@ -37,6 +37,17 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const navigate = useNavigate();
+  // Shared preview always lands on /welcome first; once the user taps
+  // "Continue with email" we set a session flag and route here.
+  useEffect(() => {
+    try {
+      if (!sessionStorage.getItem("stl:entered-app")) {
+        navigate({ to: "/welcome", replace: true });
+      }
+    } catch {}
+  }, [navigate]);
+
   const [cat, setCat] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("trending");
   const [reportVenue, setReportVenue] = useState<Venue | null | undefined>(undefined);
