@@ -310,7 +310,7 @@ function Home() {
                       }}
                     >
                       <PeopleSkipGlyph className="h-3 w-3" />
-                      Be the first to report · +15 pts
+                      <span className="whitespace-nowrap">First report · +15 pts</span>
                     </button>
                   )}
                 <button
@@ -402,6 +402,39 @@ function PushNotificationMock({
 }) {
   // Mocks how a real OS push notification would look when the geofence
   // fires outside the app (lock screen / banner). Tap = open report sheet.
+  // Horizontal swipe (left or right) past ~80px dismisses, mirroring iOS.
+  const [dragX, setDragX] = useState(0);
+  const [dismissing, setDismissing] = useState(false);
+  const startRef = useRef<{ x: number; y: number; locked: "x" | "y" | null } | null>(null);
+  const onDown = (e: React.PointerEvent) => {
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    startRef.current = { x: e.clientX, y: e.clientY, locked: null };
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const s = startRef.current;
+    if (!s) return;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    if (!s.locked) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      s.locked = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    }
+    if (s.locked === "x") setDragX(dx);
+  };
+  const onUp = () => {
+    const s = startRef.current;
+    startRef.current = null;
+    if (s?.locked === "x" && Math.abs(dragX) > 80) {
+      // Animate off-screen, then dismiss.
+      setDismissing(true);
+      const dir = dragX < 0 ? -1 : 1;
+      setDragX(dir * 600);
+      window.setTimeout(onDismiss, 220);
+      return;
+    }
+    setDragX(0);
+  };
+  const dragging = startRef.current?.locked === "x";
   return (
     <div
       className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto flex max-w-md justify-center px-3"
@@ -409,7 +442,15 @@ function PushNotificationMock({
     >
       <button
         type="button"
-        onClick={onReport}
+        onClick={() => {
+          // Suppress the click that fires after a horizontal swipe.
+          if (Math.abs(dragX) > 8 || dismissing) return;
+          onReport();
+        }}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
         className="pointer-events-auto animate-fade-in-up group relative flex w-full items-start gap-2.5 rounded-[1.4rem] p-3 text-left"
         style={{
           background: "color-mix(in oklab, var(--card) 92%, transparent)",
@@ -417,6 +458,10 @@ function PushNotificationMock({
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
           border: "1px solid color-mix(in oklab, var(--foreground) 8%, transparent)",
           boxShadow: "0 18px 40px -12px oklch(0 0 0 / 0.35), 0 2px 6px oklch(0 0 0 / 0.15)",
+          transform: `translateX(${dragX}px)`,
+          opacity: dismissing ? 0 : Math.max(0.3, 1 - Math.abs(dragX) / 240),
+          transition: dragging ? "none" : "transform 220ms ease, opacity 220ms ease",
+          touchAction: "pan-y",
         }}
       >
         {/* App icon — mimics OS lock-screen notification icon */}
@@ -851,10 +896,22 @@ function SponsoredAd() {
   ];
   const [idx, setIdx] = useState(0);
   const startX = useRef<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  // Auto-advance like the welcome carousel; pauses briefly after a manual swipe.
+  useEffect(() => {
+    if (paused) return;
+    const t = window.setInterval(() => {
+      setIdx((i) => (i + 1) % sponsors.length);
+    }, 4200);
+    return () => window.clearInterval(t);
+  }, [paused, sponsors.length]);
   const onDown = (e: React.PointerEvent) => {
     startX.current = e.clientX;
+    setPaused(true);
   };
   const onUp = (e: React.PointerEvent) => {
+    // Resume auto-advance a moment after the user finishes interacting.
+    window.setTimeout(() => setPaused(false), 6000);
     if (startX.current == null) return;
     const dx = e.clientX - startX.current;
     startX.current = null;
