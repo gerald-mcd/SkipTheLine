@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { Venue } from "@/lib/mock-data";
+import { useVenueSheet } from "@/components/VenueSheet";
 
 /**
  * Map placeholder. This is the surface where Google Maps SDK will eventually
