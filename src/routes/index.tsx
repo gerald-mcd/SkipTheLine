@@ -264,7 +264,7 @@ function Home() {
                       }}
                     >
                       <PeopleSkipGlyph className="h-3 w-3" />
-                      Be the first · +15 pts
+                      Be the first to report · +15 pts
                     </button>
                   )}
                 <button
