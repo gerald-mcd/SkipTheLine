@@ -250,6 +250,8 @@ function Discover() {
   }, []);
 
   const selectedVenue = selectedId ? venues.find((v) => v.id === selectedId) ?? null : null;
+  const currentSheetHeight = sheetH || (containerH ? sheetHeightFor(snap, containerH) : 0);
+  const snapLabel = SHEET_SNAP_LABEL[snap];
 
   return (
     <div ref={containerRef} className="relative h-[calc(100dvh-80px)] overflow-hidden">
@@ -296,11 +298,11 @@ function Discover() {
       {/* Quick map / expand toggle — floats just above the sheet */}
       <button
         type="button"
-        onClick={() => setSnap(snap === "collapsed" ? "peek" : "collapsed")}
-        aria-label={snap === "collapsed" ? "Show list" : "Show map"}
+        onClick={() => setSnap(snap === "low" ? "mid" : "low")}
+        aria-label={snap === "low" ? "Raise list" : "Lower list"}
         className="absolute right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full bg-card transition-all active:scale-95"
         style={{
-          bottom: `${(sheetH || containerH * PEEK) + 12}px`,
+          bottom: `${currentSheetHeight + 12}px`,
           border: "1px solid var(--border)",
           boxShadow: "var(--shadow-md)",
           transition: dragging
@@ -330,11 +332,34 @@ function Discover() {
           onPointerMove={onHandleMove}
           onPointerUp={onHandleUp}
           onPointerCancel={onHandleUp}
-          className="flex shrink-0 cursor-grab justify-center pt-3 pb-3 active:cursor-grabbing"
+          className="shrink-0 cursor-grab px-5 pt-3 pb-3 active:cursor-grabbing"
           style={{ touchAction: "none" }}
           aria-label="Drag to resize"
         >
-          <span className="h-1 w-10 rounded-full" style={{ background: "var(--border)" }} />
+          <div className="flex justify-center">
+            <span className="h-1.5 w-12 rounded-full" style={{ background: "var(--primary)" }} />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-2">
+            {SHEET_SNAP_ORDER.map((point) => (
+              <button
+                key={point}
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSnap(point);
+                }}
+                className="font-grotesk flex h-6 flex-1 items-center justify-center rounded-full text-[10px] font-bold transition-colors"
+                style={{
+                  background: point === snap ? "var(--primary)" : "var(--muted)",
+                  color: point === snap ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                }}
+                aria-label={`Snap sheet to ${SHEET_SNAP_LABEL[point]}`}
+              >
+                {SHEET_SNAP_LABEL[point]}
+              </button>
+            ))}
+          </div>
+          <p className="sr-only">Current sheet height {snapLabel}</p>
         </div>
         {selectedVenue ? (
           <VenuePanel
