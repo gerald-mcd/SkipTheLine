@@ -286,6 +286,8 @@ function Home() {
                 <img
                   src={v.image}
                   alt={v.name}
+                  width={400}
+                  height={256}
                   loading={idx === 0 ? "eager" : "lazy"}
                   decoding="async"
                   fetchPriority={idx === 0 ? "high" : "auto"}
