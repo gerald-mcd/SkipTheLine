@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { X, MapPin, Map as MapIcon, Trophy } from "lucide-react";
 import { PeopleSkipGlyph } from "./ReportFab";
 
@@ -46,16 +47,18 @@ const steps: Step[] = [
 export function OnboardingTour() {
   const [open, setOpen] = useState(false);
   const [i, setI] = useState(0);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (pathname === "/welcome") return;
     try {
       if (!window.localStorage.getItem(KEY)) {
         const t = window.setTimeout(() => setOpen(true), 600);
         return () => window.clearTimeout(t);
       }
     } catch {}
-  }, []);
+  }, [pathname]);
 
   const dismiss = () => {
     try {
