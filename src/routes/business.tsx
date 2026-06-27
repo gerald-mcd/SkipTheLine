@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Clock, Users, Swords, CalendarDays, ShieldCheck, Download, Sparkles } from "lucide-react";
+import { ChevronLeft, Clock, Users, Swords, CalendarDays, ShieldCheck, Download, Sparkles, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/business")({
@@ -28,91 +28,126 @@ const tabs = [
 function BusinessPreview() {
   const navigate = useNavigate();
   return (
-    <div className="font-grotesk min-h-screen text-white" style={{ background: "#0b1020" }}>
-      {/* Header */}
-      <div className="relative overflow-hidden px-5 pb-10 pt-5"
-        style={{ background: "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)" }}
-      >
-        <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full" style={{ background: "radial-gradient(circle, rgba(167,139,250,0.45), transparent 65%)", filter: "blur(10px)" }} />
-        <span aria-hidden className="pointer-events-none absolute -left-16 bottom-[-40px] h-56 w-56 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.4), transparent 65%)", filter: "blur(14px)" }} />
+    <div className="font-grotesk relative min-h-screen overflow-hidden" style={{ background: "var(--background)" }}>
+      {/* Soft ambient — same recipe as home */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[460px]"
+        style={{
+          background:
+            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 9%, var(--background)) 0%, var(--background) 85%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 top-16 -z-10 h-[300px] w-[300px] rounded-full opacity-30 blur-3xl"
+        style={{ background: "color-mix(in oklab, var(--primary) 40%, transparent)" }}
+      />
 
+      {/* Header */}
+      <header className="px-5 pt-5">
         <button
           type="button"
           onClick={() => navigate({ to: "/" })}
-          className="relative inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-semibold"
-          style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}
+          className="btn-pop inline-flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[12px] font-semibold"
+          style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)", color: "var(--foreground)" }}
         >
           <ChevronLeft className="h-3.5 w-3.5" /> Back
         </button>
 
-        <div className="relative mt-6 flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}>
-            <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden>
-              <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="#fff" opacity="0.95" />
-              <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(11,16,32,0.35)" strokeWidth="0.8" fill="none" />
+        <div className="mt-5 flex items-start gap-3">
+          <span
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white"
+            style={{ background: "var(--gradient-aurora)", boxShadow: "var(--shadow-glow)" }}
+            aria-hidden
+          >
+            <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden fill="none">
+              <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="currentColor" opacity="0.96" />
+              <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(0,0,0,0.22)" strokeWidth="0.9" fill="none" />
             </svg>
           </span>
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-85">Premium Pass · For business owners</p>
-            <h1 className="font-display text-[26px] font-extrabold leading-tight tracking-tight">
-              Turn your line into your edge.
+          <div className="min-w-0 flex-1">
+            <span
+              className="inline-block rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+              style={{
+                background: "color-mix(in oklab, var(--primary) 14%, transparent)",
+                color: "var(--primary)",
+              }}
+            >
+              Premium · For business owners
+            </span>
+            <h1 className="font-display mt-1.5 text-[26px] font-extrabold leading-[1.05] tracking-tight">
+              Turn your line<br />into your edge.
             </h1>
           </div>
         </div>
 
-        <p className="relative mt-3 max-w-md text-[13px] opacity-90">
+        <p className="mt-3 max-w-md text-[13px]" style={{ color: "var(--muted-foreground)" }}>
           Live wait intel, foot-traffic patterns, competitor pulse and event lift —
-          built from the same crowd signal powering SkipTheLine. From $29–$199/mo.
+          built from the same crowd signal powering SkipTheLine.{" "}
+          <span className="font-semibold" style={{ color: "var(--foreground)" }}>$29–$199/mo.</span>
         </p>
 
-        <div className="relative mt-5 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => toast("Early access — we'll be in touch")}
-            className="press-depth rounded-full px-4 py-2 text-[13px] font-bold"
-            style={{ background: "#fff", color: "#3a2960" }}
+            className="press-depth font-grotesk inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold text-white"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
           >
-            Request early access
+            Request early access <ChevronRight className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={() => toast("Demo deck coming soon")}
-            className="press-depth rounded-full px-4 py-2 text-[13px] font-semibold"
-            style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}
+            className="press-depth font-grotesk inline-flex items-center rounded-full bg-card px-4 py-2 text-[13px] font-semibold"
+            style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)", color: "var(--foreground)" }}
           >
             Watch the demo
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Suite preview */}
-      <div className="px-5 py-7">
+      <section className="mt-7 px-5 pb-10">
         <div className="mb-3 flex items-center gap-1.5">
-          <Sparkles className="h-3.5 w-3.5" style={{ color: "#c4b5fd" }} />
+          <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--primary)" }} />
           <h2 className="font-display text-base font-bold tracking-tight">What's inside</h2>
         </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {tabs.map(({ icon: Icon, name, blurb }) => (
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          {tabs.map(({ icon: Icon, name, blurb }, i) => (
             <div
               key={name}
-              className="rounded-2xl p-4"
-              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              className="card-lift animate-fade-in-up rounded-2xl bg-card p-4"
+              style={{
+                border: "1px solid var(--border)",
+                boxShadow: "var(--shadow-sm)",
+                animationDelay: `${i * 50}ms`,
+              }}
             >
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: "rgba(167,139,250,0.18)" }}>
-                  <Icon className="h-4 w-4" style={{ color: "#c4b5fd" }} />
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-xl"
+                  style={{
+                    background: "color-mix(in oklab, var(--primary) 12%, transparent)",
+                  }}
+                  aria-hidden
+                >
+                  <Icon className="h-4 w-4" style={{ color: "var(--primary)" }} />
                 </span>
                 <p className="font-display text-sm font-bold tracking-tight">{name}</p>
               </div>
-              <p className="mt-2 text-[12px] opacity-80">{blurb}</p>
+              <p className="mt-2 text-[12px]" style={{ color: "var(--muted-foreground)" }}>
+                {blurb}
+              </p>
             </div>
           ))}
         </div>
 
-        <p className="mt-6 text-center text-[11px] opacity-60">
+        <p className="mt-6 text-center text-[11px]" style={{ color: "var(--muted-foreground)" }}>
           Preview using demo data. Full suite ships with a claimed venue.
         </p>
-      </div>
+      </section>
     </div>
   );
 }

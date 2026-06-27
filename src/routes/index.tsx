@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles, Clock, Users, Swords, ShieldCheck, Download } from "lucide-react";
 import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -214,6 +214,9 @@ function Home() {
 
         {/* Sponsored ad slot — placeholder styled like OpenTable / Yelp featured */}
         <SponsoredAd />
+
+        {/* Premium Pass — business-owner upsell, beneath the sponsored carousel */}
+        <PremiumPassCard />
 
         {/* Search */}
         <div
@@ -520,6 +523,113 @@ function SettingsSheet({ onClose }: { onClose: () => void }) {
         </section>
       </div>
     </div>
+  );
+}
+
+function PremiumPassCard() {
+  const navigate = useNavigate();
+  const features = [
+    { icon: Clock, label: "Wait intel" },
+    { icon: Users, label: "Foot traffic" },
+    { icon: Swords, label: "Competitor pulse" },
+    { icon: CalendarDays, label: "Event lift" },
+    { icon: ShieldCheck, label: "Reporter quality" },
+    { icon: Download, label: "CSV exports" },
+  ];
+  return (
+    <button
+      type="button"
+      onClick={() => navigate({ to: "/business" })}
+      aria-label="Preview the Premium Pass for business owners"
+      className="card-lift relative mt-3 block w-full overflow-hidden rounded-3xl bg-card p-4 text-left"
+      style={{
+        border: "1px solid var(--border)",
+        boxShadow: "var(--shadow-md)",
+        backgroundImage:
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 6%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 5%, var(--card)) 100%)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-60 blur-2xl"
+        style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
+      />
+      <div className="relative flex items-start gap-3">
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+          style={{
+            background: "var(--gradient-aurora)",
+            boxShadow: "var(--shadow-glow)",
+          }}
+          aria-hidden
+        >
+          <DiamondGlyph className="h-5 w-5 text-white" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+              style={{
+                background: "color-mix(in oklab, var(--primary) 14%, transparent)",
+                color: "var(--primary)",
+              }}
+            >
+              Premium · For owners
+            </span>
+          </div>
+          <p className="font-display mt-1 text-[15px] font-bold leading-tight tracking-tight">
+            Turn your line into your edge.
+          </p>
+          <p className="font-grotesk mt-0.5 text-[11.5px]" style={{ color: "var(--muted-foreground)" }}>
+            The full analytics suite, built from live SkipTheLine signals.
+          </p>
+        </div>
+        <ChevronRight className="mt-1 h-4 w-4 shrink-0" style={{ color: "var(--muted-foreground)" }} />
+      </div>
+
+      <div className="relative mt-3 grid grid-cols-3 gap-1.5">
+        {features.map(({ icon: Icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center gap-1 rounded-xl px-1.5 py-1.5"
+            style={{
+              background: "color-mix(in oklab, var(--primary) 5%, var(--surface, var(--card)))",
+              border: "1px solid color-mix(in oklab, var(--primary) 12%, var(--border))",
+            }}
+          >
+            <Icon className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+            <span className="truncate text-[10px] font-semibold" style={{ color: "var(--foreground)" }}>
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mt-3 flex items-center justify-between gap-2">
+        <p className="font-grotesk text-[10.5px]" style={{ color: "var(--muted-foreground)" }}>
+          From <span className="font-bold" style={{ color: "var(--foreground)" }}>$29/mo</span> · No card to preview
+        </p>
+        <span
+          className="font-grotesk inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white"
+          style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
+        >
+          Preview suite <ChevronRight className="h-3 w-3" />
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function DiamondGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden fill="none">
+      <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="currentColor" opacity="0.96" />
+      <path
+        d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4"
+        stroke="rgba(0,0,0,0.22)"
+        strokeWidth="0.9"
+      />
+    </svg>
   );
 }
 
@@ -836,7 +946,6 @@ function SponsoredAd() {
   // doesn't read as restaurant-only. No reservation CTA (not our niche);
   // tapping a card opens the venue sheet.
   const { open: openVenueSheet } = useVenueSheet();
-  const navigate = useNavigate();
   type Sponsor = {
     id: string;
     name: string;
@@ -844,7 +953,6 @@ function SponsoredAd() {
     tag: string;
     image?: string;
     venueId?: string;
-    kind?: "premium";
     cta?: string;
   };
   const sponsors: Sponsor[] = [
@@ -855,14 +963,6 @@ function SponsoredAd() {
       tag: "Featured restaurant",
       image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
       venueId: "v5",
-    },
-    {
-      id: "s-premium",
-      name: "SkipTheLine Premium Pass",
-      subtitle: "Wait intel · Foot traffic · Competitor pulse",
-      tag: "For business owners",
-      kind: "premium",
-      cta: "Preview suite",
     },
     {
       id: "s2",
@@ -926,64 +1026,28 @@ function SponsoredAd() {
               key={s.id}
               type="button"
               onClick={() => {
-                if (s.kind === "premium") {
-                  navigate({ to: "/business" });
-                  return;
-                }
                 if (s.venueId) openVenueSheet(s.venueId);
               }}
               className="card-lift block w-full shrink-0 overflow-hidden rounded-3xl bg-card text-left"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <div className="relative h-32 w-full overflow-hidden">
-                {s.kind === "premium" ? (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)",
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute -right-8 -top-8 h-32 w-32 rounded-full"
-                      style={{ background: "radial-gradient(circle, rgba(167,139,250,0.55), transparent 65%)", filter: "blur(6px)" }}
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute -left-10 bottom-[-30px] h-32 w-32 rounded-full"
-                      style={{ background: "radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%)", filter: "blur(10px)" }}
-                    />
-                    {/* Diamond glyph */}
-                    <svg viewBox="0 0 64 64" className="relative h-14 w-14" aria-hidden>
-                      <defs>
-                        <linearGradient id="dgrad" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
-                          <stop offset="100%" stopColor="#c4b5fd" stopOpacity="0.9" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="url(#dgrad)" stroke="rgba(255,255,255,0.6)" strokeWidth="1" />
-                      <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(11,16,32,0.35)" strokeWidth="0.8" fill="none" />
-                    </svg>
-                  </div>
-                ) : (
-                  <img
-                    src={s.image}
-                    alt={`Sponsored — ${s.name}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-                    draggable={false}
-                  />
-                )}
+                <img
+                  src={s.image}
+                  alt={`Sponsored — ${s.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                  draggable={false}
+                />
                 <span
                   className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
                   style={{
-                    background: s.kind === "premium" ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.92)",
-                    color: s.kind === "premium" ? "#3a2960" : "var(--foreground)",
+                    background: "rgba(255,255,255,0.92)",
+                    color: "var(--foreground)",
                   }}
                 >
-                  {s.kind === "premium" ? "Premium" : "Sponsored"}
+                  Sponsored
                 </span>
                 <span
                   className="font-grotesk absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white"
@@ -1002,11 +1066,8 @@ function SponsoredAd() {
                 <span
                   className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
                   style={{
-                    background:
-                      s.kind === "premium"
-                        ? "linear-gradient(135deg, #3a2960, #6366f1)"
-                        : "color-mix(in oklab, var(--primary) 12%, transparent)",
-                    color: s.kind === "premium" ? "#fff" : "var(--primary)",
+                    background: "color-mix(in oklab, var(--primary) 12%, transparent)",
+                    color: "var(--primary)",
                   }}
                 >
                   {s.cta ?? "View"}
