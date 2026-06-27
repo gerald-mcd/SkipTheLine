@@ -847,7 +847,6 @@ function SponsoredAd() {
     tag: string;
     image?: string;
     venueId?: string;
-    kind?: "premium";
     cta?: string;
   };
   const sponsors: Sponsor[] = [
@@ -858,14 +857,6 @@ function SponsoredAd() {
       tag: "Featured restaurant",
       image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
       venueId: "v5",
-    },
-    {
-      id: "s-premium",
-      name: "SkipTheLine Premium Pass",
-      subtitle: "Wait intel · Foot traffic · Competitor pulse",
-      tag: "For business owners",
-      kind: "premium",
-      cta: "Preview suite",
     },
     {
       id: "s2",
