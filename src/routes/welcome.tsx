@@ -172,6 +172,17 @@ function Welcome() {
               </svg>
               Continue with Apple
             </button>
+            <button
+              type="button"
+              onClick={enterApp}
+              className="press-depth flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[14px] font-semibold text-white backdrop-blur-md"
+              style={{
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.28)",
+              }}
+            >
+              Test User
+            </button>
           </div>
 
           <p
