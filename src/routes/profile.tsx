@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
 import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
@@ -18,6 +18,7 @@ function Profile() {
   const { current: tier, next: nextTier, progress } = tierFor(profile.points);
   const pointsToNext = nextTier ? Math.max(0, nextTier.min - profile.points) : 0;
   const [findOpen, setFindOpen] = useState(false);
+  const navigate = useNavigate();
   // Local extra friends added during this session
   const [extraFriends, setExtraFriends] = useState<Person[]>([]);
   const allFriends = useMemo(
@@ -142,6 +143,72 @@ function Profile() {
         />
         <Stat icon={<Users className="h-3.5 w-3.5" style={{ color: "var(--success)" }} />} value={communityImpact.peopleHelped > 999 ? `${(communityImpact.peopleHelped / 1000).toFixed(1)}k` : `${communityImpact.peopleHelped}`} label="Helped" />
       </div>
+
+      {/* Premium Pass teaser — for business owners */}
+      <section className="mt-5">
+        <button
+          type="button"
+          onClick={() => navigate({ to: "/business" })}
+          className="card-lift relative w-full overflow-hidden rounded-3xl p-4 text-left text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)",
+            boxShadow: "var(--shadow-md)",
+          }}
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(167,139,250,0.55), transparent 65%)", filter: "blur(8px)" }}
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -left-10 bottom-[-30px] h-32 w-32 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%)", filter: "blur(10px)" }}
+          />
+          <div className="relative flex items-start gap-3">
+            <span
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}
+            >
+              <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden>
+                <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="#fff" opacity="0.95" />
+                <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(11,16,32,0.35)" strokeWidth="0.8" fill="none" />
+              </svg>
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-85">
+                Premium Pass · For business owners
+              </p>
+              <p className="font-display mt-0.5 text-base font-bold leading-tight">
+                Turn your line into your edge.
+              </p>
+              <p className="mt-1 text-[11px] opacity-85">
+                Wait intel, foot traffic, competitor pulse, reporter quality, event lift, CSV exports.
+              </p>
+            </div>
+          </div>
+          <div className="relative mt-3 flex items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-1">
+              {["Wait Intel", "Foot Traffic", "Competitors", "Events"].map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                  style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.22)" }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+            <span
+              className="font-grotesk inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold"
+              style={{ background: "#fff", color: "#3a2960" }}
+            >
+              Preview suite <ChevronRight className="h-3 w-3" />
+            </span>
+          </div>
+        </button>
+      </section>
 
       {/* Active Quests — community participation drivers */}
       <section className="mt-7">
