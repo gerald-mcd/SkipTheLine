@@ -839,7 +839,6 @@ function SponsoredAd() {
   // doesn't read as restaurant-only. No reservation CTA (not our niche);
   // tapping a card opens the venue sheet.
   const { open: openVenueSheet } = useVenueSheet();
-  const navigate = useNavigate();
   type Sponsor = {
     id: string;
     name: string;
