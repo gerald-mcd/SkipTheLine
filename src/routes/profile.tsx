@@ -147,42 +147,45 @@ function Profile() {
       {/* Premium Pass teaser — for business owners */}
       <section className="mt-5">
         <div
-          className="card-lift relative w-full overflow-hidden rounded-3xl p-4 text-white"
+          className="card-lift relative w-full overflow-hidden rounded-3xl bg-card p-4"
           style={{
-            background:
-              "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)",
+            border: "1px solid var(--border)",
             boxShadow: "var(--shadow-md)",
+            backgroundImage:
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 7%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 6%, var(--card)) 100%)",
           }}
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(167,139,250,0.55), transparent 65%)", filter: "blur(8px)" }}
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -left-10 bottom-[-30px] h-32 w-32 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%)", filter: "blur(10px)" }}
+            className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-60 blur-2xl"
+            style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
           />
 
           <div className="relative flex items-start gap-3">
             <span
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
-              style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}
+              style={{ background: "var(--gradient-aurora)", boxShadow: "var(--shadow-glow)" }}
+              aria-hidden
             >
-              <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden>
-                <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="#fff" opacity="0.95" />
+              <svg viewBox="0 0 64 64" className="h-6 w-6 text-white" aria-hidden fill="none">
+                <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="currentColor" opacity="0.96" />
                 <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(11,16,32,0.35)" strokeWidth="0.8" fill="none" />
               </svg>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] opacity-85">
-                Premium Pass · For business owners
-              </p>
-              <p className="font-display mt-0.5 text-base font-bold leading-tight">
+              <span
+                className="inline-block rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+                style={{
+                  background: "color-mix(in oklab, var(--primary) 14%, transparent)",
+                  color: "var(--primary)",
+                }}
+              >
+                Premium · For owners
+              </span>
+              <p className="font-display mt-1 text-base font-bold leading-tight tracking-tight">
                 Turn your line into your edge.
               </p>
-              <p className="mt-1 text-[11px] opacity-85">
+              <p className="mt-1 text-[11.5px]" style={{ color: "var(--muted-foreground)" }}>
                 The full analytics suite built from live SkipTheLine signals.
               </p>
             </div>
@@ -201,15 +204,18 @@ function Profile() {
               <div
                 key={name}
                 className="flex items-center gap-1.5 rounded-xl px-2 py-1.5"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+                style={{
+                  background: "color-mix(in oklab, var(--primary) 5%, var(--card))",
+                  border: "1px solid color-mix(in oklab, var(--primary) 12%, var(--border))",
+                }}
               >
                 <span
                   className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
-                  style={{ background: "rgba(167,139,250,0.22)" }}
+                  style={{ background: "color-mix(in oklab, var(--primary) 14%, transparent)" }}
                 >
-                  <Icon className="h-3 w-3" style={{ color: "#c4b5fd" }} />
+                  <Icon className="h-3 w-3" style={{ color: "var(--primary)" }} />
                 </span>
-                <span className="truncate text-[11px] font-semibold">{name}</span>
+                <span className="truncate text-[11px] font-semibold" style={{ color: "var(--foreground)" }}>{name}</span>
               </div>
             ))}
           </div>
@@ -218,12 +224,12 @@ function Profile() {
           <button
             type="button"
             onClick={() => navigate({ to: "/business" })}
-            className="press-depth font-grotesk relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-bold"
-            style={{ background: "#fff", color: "#3a2960" }}
+            className="press-depth font-grotesk relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-bold text-white"
+            style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
           >
             Preview suite <ChevronRight className="h-3.5 w-3.5" />
           </button>
-          <p className="relative mt-2 text-center text-[10px] opacity-70">
+          <p className="relative mt-2 text-center text-[10px]" style={{ color: "var(--muted-foreground)" }}>
             From $29/mo · No credit card to preview
           </p>
         </div>
