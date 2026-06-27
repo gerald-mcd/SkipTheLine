@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles } from "lucide-react";
+import { Settings, Check, Heart, Moon, Search, SlidersHorizontal, Sun, TrendingUp, TrendingDown, Minus, Plus, Mail, Phone, CalendarDays, Bell, Shield, LogOut, X, ChevronRight, MapPin, Sparkles, Clock, Users, Swords, ShieldCheck, Download } from "lucide-react";
 import { venues, Category, categories, profile, staleVenues, type Venue } from "@/lib/mock-data";
 import { LazyReportSheet as ReportSheet } from "@/components/LazyReportSheet";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -214,6 +214,9 @@ function Home() {
 
         {/* Sponsored ad slot — placeholder styled like OpenTable / Yelp featured */}
         <SponsoredAd />
+
+        {/* Premium Pass — business-owner upsell, beneath the sponsored carousel */}
+        <PremiumPassCard />
 
         {/* Search */}
         <div
