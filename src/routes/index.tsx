@@ -526,6 +526,113 @@ function SettingsSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
+function PremiumPassCard() {
+  const navigate = useNavigate();
+  const features = [
+    { icon: Clock, label: "Wait intel" },
+    { icon: Users, label: "Foot traffic" },
+    { icon: Swords, label: "Competitor pulse" },
+    { icon: CalendarDays, label: "Event lift" },
+    { icon: ShieldCheck, label: "Reporter quality" },
+    { icon: Download, label: "CSV exports" },
+  ];
+  return (
+    <button
+      type="button"
+      onClick={() => navigate({ to: "/business" })}
+      aria-label="Preview the Premium Pass for business owners"
+      className="card-lift relative mt-3 block w-full overflow-hidden rounded-3xl bg-card p-4 text-left"
+      style={{
+        border: "1px solid var(--border)",
+        boxShadow: "var(--shadow-md)",
+        backgroundImage:
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 6%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 5%, var(--card)) 100%)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-60 blur-2xl"
+        style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
+      />
+      <div className="relative flex items-start gap-3">
+        <span
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+          style={{
+            background: "var(--gradient-aurora)",
+            boxShadow: "var(--shadow-glow)",
+          }}
+          aria-hidden
+        >
+          <DiamondGlyph className="h-5 w-5 text-white" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+              style={{
+                background: "color-mix(in oklab, var(--primary) 14%, transparent)",
+                color: "var(--primary)",
+              }}
+            >
+              Premium · For owners
+            </span>
+          </div>
+          <p className="font-display mt-1 text-[15px] font-bold leading-tight tracking-tight">
+            Turn your line into your edge.
+          </p>
+          <p className="font-grotesk mt-0.5 text-[11.5px]" style={{ color: "var(--muted-foreground)" }}>
+            The full analytics suite, built from live SkipTheLine signals.
+          </p>
+        </div>
+        <ChevronRight className="mt-1 h-4 w-4 shrink-0" style={{ color: "var(--muted-foreground)" }} />
+      </div>
+
+      <div className="relative mt-3 grid grid-cols-3 gap-1.5">
+        {features.map(({ icon: Icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center gap-1 rounded-xl px-1.5 py-1.5"
+            style={{
+              background: "color-mix(in oklab, var(--primary) 5%, var(--surface, var(--card)))",
+              border: "1px solid color-mix(in oklab, var(--primary) 12%, var(--border))",
+            }}
+          >
+            <Icon className="h-3 w-3 shrink-0" style={{ color: "var(--primary)" }} />
+            <span className="truncate text-[10px] font-semibold" style={{ color: "var(--foreground)" }}>
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mt-3 flex items-center justify-between gap-2">
+        <p className="font-grotesk text-[10.5px]" style={{ color: "var(--muted-foreground)" }}>
+          From <span className="font-bold" style={{ color: "var(--foreground)" }}>$29/mo</span> · No card to preview
+        </p>
+        <span
+          className="font-grotesk inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-white"
+          style={{ background: "var(--primary)", boxShadow: "var(--shadow-glow)" }}
+        >
+          Preview suite <ChevronRight className="h-3 w-3" />
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function DiamondGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden fill="none">
+      <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="currentColor" opacity="0.96" />
+      <path
+        d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4"
+        stroke="rgba(0,0,0,0.22)"
+        strokeWidth="0.9"
+      />
+    </svg>
+  );
+}
+
 function ReplayTourItem() {
   return (
     <button
