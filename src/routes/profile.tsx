@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { profile, peoplePool, incomingRequests, type Person, geoChildren, geoById, type GeoNode, tierFor, quests, rewards, communityImpact, type Quest, type Reward } from "@/lib/mock-data";
-import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles } from "lucide-react";
+import { Flame, Trophy, MapPin, ChevronRight, Settings, UserPlus, Search, X, Check, Clock, TrendingUp, TrendingDown, Minus, List, Map as MapIcon, ChevronLeft, Crosshair, Zap, Target, Gift, Users, Lock, Sparkles, Swords, CalendarDays, ShieldCheck, Download } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/profile")({
@@ -146,10 +146,8 @@ function Profile() {
 
       {/* Premium Pass teaser — for business owners */}
       <section className="mt-5">
-        <button
-          type="button"
-          onClick={() => navigate({ to: "/business" })}
-          className="card-lift relative w-full overflow-hidden rounded-3xl p-4 text-left text-white"
+        <div
+          className="card-lift relative w-full overflow-hidden rounded-3xl p-4 text-white"
           style={{
             background:
               "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)",
@@ -166,6 +164,7 @@ function Profile() {
             className="pointer-events-none absolute -left-10 bottom-[-30px] h-32 w-32 rounded-full"
             style={{ background: "radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%)", filter: "blur(10px)" }}
           />
+
           <div className="relative flex items-start gap-3">
             <span
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
@@ -184,30 +183,50 @@ function Profile() {
                 Turn your line into your edge.
               </p>
               <p className="mt-1 text-[11px] opacity-85">
-                Wait intel, foot traffic, competitor pulse, reporter quality, event lift, CSV exports.
+                The full analytics suite built from live SkipTheLine signals.
               </p>
             </div>
           </div>
-          <div className="relative mt-3 flex items-center justify-between gap-2">
-            <div className="flex flex-wrap gap-1">
-              {["Wait Intel", "Foot Traffic", "Competitors", "Events"].map((t) => (
+
+          {/* Six suite highlights */}
+          <div className="relative mt-4 grid grid-cols-2 gap-1.5">
+            {[
+              { icon: Clock, name: "Wait Intel" },
+              { icon: Users, name: "Foot Traffic" },
+              { icon: Swords, name: "Competitor Pulse" },
+              { icon: CalendarDays, name: "Event Lift" },
+              { icon: ShieldCheck, name: "Reporter Quality" },
+              { icon: Download, name: "CSV Exports" },
+            ].map(({ icon: Icon, name }) => (
+              <div
+                key={name}
+                className="flex items-center gap-1.5 rounded-xl px-2 py-1.5"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+              >
                 <span
-                  key={t}
-                  className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                  style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.22)" }}
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
+                  style={{ background: "rgba(167,139,250,0.22)" }}
                 >
-                  {t}
+                  <Icon className="h-3 w-3" style={{ color: "#c4b5fd" }} />
                 </span>
-              ))}
-            </div>
-            <span
-              className="font-grotesk inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-bold"
-              style={{ background: "#fff", color: "#3a2960" }}
-            >
-              Preview suite <ChevronRight className="h-3 w-3" />
-            </span>
+                <span className="truncate text-[11px] font-semibold">{name}</span>
+              </div>
+            ))}
           </div>
-        </button>
+
+          {/* Primary CTA */}
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/business" })}
+            className="press-depth font-grotesk relative mt-4 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-[13px] font-bold"
+            style={{ background: "#fff", color: "#3a2960" }}
+          >
+            Preview suite <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+          <p className="relative mt-2 text-center text-[10px] opacity-70">
+            From $29/mo · No credit card to preview
+          </p>
+        </div>
       </section>
 
       {/* Active Quests — community participation drivers */}
