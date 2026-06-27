@@ -920,64 +920,28 @@ function SponsoredAd() {
               key={s.id}
               type="button"
               onClick={() => {
-                if (s.kind === "premium") {
-                  navigate({ to: "/business" });
-                  return;
-                }
                 if (s.venueId) openVenueSheet(s.venueId);
               }}
               className="card-lift block w-full shrink-0 overflow-hidden rounded-3xl bg-card text-left"
               style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)" }}
             >
               <div className="relative h-32 w-full overflow-hidden">
-                {s.kind === "premium" ? (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #0b1020 0%, #1a1f3a 45%, #3a2960 100%)",
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute -right-8 -top-8 h-32 w-32 rounded-full"
-                      style={{ background: "radial-gradient(circle, rgba(167,139,250,0.55), transparent 65%)", filter: "blur(6px)" }}
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute -left-10 bottom-[-30px] h-32 w-32 rounded-full"
-                      style={{ background: "radial-gradient(circle, rgba(99,102,241,0.45), transparent 65%)", filter: "blur(10px)" }}
-                    />
-                    {/* Diamond glyph */}
-                    <svg viewBox="0 0 64 64" className="relative h-14 w-14" aria-hidden>
-                      <defs>
-                        <linearGradient id="dgrad" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor="#fff" stopOpacity="0.95" />
-                          <stop offset="100%" stopColor="#c4b5fd" stopOpacity="0.9" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M32 4 L60 24 L32 60 L4 24 Z" fill="url(#dgrad)" stroke="rgba(255,255,255,0.6)" strokeWidth="1" />
-                      <path d="M4 24 L60 24 M20 24 L32 60 M44 24 L32 60 M20 24 L32 4 M44 24 L32 4" stroke="rgba(11,16,32,0.35)" strokeWidth="0.8" fill="none" />
-                    </svg>
-                  </div>
-                ) : (
-                  <img
-                    src={s.image}
-                    alt={`Sponsored — ${s.name}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover pointer-events-none"
-                    draggable={false}
-                  />
-                )}
+                <img
+                  src={s.image}
+                  alt={`Sponsored — ${s.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+                  draggable={false}
+                />
                 <span
                   className="absolute left-2 top-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
                   style={{
-                    background: s.kind === "premium" ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.92)",
-                    color: s.kind === "premium" ? "#3a2960" : "var(--foreground)",
+                    background: "rgba(255,255,255,0.92)",
+                    color: "var(--foreground)",
                   }}
                 >
-                  {s.kind === "premium" ? "Premium" : "Sponsored"}
+                  Sponsored
                 </span>
                 <span
                   className="font-grotesk absolute right-2 top-2 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white"
@@ -996,11 +960,8 @@ function SponsoredAd() {
                 <span
                   className="font-grotesk shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold"
                   style={{
-                    background:
-                      s.kind === "premium"
-                        ? "linear-gradient(135deg, #3a2960, #6366f1)"
-                        : "color-mix(in oklab, var(--primary) 12%, transparent)",
-                    color: s.kind === "premium" ? "#fff" : "var(--primary)",
+                    background: "color-mix(in oklab, var(--primary) 12%, transparent)",
+                    color: "var(--primary)",
                   }}
                 >
                   {s.cta ?? "View"}
