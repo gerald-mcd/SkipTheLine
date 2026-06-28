@@ -147,17 +147,17 @@ function Profile() {
       {/* Premium Pass teaser — for business owners */}
       <section className="mt-5">
         <div
-          className="card-lift relative w-full overflow-hidden rounded-3xl bg-card p-4"
+          className="card-lift relative mx-1.5 overflow-hidden rounded-2xl bg-card p-3.5"
           style={{
             border: "1px solid var(--border)",
             boxShadow: "var(--shadow-md)",
             backgroundImage:
-              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 7%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 6%, var(--card)) 100%)",
+              "linear-gradient(135deg, color-mix(in oklab, var(--primary) 3%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 2%, var(--card)) 100%)",
           }}
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-60 blur-2xl"
+            className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-40 blur-xl"
             style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
           />
 
