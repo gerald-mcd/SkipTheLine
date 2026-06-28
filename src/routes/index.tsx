@@ -216,7 +216,9 @@ function Home() {
         <SponsoredAd />
 
         {/* Premium Pass — business-owner upsell, beneath the sponsored carousel */}
-        <PremiumPassCard />
+        <div className="px-1">
+          <PremiumPassCard />
+        </div>
 
         {/* Search */}
         <div
@@ -541,17 +543,17 @@ function PremiumPassCard() {
       type="button"
       onClick={() => navigate({ to: "/business" })}
       aria-label="Preview the Premium Pass for business owners"
-      className="card-lift relative mt-3 block w-full overflow-hidden rounded-3xl bg-card p-4 text-left"
+      className="card-lift relative mt-3 block overflow-hidden rounded-2xl bg-card p-3.5 text-left"
       style={{
         border: "1px solid var(--border)",
         boxShadow: "var(--shadow-md)",
         backgroundImage:
-          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 6%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 5%, var(--card)) 100%)",
+          "linear-gradient(135deg, color-mix(in oklab, var(--primary) 3%, var(--card)) 0%, var(--card) 55%, color-mix(in oklab, var(--primary-glow) 2%, var(--card)) 100%)",
       }}
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-60 blur-2xl"
+        className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-40 blur-xl"
         style={{ background: "color-mix(in oklab, var(--primary) 35%, transparent)" }}
       />
       <div className="relative flex items-start gap-3">
